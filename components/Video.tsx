@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   Platform,
   StyleSheet,
@@ -13,14 +13,26 @@ import { Text, View } from "../components/Themed";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function VideoComponent(props: any) {
+  const { description, image, title, fileName, creationTime } = props.item;
+  let detail = description;
+
+  const [readMore, setReadMore] = useState(
+    detail.length < 50 ? "Read more..." : "Read less"
+  );
+  useEffect(() => {
+    if (readMore == "Read more...") {
+      detail = props.description;
+    } else {
+      detail = detail.substring(0, 200);
+    }
+  }, [readMore]);
+
   const trimDate = (num: any) => {
     var str = `${num}`;
     var sliced = str.slice(0, 10);
 
     return sliced;
   };
-
-  const { description, image, title, fileName, creationTime } = props.item;
 
   return (
     <>
@@ -81,7 +93,10 @@ export default function VideoComponent(props: any) {
         />
         {/* <Image source={{ uri: `${image}` }} style={styles.image} /> */}
         <Text allowFontScaling={false} style={styles.cardDesc}>
-          {description && description}
+          {description && detail}
+          <TouchableOpacity onPress={() => setReadMore("Read less")}>
+            <Text style={{ color: "skyblue" }}>{readMore}</Text>
+          </TouchableOpacity>
         </Text>
       </TouchableOpacity>
     </>

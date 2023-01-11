@@ -1,17 +1,13 @@
-import React, { useEffect, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
+import React, { useEffect } from "react";
+
 import { BackHandler, ScrollView } from "react-native";
-import { TouchableOpacity, Image, Dimensions } from "react-native";
+import { Image, Dimensions } from "react-native";
 import { View, Text } from "../components/Themed";
-import { McqData } from "../data/McqData";
-import AnswerOption from "../components/AnswerOption";
-import ButtonComponent from "../components/ButtonComponent";
-import { Buttontypes } from "../data/ButtonProps";
+
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 
 export default function AffairsView(props: any) {
-
   const prop = props.route.params.item;
   useEffect(() => {
     const backbuttonHander = () => {
@@ -83,69 +79,7 @@ export default function AffairsView(props: any) {
           style={{
             backgroundColor: "#FAFAFB",
           }}
-        >
-          <View
-            style={{
-              marginTop: high / 18.35,
-              bottom: high / 42.7,
-              paddingHorizontal: wid / 19.2,
-              backgroundColor: "#FAFAFB",
-            }}
-          >
-            <Text
-              allowFontScaling={false}
-              style={{
-                fontSize: 18,
-                fontFamily: "Poppins-Bold",
-                alignSelf: "flex-start",
-              }}
-            >
-              Q.1 : Lorem ipsum, dolor sit amet consectetur adipisicing elit.
-              Sit eaque aliquam facilis id voluptas.
-            </Text>
-          </View>
-          <View
-            style={{ backgroundColor: "#FAFAFB", marginBottom: high / 14.23 }}
-          >
-            {McqData.map((e: any) => {
-              return (
-                <View
-                  style={{
-                    marginVertical: high / 71.16,
-                    backgroundColor: "#FAFAFB",
-                  }}
-                >
-                  <AnswerOption text={e.content} />
-                </View>
-              );
-            })}
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "center",
-              bottom: high / 21.35,
-              marginBottom: high / 15,
-              backgroundColor: "#FAFAFB",
-            }}
-          >
-            {Buttontypes.map((type) => {
-              return (
-                <ButtonComponent
-                  key={type.key}
-                  text={type.buttonText}
-                  borderColor={type.borderColor}
-                  borderWidth={type.borderWidth}
-                  borderStyle={type.borderStyle}
-                  borderRadius={type.borderRadius}
-                  backgroudColor={type.backgroudColor}
-                  textColor={type.textColor}
-                  marginRight={type.marginRight}
-                />
-              );
-            })}
-          </View>
-        </View>
+        ></View>
       </ScrollView>
     </ScrollView>
   );

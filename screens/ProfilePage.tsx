@@ -26,13 +26,17 @@ export default function ProfilePage(props: any) {
   const { userDetail } = useStateContext();
   var token = "";
   const getToken = async () => {
-    SecureStore.getItemAsync("access_token").then((value) => {
+    await SecureStore.getItemAsync("access_token").then((value) => {
       if (value != null) {
+        console.log("new AccessTken", value);
+
         token = value;
       }
     });
   };
-  useEffect(() => {}, []);
+  useEffect(() => {
+    getToken;
+  }, []);
   console.log(userDetail);
 
   const logoutButtonHandler = async () => {
@@ -47,7 +51,7 @@ export default function ProfilePage(props: any) {
       //   headers
       // );
       // console.log(data);
-      await SecureStore.deleteItemAsync("userId1");
+      await SecureStore.deleteItemAsync("userId");
       await SecureStore.deleteItemAsync("access_token");
       navigation.dispatch(StackActions.replace("SignIn"));
     } catch (error) {

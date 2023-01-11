@@ -24,19 +24,16 @@ export default function HomeScreen({ route, navigation }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [enrData, SetEnrData] = useState<any>([]);
   const [freeVideoData, SetFreeVideoData] = useState<any>([]);
-  const { userDetail, setUserDetail } = useStateContext();
-
+  const { userDetail, setUserDetail, setAccess_token } = useStateContext();
   const getUserData = async (token: any) => {
-    const headers = {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-      "Abp-TenantId": "1",
-    };
     let data = "";
     const config = {
       method: "GET",
       url: `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/Session/GetCurrentLoginInformations`,
-      headers,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Abp-TenantId": "1",
+      },
       data: data,
     };
     await axios(config)
@@ -44,10 +41,9 @@ export default function HomeScreen({ route, navigation }: any) {
         if (response.data.result.user != null) {
           setUserDetail(response.data.result.user);
         }
-        console.log(userDetail, "userDETAIL fafa");
       })
       .catch(function (error: any) {
-        console.log(userDetail, "userDETAIL fafa");
+        console.log(error);
       });
   };
   const getVideoId = (url: any) => {
@@ -66,15 +62,16 @@ export default function HomeScreen({ route, navigation }: any) {
     }
   };
   useEffect(() => {
-    SecureStore.getItemAsync("access_token").then((value: any) => {
-      getUserData(value);
-      SecureStore.getItemAsync("userId1").then((userId: any) => {
+    try {
+      SecureStore.getItemAsync("access_token").then((value: any) => {
         if (value != null) {
-          GetEnrolledCourseInformation(value, userId);
+          setAccess_token(value);
+          getUserData(value);
+          GetEnrolledCourseInformation(value, userDetail.id);
           getVideoContent(value);
         }
       });
-    });
+    } catch (error) {}
   }, []);
   useEffect(() => {
     const backbuttonHander = () => {
@@ -85,7 +82,7 @@ export default function HomeScreen({ route, navigation }: any) {
   });
 
   const getVideoContent = async (access_token: any) => {
-    // setIsLoading(true);
+    setIsLoading(true);
     try {
       const config = {
         headers: {
@@ -107,7 +104,7 @@ export default function HomeScreen({ route, navigation }: any) {
     access_token: any,
     userId: any
   ) => {
-    // setIsLoading(true);
+    setIsLoading(true);
     try {
       const config = {
         headers: {
@@ -126,7 +123,9 @@ export default function HomeScreen({ route, navigation }: any) {
   };
 
   return (
-    <View style={{ width: wid, flex: 1, height: high }}>
+    <View
+      style={{ width: wid, flex: 1, height: high, backgroundColor: "#F7F7F7" }}
+    >
       {isLoading === true ? (
         <View style={{ alignSelf: "center", top: high / 4.5 }}>
           <ActivityIndicator size="large" color="#319EAE" />

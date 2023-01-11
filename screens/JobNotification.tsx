@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Dimensions,
-  Image,
   Linking,
 } from "react-native";
 
@@ -72,21 +71,9 @@ export default function JobNotification(props: any) {
         position: "relative",
         alignSelf: "center",
         width: wid,
-
         marginBottom: high / 8.68,
       }}
     >
-      {/* <Text
-        style={{
-          fontFamily: "Poppins-Medium",
-          fontSize: 28,
-          left: 20,
-          marginBottom: 20,
-        }}
-      >
-        Current Jobs
-      </Text> */}
-
       {jobData.map((data: any) => {
         if (data == null) {
           return <></>;
@@ -143,6 +130,7 @@ export default function JobNotification(props: any) {
                     style={{
                       color: "#8A8A8A",
                       marginTop: 1.5,
+                      marginLeft: 8,
                       backgroundColor: "transparent",
                     }}
                   >

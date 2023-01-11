@@ -115,7 +115,7 @@ export default function FeedScreen(props: any) {
   return (
     <View
       style={{
-        backgroundColor: "#FAFAFB",
+        backgroundColor: "#F7F7F7",
         flex: 1,
       }}
     >

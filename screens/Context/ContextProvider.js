@@ -11,9 +11,12 @@ export const ContextProvider = ({ children }) => {
   const [isLogIn, setisLogIn] = useState(false);
   const [ansResultIdx, SetAnsResultIdx] = useState([{ color: "red" }]);
   const [userDetail, setUserDetail] = useState({});
+  const [access_token, setAccess_token] = useState("");
   return (
     <StateContext.Provider
       value={{
+        access_token,
+        setAccess_token,
         userDetail,
         setUserDetail,
         index,

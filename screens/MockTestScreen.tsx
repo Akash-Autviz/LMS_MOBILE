@@ -12,11 +12,12 @@ import { View, Text } from "../components/Themed";
 import * as SecureStore from "expo-secure-store";
 import MockTestCard from "../components/MockTestCard";
 import { ActivityIndicator } from "react-native-paper";
+import { useStateContext } from "./Context/ContextProvider";
 export default function MockTest(props: any) {
   const [studentId, setStutendId] = useState("");
   const [mockData, setMockData] = useState<any>([]);
   const [myMockData, setMyMockData] = useState<any>([]);
-  const [access_token, setAccess_token] = useState<any>([]);
+  const { access_token, userDetail } = useStateContext();
   const [isLoading, setisLoading] = useState<boolean>(false);
   useEffect(() => {
     const backbuttonHander = () => {
@@ -35,15 +36,10 @@ export default function MockTest(props: any) {
     SecureStore.getItemAsync("userId1").then((userId: any) => {
       setStutendId(userId);
     });
-    SecureStore.getItemAsync("access_token").then((token: any) => {
-      setAccess_token(token);
-    });
     upComingData();
   }, []);
 
   const upComingData = async () => {
-    console.log(access_token);
-
     try {
       setisLoading(true);
       const config = {
@@ -76,7 +72,7 @@ export default function MockTest(props: any) {
         },
       };
       const res = await axios.get(
-        `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/EnrollCourses/GetAllEnrollCourses?studentId=${studentId}`,
+        `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/EnrollCourses/GetAllEnrollCourses?studentId=${userDetail.id}`,
         config
       );
       setMyMockData(res.data.result);
@@ -109,19 +105,7 @@ export default function MockTest(props: any) {
         <View style={{ backgroundColor: "#F7F7F7" }}>
           <HeaderNav name="Mock Test" navigation={props.navigation} />
         </View>
-        <View>
-          {/* <Text
-            allowFontScaling={false}
-            style={{
-              fontSize: 30,
-              fontFamily: "Poppins-Medium",
-              marginTop: high / 42.7,
-              marginLeft: wid / 15.36,
-            }}
-          >
-            Mock Test
-          </Text> */}
-        </View>
+        <View></View>
         <View
           style={{
             display: "flex",
@@ -199,7 +183,7 @@ export default function MockTest(props: any) {
         ) : (
           <View>
             {res == "Upcoming" && (
-              <ScrollView>
+              <ScrollView style={{ height: high / 1.33 }}>
                 {mockData.map((item: any) => {
                   return (
                     <MockTestCard
@@ -218,7 +202,7 @@ export default function MockTest(props: any) {
               </ScrollView>
             )}
             {res == "My Mock" && (
-              <ScrollView style={{ height: high / 1.65 }}>
+              <ScrollView style={{ height: high / 1.33 }}>
                 {React.Children.toArray(
                   myMockData?.map((item: any) => {
                     if (item.courseManagement.type == "Mock") {
@@ -226,21 +210,19 @@ export default function MockTest(props: any) {
 
                       item.courseManagement.type;
                       return (
-                        <>
-                          <MockTestCard
-                            id={item.courseManagement.id}
-                            name={item.courseManagement.name}
-                            details={
-                              item.courseManagement.detail
-                                ? item.courseManagement.detail
-                                : "No Details Available"
-                            }
-                            date={item.courseManagement.creationTime}
-                            price={item.courseManagement.price}
-                            // endTime={item.endTime}
-                            isBuy={"View"}
-                          />
-                        </>
+                        <MockTestCard
+                          id={item.courseManagement.id}
+                          name={item.courseManagement.name}
+                          details={
+                            item.courseManagement.detail
+                              ? item.courseManagement.detail
+                              : "No Details Available"
+                          }
+                          date={item.courseManagement.creationTime}
+                          price={item.courseManagement.price}
+                          // endTime={item.endTime}
+                          isBuy={"View"}
+                        />
                       );
                     }
                   })

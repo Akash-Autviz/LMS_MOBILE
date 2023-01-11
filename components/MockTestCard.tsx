@@ -12,13 +12,12 @@ import { useNavigation } from "@react-navigation/native";
 import { useStateContext } from "../screens/Context/ContextProvider";
 import { AntDesign, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import RazorpayCheckout from "react-native-razorpay";
-import * as SecureStore from "expo-secure-store";
 import axios from "axios";
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 export default function MockTestCard(props: any) {
   const navigation = useNavigation();
-  const { index, setIndex, mockTestId, setMockTestId, userDetail } =
+  const { mockTestId, setMockTestId, userDetail, access_token } =
     useStateContext();
   const {
     name,
@@ -31,20 +30,12 @@ export default function MockTestCard(props: any) {
     isBuy,
     isMockTest,
   } = props;
-
-  var token = "";
-  const getToken = async () => {
-    await SecureStore.getItemAsync("access_token").then((value) => {
-      if (value != null) {
-        console.log("new AccessTken", value);
-
-        token = value;
-      }
-    });
+  let buy = isBuy;
+  const headers = {
+    Authorization: `Bearer ${access_token}`,
+    "Content-Type": "application/json",
+    "Abp-TenantId": "1",
   };
-  useLayoutEffect(() => {
-    getToken();
-  }, []);
   setMockTestId(props.id);
 
   const trimDate = (num: any) => {
@@ -68,11 +59,7 @@ export default function MockTestCard(props: any) {
         console.log("create payment APi", error);
       });
   };
-  const headers = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-    "Abp-TenantId": "1",
-  };
+
   const createCourseMockTest = async () => {
     var data = JSON.stringify({
       studentId: userDetail.id,
@@ -87,8 +74,6 @@ export default function MockTestCard(props: any) {
 
     axios(config)
       .then(function (response: any) {
-        console.log("Create MockTest", response);
-
         alert(`Congratulations Transaction has been completed`);
       })
       .catch(function (error: any) {
@@ -110,6 +95,7 @@ export default function MockTestCard(props: any) {
 
     axios(config)
       .then(function (response: any) {
+        buy = true;
         console.log(response, "Create Enroll Success");
       })
       .catch(function (error: any) {
@@ -118,35 +104,32 @@ export default function MockTestCard(props: any) {
   };
 
   const BuyCourse = () => {
-    createCourseMockTest();
-    createEnrollementCoures();
-    // var options = {
-    //   description: "Credits towards Coures",
-    //   image: "https://i.imgur.com/3g7nmJC.jpg",
-    //   currency: "INR",
-    //   key: "rzp_test_zChmfgG09ShLe2",
-    //   amount: price * 100,
-    //   name: "Teacher's Vision",
-    //   prefill: {
-    //     email: userDetail.emailAddress,
-    //     contact: "",
-    //     name: userDetail.name,
-    //   },
-    //   theme: { color: "#319EAE" },
-    // };
-    // RazorpayCheckout.open(options as any)
-    //   .then((data: any) => {
-    //     console.log(id, "id++++++++==r23rjwklerklS");
-    //     createCourseMockTest();
-    //     createPayment();
-    //     createEnrollementCoures();
-    //   })
-    //   .catch((error: any) => {
-    //     createPayment();
-    //     alert(
-    //       `Payment Failed if Money deducted from your account.Please Contact Admin`
-    //     );
-    //   });
+    var options = {
+      description: "Credits towards Coures",
+      image: "https://i.imgur.com/3g7nmJC.jpg",
+      currency: "INR",
+      key: "rzp_test_zChmfgG09ShLe2",
+      amount: price * 100,
+      name: "Teacher's Vision",
+      prefill: {
+        email: userDetail.emailAddress,
+        contact: "",
+        name: userDetail.name,
+      },
+      theme: { color: "#319EAE" },
+    };
+    RazorpayCheckout.open(options as any)
+      .then((data: any) => {
+        createCourseMockTest();
+        createPayment();
+        createEnrollementCoures();
+      })
+      .catch((error: any) => {
+        createPayment();
+        alert(
+          `Payment Failed if Money deducted from your account.Please Contact Admin`
+        );
+      });
   };
   const trimName = (desc: string) => {
     let newDesc = desc.split(" ");
@@ -298,7 +281,7 @@ export default function MockTestCard(props: any) {
                   alignSelf: "center",
                 }}
               >
-                {isBuy}
+                {buy}
               </Text>
             </TouchableOpacity>
           </View>

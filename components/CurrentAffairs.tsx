@@ -14,9 +14,6 @@ import { Text } from "../components/Themed";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function CurrentAffairs(props: any) {
-  // console.log(props);
-  const [isLoading, setIsLoading] = useState(false);
-
   const trimTextName = (desc: string) => {
     let newDesc = desc.split(" ");
     if (desc.length < 10) return desc;
@@ -28,12 +25,11 @@ export default function CurrentAffairs(props: any) {
   };
   const { title, description, image } = props.item;
   console.log(image);
-  // const image = props.image.image;
+
   return (
     <ScrollView
       style={{
         backgroundColor: "#FAFAFB",
-        // height: "100%",
       }}
       contentContainerStyle={{ justifyContent: "flex-start" }}
     >
@@ -62,7 +58,6 @@ export default function CurrentAffairs(props: any) {
                 height: wid / 6.4,
               }}
               source={{ uri: `${image}` }}
-              // source={require(`${image}`)}
             ></Image>
           </View>
           <View

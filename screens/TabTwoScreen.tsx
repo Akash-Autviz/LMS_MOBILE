@@ -147,7 +147,7 @@ export default function TabTwoScreen({ routes, navigation }: any) {
   };
 
   return (
-    <View style={{ backgroundColor: "#FAFAFB", flex: 1 }}>
+    <View style={{ backgroundColor: "#F7F7F7", flex: 1 }}>
       <HeaderNav name="My Courses" navigation={navigation} />
       <View style={styles.searchBarContainer}>
         <TextInput
