@@ -30,6 +30,7 @@ export default function CurrentAffairs(props: any) {
     <ScrollView
       style={{
         backgroundColor: "#FAFAFB",
+        // height: "100%",
       }}
       contentContainerStyle={{ justifyContent: "flex-start" }}
     >

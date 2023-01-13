@@ -4,10 +4,13 @@ import { TouchableOpacity, Image, Dimensions } from "react-native";
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 import { ActivityIndicator } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
+import { baseUrl } from "../utils";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function CourseDetails(props: any) {
   const [courseData, setCourseData] = useState<any>([]);
+  const navigation = useNavigation();
   const [dataTrue, setDataTrue] = useState(false);
   const Courseid = props.route.params.id;
   const [isTrue, setIsTrue] = useState(false);
@@ -17,6 +20,13 @@ export default function CourseDetails(props: any) {
 
     return sliced;
   };
+  useEffect(() => {
+    const backbuttonHander = () => {
+      navigation.navigate("TabTwo");
+      return true;
+    };
+    BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
+  });
 
   function checkNull($value: any) {
     if ($value == null) {
@@ -55,7 +65,7 @@ export default function CourseDetails(props: any) {
     var data = "";
     var config = {
       method: "get",
-      url: `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/CourseManagementAppServices/GetCourseContent?courseId=${Courseid}`,
+      url: `${baseUrl}/api/services/app/CourseManagementAppServices/GetCourseContent?courseId=${Courseid}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -68,10 +78,8 @@ export default function CourseDetails(props: any) {
         if (courseData.courseManagement.name == null) {
           setIsTrue(false);
         } else {
-          // console.log(courseData);
           setIsTrue(true);
         }
-        // console.log(response.data.result);
       })
       .catch(function (error: any) {
         console.log(error);
@@ -144,9 +152,6 @@ export default function CourseDetails(props: any) {
               // marginBottom: high / 15,
             }}
           >
-            {/* Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s,Lorem Ipsum is simply dummy text of */}
             {courseData.courseManagement.detail}
           </Text>
         </View>

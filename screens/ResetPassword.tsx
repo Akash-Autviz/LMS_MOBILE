@@ -11,6 +11,7 @@ import * as SecureStore from "expo-secure-store";
 import { Text, View } from "../components/Themed";
 import axios from "axios";
 import React from "react";
+import { baseUrl } from "../utils";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function ResetPassword() {
@@ -27,7 +28,7 @@ export default function ResetPassword() {
         },
       };
       const res = await axios.get(
-        `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/Account/ForgotPassword?usernameOrEmail=${num}`
+        `${baseUrl}/api/services/app/Account/ForgotPassword?usernameOrEmail=${num}`
       );
     } catch (error) {
       console.log(error);

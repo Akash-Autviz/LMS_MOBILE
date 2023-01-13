@@ -2,7 +2,6 @@ import { MaterialCommunityIcons, SimpleLineIcons } from "@expo/vector-icons";
 import React, { useState, useEffect } from "react";
 import { memo } from "react";
 import {
-  Alert,
   Modal,
   StyleSheet,
   Text,
@@ -18,12 +17,13 @@ import QuestionNoContainer from "../QuestionNoContainer";
 const wid = Dimensions.get("screen").width;
 const high = Dimensions.get("screen").height;
 const ResultModal = (props: any) => {
-
   const { SetAnsResultIdx, ansResultIdx, setIndex } = useStateContext();
   const [modalVisible, setModalVisible] = useState(false);
-  useEffect(() => {
-    console.log(ansResultIdx);
-  }, [ansResultIdx]);
+  const setCurrentIndex=(index:number)=>{
+    setIndex(index);
+
+  }
+  useEffect(() => {setCurrentIndex;}, [ansResultIdx]);
 
   return (
     <View style={styles.centeredView}>
@@ -99,14 +99,13 @@ const ResultModal = (props: any) => {
               marginBottom: high / 4.5,
             }}
           >
-            {ansResultIdx.map((e: any, id: number) => {
+            {props?.quesIndexArray?.map((e: any, id: number) => {
               if (e.color) {
                 return (
                   <QuestionNoContainer
                     setModalVisible={setModalVisible}
                     key={id}
                     quesno={id + 1}
-                    color={e?.color}
                   />
                 );
               } else {
@@ -119,15 +118,6 @@ const ResultModal = (props: any) => {
                 );
               }
             })}
-            {/* {Array.from(Array(length), (e: any, l: any) => {
-              return (
-                <QuestionNoContainer
-                  key={l}
-                  quesno={l + 1}
-                  // backgroundColor={e.backgroundColor}
-                />
-              );
-            })} */}
 
             <FinishButtonTest key={Math.random() * 100} />
           </ScrollView>

@@ -14,6 +14,7 @@ import HeaderNav from "../components/HeaderNav";
 import Quiz from "../components/Quiz";
 import { Text, View } from "../components/Themed";
 import Video from "../components/Video";
+import { baseUrl } from "../utils";
 
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
@@ -85,7 +86,7 @@ export default function FeedScreen(props: any) {
     var data = "";
     var config = {
       method: "get",
-      url: `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/BlogAppServices/GetAllBlogs?subjectId=0&courseId=0`,
+      url: `${baseUrl}/api/services/app/BlogAppServices/GetAllBlogs?subjectId=0&courseId=0`,
       headers: {
         Authorization: `Bearer  ${token}`,
       },
@@ -202,18 +203,7 @@ export default function FeedScreen(props: any) {
           </Text>
         </TouchableOpacity>
       </View>
-      {/* <View style={{ backgroundColor: "#FAFAFB", marginVertical: high / 40 }}>
-        <Text
-          allowFontScaling={false}
-          style={{
-            left: wid / 12.8,
-            fontSize: 30,
-            fontFamily: "Poppins-Regular",
-          }}
-        >
-          {currentState}
-        </Text>
-      </View> */}
+     
       <ScrollView style={{}}>
         {currentState == "Current Affairs" ? (
           <>
@@ -222,7 +212,6 @@ export default function FeedScreen(props: any) {
                 return (
                   <CurrentAffairs
                     item={data1}
-                    // image={data1.image}
                     navigation={props.navigation}
                     key={Math.random() * 100}
                   />

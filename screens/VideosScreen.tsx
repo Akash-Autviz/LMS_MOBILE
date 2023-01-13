@@ -22,6 +22,7 @@ import * as SecureStore from "expo-secure-store";
 import WebView from "react-native-webview";
 import VideoCard from "../components/VideoCard";
 import axios from "axios";
+import { baseUrl } from "../utils";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function VideosScreen(props: any) {
@@ -70,7 +71,7 @@ export default function VideosScreen(props: any) {
         },
       };
       const res = await axios.get(
-        "http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/ContentManagementService/getAllContentVideos",
+        `${baseUrl}/api/services/app/ContentManagementService/getAllContentVideos`,
         config
       );
       console.log(res.data.result, "^^^^^^^^^^^^^^^^^^^^^^^^^^^^");

@@ -14,7 +14,7 @@ const wid = Dimensions.get("window").width;
 const MockTestTypeTest = (props: any) => {
   return (
     <View style={{ height: high, width: wid, paddingBottom: 10 }}>
-      <View style={{ backgroundColor: "#F7F7F7" }}>
+      {/* <View style={{ backgroundColor: "#F7F7F7" }}>
         <HeaderNav name="Mock Test" navigation={props.navigation} />
       </View>
       <View style={{ backgroundColor: "#FAFAFB" }}>
@@ -31,7 +31,7 @@ const MockTestTypeTest = (props: any) => {
         <TestTypeButton title={"Math"} />
         <TestTypeButton title={"Math"} />
         <TestTypeButton title={"Math"} />
-      </View>
+      </View> */}
     </View>
   );
 };

@@ -9,26 +9,25 @@ const wid = Dimensions.get("screen").width;
 const high = Dimensions.get("screen").height;
 const QuestionNoContainer = (props: any) => {
   const { index, setIndex } = useStateContext();
-  
+
   const navigation = useNavigation();
 
   const { quesno } = props;
   return (
     <TouchableOpacity
       onPress={() => {
-        console.log(quesno);
+        // console.log(quesno);
 
-        setIndex(quesno - 1),
-          props.setModalVisible(false),
-          navigation.navigate("Test", (quesno - 1) as never);
+        setIndex(quesno - 1);
+        props.setModalVisible(false);
+        //   navigation.navigate("Test", (quesno - 1) as never);
       }}
       style={{
-        // backgroundColor?
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 8,
-        // flexDirection: "row",
+
         alignSelf: "center",
         backgroundColor: props.color ? props.color : "#FAFAFB",
         width: wid / 7,

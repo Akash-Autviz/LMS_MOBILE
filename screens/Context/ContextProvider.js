@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 const StateContext = React.createContext();
 
@@ -12,9 +12,16 @@ export const ContextProvider = ({ children }) => {
   const [ansResultIdx, SetAnsResultIdx] = useState([{ color: "red" }]);
   const [userDetail, setUserDetail] = useState({});
   const [access_token, setAccess_token] = useState("");
+  const [userImage, setuserImage] = useState();
+  const [questionLength, setQuestionLength] = useState();
+
   return (
     <StateContext.Provider
       value={{
+        questionLength,
+        setQuestionLength,
+        userImage,
+        setuserImage,
         access_token,
         setAccess_token,
         userDetail,

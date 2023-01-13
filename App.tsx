@@ -2,15 +2,16 @@ import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import useCachedResources from "./hooks/useCachedResources";
 import useColorScheme from "./hooks/useColorScheme";
-// import SplashScreen from 'react-native-splash-screen';
 import Navigation from "./navigation";
-import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 const Stack = createNativeStackNavigator();
 import { Provider as PaperProvider } from "react-native-paper";
 import React, { useEffect } from "react";
-import { ContextProvider } from "./screens/Context/ContextProvider";
+import {
+  ContextProvider,
+  useStateContext,
+} from "./screens/Context/ContextProvider";
 
 export default function App() {
   const [hideSplashScreen, setHideSplashScreen] = React.useState(false);
@@ -34,20 +35,6 @@ export default function App() {
     return (
       <SafeAreaProvider>
         <ContextProvider>
-          {/* <NavigationContainer>
-          {hideSplashScreen ? (
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-              <Stack.Screen
-                name="Splash"
-                component={SplashScreen}
-                options={{ headerShown: false }}
-              />
-            </Stack.Navigator>
-          ) : (
-            // <SplashScreen />
-            <></>
-          )}
-        </NavigationContainer> */}
           <PaperProvider>
             <Navigation colorScheme={colorScheme} />
             <StatusBar />

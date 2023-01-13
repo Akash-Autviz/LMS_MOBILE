@@ -11,9 +11,12 @@ import * as SecureStore from "expo-secure-store";
 import { Text, View } from "../components/Themed";
 import axios from "axios";
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
+import { baseUrl } from "../utils";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function Password() {
+  const naviagation = useNavigation();
   var token: any = "";
   SecureStore.getItemAsync("access_token").then((value) => {
     token = value;
@@ -22,7 +25,7 @@ export default function Password() {
   const [newPassword, setNewPassword] = useState("");
   const changePassword = async (password: any, newPassword: any) => {
     // const res = await axios.post(
-    //   `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/User/ChangePassword`,
+    //   `${baseUrl}/api/services/app/User/ChangePassword`,
     //   { currentPassword: password, newPassword: newPassword },
     //   {
     //     headers: {
@@ -45,7 +48,7 @@ export default function Password() {
 
     var config = {
       method: "post",
-      url: "http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/User/ChangePassword",
+      url: `${baseUrl}/api/services/app/User/ChangePassword`,
       headers: {
         Authorization: `Bearer ${token}`,
         "Abp-TenantId": "1",
@@ -56,14 +59,16 @@ export default function Password() {
     };
     axios(config)
       .then((res: any) => {
-        console.log(res);
         Alert.alert("Success", "Password Changed Successfuly", [
           { text: "Okay" },
         ]);
+        naviagation.navigate("Rooot");
       })
       .catch((error: any) => {
         // console.log(config);
-        Alert.alert("Invalid Entry", "Enter Password", [{ text: "Okay" }]);
+        Alert.alert("Enter Old Password", "Enter Old Password", [
+          { text: "Okay" },
+        ]);
       });
   };
 

@@ -13,6 +13,7 @@ import * as SecureStore from "expo-secure-store";
 import MockTestCard from "../components/MockTestCard";
 import { ActivityIndicator } from "react-native-paper";
 import { useStateContext } from "./Context/ContextProvider";
+import { baseUrl } from "../utils";
 export default function MockTest(props: any) {
   const [studentId, setStutendId] = useState("");
   const [mockData, setMockData] = useState<any>([]);
@@ -33,8 +34,8 @@ export default function MockTest(props: any) {
   const [color, setColor] = useState(true);
   const [color1, setColor1] = useState(false);
   useEffect(() => {
-    SecureStore.getItemAsync("userId1").then((userId: any) => {
-      setStutendId(userId);
+    SecureStore.getItemAsync("user_id").then((user_id: any) => {
+      setStutendId(user_id);
     });
     upComingData();
   }, []);
@@ -50,7 +51,7 @@ export default function MockTest(props: any) {
         },
       };
       const { data } = await axios.get(
-        "http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/CourseManagementAppServices/GetAllDataBasedOnCategory?categoryId=-1&courseType=Mock",
+        `${baseUrl}/api/services/app/CourseManagementAppServices/GetAllDataBasedOnCategory?categoryId=-1&courseType=Mock`,
         config
       );
       console.log(data, "upcomingDataResonse");
@@ -72,7 +73,7 @@ export default function MockTest(props: any) {
         },
       };
       const res = await axios.get(
-        `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/EnrollCourses/GetAllEnrollCourses?studentId=${userDetail.id}`,
+        `${baseUrl}/api/services/app/EnrollCourses/GetAllEnrollCourses?studentId=${userDetail.id}`,
         config
       );
       setMyMockData(res.data.result);

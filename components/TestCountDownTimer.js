@@ -1,44 +1,36 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { TouchableOpacity, StyleSheet, Image } from "react-native";
-import { Dimensions } from "react-native";
-import { View, Text } from "../components/Themed";
-import { useNavigation } from "@react-navigation/native";
-import { AntDesign, FontAwesome } from "@expo/vector-icons";
+import { View, Text } from "./Themed";
+import { FontAwesome } from "@expo/vector-icons";
 import ResultModal from "./modal/Modal";
-import moment from "moment";
-const wid = Dimensions.get("screen").width;
-const high = Dimensions.get("screen").height;
+import { useStateContext } from "../screens/Context/ContextProvider";
 
-export default function TestCountDownTimer(props: any) {
-  let startTime = moment();
-  // console.log(moment("2022-12-27T19:31:30.399").diff(new Date()));
+function TestCountDownTimer({ duration }) {
+  const [quesIndexArray, setquesIndexArray] = useState();
+  const { questionLength, setIndex } = useStateContext();
+  const [time, setTime] = useState(duration);
+  useEffect(() => {
+    let Arr = [];
+    for (let i = 0; i < questionLength; i++) {
+      Arr.push({ color: null });
+    }
+    setquesIndexArray(Arr);
+  }, []);
+  useEffect(() => {
+    setTimeout(() => {
+      setTime((prevtime) => prevtime - 1000);
+    }, 1000);
+  }, [time]);
+  function getFormattedTime(milliseconds) {
+    let totalSeconds = parseInt(Math.floor(milliseconds / 1000));
+    let totalMinute = parseInt(Math.floor(totalSeconds / 60));
+    let totalHours = parseInt(Math.floor(totalMinute / 60));
+    let seconds = parseInt(totalSeconds % 60);
+    let minute = parseInt(totalMinute % 60);
+    let hours = parseInt(totalHours % 24);
+    return ` ${hours}hr ${minute}min ${seconds}sec  `;
+  }
 
-  //   timer = endTime.diff(startTime, 'second');
-
-  //   config = { leftTime: this.timer };
-
-  // .timeStart = true
-
-  // timer = endTime.diff(startTime, "second");
-  // const tick = () => {
-  //   if (hrs === 0 && mins === 0 && secs === 0) reset();
-  //   else if (mins === 0 && secs === 0) {
-  //     setTime([hrs - 1, 59, 59]);
-  //   } else if (secs === 0) {
-  //     setTime([hrs, mins - 1, 59]);
-  //   } else {
-  //     setTime([hrs, mins, secs - 1]);
-  //   }
-  // };
-
-  // const reset = () =>
-  //   setTime([parseInt(hours), parseInt(minutes), parseInt(seconds)]);
-
-  // React.useEffect(() => {
-  //   const timerId = setInterval(() => tick(), 1000);
-  //   return () => clearInterval(timerId);
-  // }, []);
-  const navigation = useNavigation();
   return (
     <View>
       <View style={styles.container}>
@@ -73,7 +65,9 @@ export default function TestCountDownTimer(props: any) {
               fontSize: 18,
               backgroundColor: "#F3FBFC",
             }}
-          ></Text>
+          >
+            {getFormattedTime(time)}
+          </Text>
         </View>
         <View
           style={{
@@ -93,7 +87,7 @@ export default function TestCountDownTimer(props: any) {
               borderRadius: 11,
             }}
           >
-            <ResultModal />
+            <ResultModal quesIndexArray={quesIndexArray} />
           </TouchableOpacity>
         </View>
       </View>
@@ -101,6 +95,7 @@ export default function TestCountDownTimer(props: any) {
     </View>
   );
 }
+export default React.memo(TestCountDownTimer);
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#F3FBFC",

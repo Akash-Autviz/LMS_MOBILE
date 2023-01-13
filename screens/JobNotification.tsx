@@ -11,6 +11,7 @@ import {
 import { Text, View } from "../components/Themed";
 
 import * as SecureStore from "expo-secure-store";
+import { baseUrl } from "../utils";
 
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
@@ -47,7 +48,7 @@ export default function JobNotification(props: any) {
     var data = "";
     var config = {
       method: "get",
-      url: `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/JobNotificationService/GetAllJobNotifications`,
+      url: `${baseUrl}/api/services/app/JobNotificationService/GetAllJobNotifications`,
       headers: {
         Authorization: `Bearer  ${token}`,
       },

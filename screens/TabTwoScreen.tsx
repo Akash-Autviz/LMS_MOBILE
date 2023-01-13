@@ -18,7 +18,8 @@ import EnrolledCourse from "../components/EnrolledCourse";
 import useDebounce from "../shared/Debounce";
 import HeaderNav from "../components/HeaderNav";
 import { ActivityIndicator } from "react-native-paper";
-
+import { useStateContext } from "./Context/ContextProvider";
+import { baseUrl } from "../utils";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function TabTwoScreen({ routes, navigation }: any) {
@@ -34,6 +35,7 @@ export default function TabTwoScreen({ routes, navigation }: any) {
   const [nameData, setNameData] = useState<any>([]);
   const [enrData, SetEnrData] = useState<any>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { userDetail } = useStateContext();
   const handleChangeText = async (text: string) => {
     setSearchQuery(text);
     if (!text.trim()) {
@@ -42,18 +44,16 @@ export default function TabTwoScreen({ routes, navigation }: any) {
   };
   useEffect(() => {
     SecureStore.getItemAsync("access_token").then((value) => {
-      SecureStore.getItemAsync("userId1").then((userId) => {
-        if (value != null) {
-          GetCourseInformation(value);
-          GetEnrolledCourseInformation(value, userId);
-        }
-      });
+      if (value != null) {
+        GetCourseInformation(value);
+        GetEnrolledCourseInformation(value, userDetail.id);
+      }
     });
   }, []);
 
   const GetEnrolledCourseInformation = async (
     access_token: any,
-    userId: any
+    user_id: any
   ) => {
     setIsLoading(true);
     try {
@@ -63,8 +63,7 @@ export default function TabTwoScreen({ routes, navigation }: any) {
         },
       };
       const res = await axios.get(
-        // `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/EnrollCourses/GetAllEnrollCourses?studentId=${userId}`,
-        `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/EnrollCourses/GetAllEnrollCourses?studentId=${userId}`,
+        `${baseUrl}/api/services/app/EnrollCourses/GetAllEnrollCourses?studentId=${user_id}`,
         config
       );
       SetEnrData(res.data.result);
@@ -81,7 +80,7 @@ export default function TabTwoScreen({ routes, navigation }: any) {
         },
       };
       const res = await axios.get(
-        `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/CourseManagementAppServices/GetAllDataBasedOnCategory`,
+        `${baseUrl}/api/services/app/CourseManagementAppServices/GetAllDataBasedOnCategory`,
         config
       );
       SetResData(res.data.result);
@@ -327,7 +326,6 @@ export default function TabTwoScreen({ routes, navigation }: any) {
                     onPress={() =>
                       navigation.navigate("CourseDetails", {
                         id: item.id,
-                        navigation: { navigation },
                       })
                     }
                     style={styles.topicCntr}

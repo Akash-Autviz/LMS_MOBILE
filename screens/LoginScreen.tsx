@@ -23,7 +23,7 @@ export default function LoginScreen(props: any) {
     }, 1200);
   }, []);
   async function getValueFor() {
-    let accesToken = await SecureStore.getItemAsync("userId1");
+    let accesToken = await SecureStore.getItemAsync("user_id");
     let User = await SecureStore.getItemAsync("access_token");
 
     if (accesToken || User) {

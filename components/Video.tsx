@@ -10,6 +10,7 @@ import {
 import { Linking } from "react-native";
 
 import { Text, View } from "../components/Themed";
+import { trimDate } from "../utils/Logics";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function VideoComponent(props: any) {
@@ -26,13 +27,6 @@ export default function VideoComponent(props: any) {
       detail = detail.substring(0, 200);
     }
   }, [readMore]);
-
-  const trimDate = (num: any) => {
-    var str = `${num}`;
-    var sliced = str.slice(0, 10);
-
-    return sliced;
-  };
 
   return (
     <>
@@ -91,7 +85,7 @@ export default function VideoComponent(props: any) {
           }}
           source={require("../assets/images/bigEnglish.png")}
         />
-        {/* <Image source={{ uri: `${image}` }} style={styles.image} /> */}
+
         <Text allowFontScaling={false} style={styles.cardDesc}>
           {description && detail}
           <TouchableOpacity onPress={() => setReadMore("Read less")}>

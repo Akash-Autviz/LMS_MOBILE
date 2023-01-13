@@ -6,48 +6,31 @@ import { ActivityIndicator } from "react-native-paper";
 import axios from "axios";
 import { TouchableOpacity, Image, Dimensions } from "react-native";
 import { View, Text } from "../components/Themed";
-import * as SecureStore from "expo-secure-store";
-import MockTestCard from "../components/MockTestCard";
-import { useNavigation } from "@react-navigation/native";
+
+
 import VideoCard from "../components/VideoCard";
+import { getVideoId } from "../utils/Logics";
+import TestCard from "../components/TestCard";
+import { useStateContext } from "./Context/ContextProvider";
+import { baseUrl } from "../utils";
 
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 
 export default function Purchased(props: any) {
-  const navigation = useNavigation();
   const [courseData, setCourseData] = useState<any>([]);
-  const [topicData, setTopicData] = useState<any>([]);
-  const [videoData, setVideoData] = useState<any>([]);
+  const { access_token } = useStateContext();
   const Courseid = props.route.params.id;
-  // console.log(courseData.notes[0].notesUrl);
-  const getVideoId = (url: any) => {
-    var id = "";
-    if (Boolean(url)) {
-      id = url.split("v=")[1];
-      if (id != null) {
-        if (id.includes("&")) {
-          return id.split("&")[0];
-        } else {
-          return id;
-        }
-      }
-    }
-  };
 
   useEffect(() => {
-    SecureStore.getItemAsync("access_token").then((value: any) => {
-      if (value != null) {
-        getCourseDetails(value, Courseid);
-      }
-    });
+    getCourseDetails(access_token, Courseid);
   }, []);
   const [isTrue, setIsTrue] = useState(false);
   const getCourseDetails = async (token: any, id: any) => {
     var data = "";
     var config = {
       method: "get",
-      url: `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/CourseManagementAppServices/GetStudentCourse?id=${id}`,
+      url: `${baseUrl}/api/services/app/CourseManagementAppServices/GetStudentCourse?id=${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -57,7 +40,6 @@ export default function Purchased(props: any) {
     axios(config)
       .then(function (response: any) {
         if (response.data.name !== null) {
-          console.log(response, "++++++++++++++++++++++++++");
           setCourseData(response.data.result);
           setIsTrue(true);
         }
@@ -203,7 +185,7 @@ export default function Purchased(props: any) {
                   fontSize: 15,
                 }}
               >
-                Tests
+                Mock Tests
               </Text>
             </TouchableOpacity>
             <TouchableOpacity
@@ -252,13 +234,11 @@ export default function Purchased(props: any) {
             </TouchableOpacity>
           </View>
 
-          {/* {courseData.mockTests && courseData.video && ( */}
-          {/* <View> */}
           {res == "Mock Tests" ? (
             <ScrollView style={{ marginTop: 20, marginBottom: 20 }}>
               {courseData.mockTests?.map((item: any) => {
                 return (
-                  <MockTestCard
+                  <TestCard
                     navigation={props.navigation}
                     key={Math.random() * 100}
                     id={item.id}
@@ -266,6 +246,7 @@ export default function Purchased(props: any) {
                     details={item.detail}
                     date={item.creationTime}
                     button={val}
+                    isMockTest={true}
                   />
                 );
               })}
@@ -274,15 +255,10 @@ export default function Purchased(props: any) {
           {res == "Notes" ? (
             <ScrollView>
               <TouchableOpacity
-                onPress={
-                  () =>
-                    props.navigation.navigate("Web", {
-                      url: `${courseData.notes.notesUrl}`,
-                      // url: ``,
-                    })
-                  // Linking.openURL(
-                  //   `http://samples.leanpub.com/thereactnativebook-sample.pdf`
-                  // )
+                onPress={() =>
+                  props.navigation.navigate("Web", {
+                    url: `${courseData.notes.notesUrl}`,
+                  })
                 }
                 style={styles.topicCntr}
               >

@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from "react";
-import {
-  Dimensions,
-  KeyboardAvoidingView,
-  Linking,
-  ScrollView,
-} from "react-native";
+import { Dimensions, ScrollView } from "react-native";
 import { StackActions } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
-import * as AuthSession from "expo-auth-session";
 import axios from "axios";
-
 import {
   ImageBackground,
   TouchableOpacity,
@@ -21,14 +14,14 @@ import {
 import { View, Text } from "../components/Themed";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { baseUrl } from "../utils";
 
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 
-async function save(key: string, value: any) {
+const save = async (key: string, value: any) => {
   await SecureStore.setItemAsync(key, value);
-}
+};
 export default function SignInPage(props: any) {
   const navigation = useNavigation();
   const [userMailId, setUserMailId] = useState("");
@@ -50,7 +43,7 @@ export default function SignInPage(props: any) {
 
     var config = {
       method: "post",
-      url: "http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/TokenAuth/Authenticate",
+      url: `${baseUrl}/api/TokenAuth/Authenticate`,
       headers: {
         "Content-Type": "application/json",
         "Abp-TenantId": "1",
@@ -66,7 +59,7 @@ export default function SignInPage(props: any) {
           JSON.stringify(res.data.result.userId)
         );
         if (data1 != null) {
-          save("userId", res.data.result.userId);
+          save("user_id", JSON.stringify(res.data.result.user_id));
           save("access_token", res.data.result.accessToken);
           navigation.dispatch(StackActions.replace("Root"));
         } else {
