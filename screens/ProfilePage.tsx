@@ -23,6 +23,7 @@ export default function ProfilePage(props: any) {
 
   const logoutButtonHandler = async () => {
     try {
+      await SecureStore.deleteItemAsync("userId1");
       await SecureStore.deleteItemAsync("user_id");
       await SecureStore.deleteItemAsync("access_token");
       navigation.dispatch(StackActions.replace("SignIn"));
@@ -55,7 +56,7 @@ export default function ProfilePage(props: any) {
     };
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
   });
-  console.log(userDetail, "userdeatauihgdfjklasghjk");
+
   return (
     <ScrollView style={{ backgroundColor: "#FAFAFB", width: wid }}>
       {/* <ScrollView style={{marginBottom: 20}}> */}

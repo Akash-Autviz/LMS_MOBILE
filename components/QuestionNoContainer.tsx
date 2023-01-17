@@ -35,28 +35,10 @@ const QuestionNoContainer = (props: any) => {
         height: "2.5%",
         padding: 5,
       }}
-      //     : {
-      //         display: "flex",
-
-      //         alignItems: "center",
-      //         borderRadius: 8,
-
-      //         borderColor: "#EFEFEF",
-      //         width: "14%",
-      //         margin: 8,
-      //         borderWidth: 2,
-      //         height: "7%",
-      //         padding: 5,
-      //       }
-      // }
     >
       <Text
         allowFontScaling={false}
-        style={
-          // backgroundColor
-          // ? { fontSize: 23,fontFamily:"Poppins-Medium", color: "white" }
-          { fontSize: 23, fontFamily: "Poppins-Medium" }
-        }
+        style={{ fontSize: 23, fontFamily: "Poppins-Medium" }}
       >
         {quesno}
       </Text>

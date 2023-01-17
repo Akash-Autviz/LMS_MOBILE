@@ -5,17 +5,18 @@ import { FontAwesome } from "@expo/vector-icons";
 import ResultModal from "./modal/Modal";
 import { useStateContext } from "../screens/Context/ContextProvider";
 
-function TestCountDownTimer({ duration }) {
-  const [quesIndexArray, setquesIndexArray] = useState();
-  const { questionLength, setIndex } = useStateContext();
+function TestCountDownTimer({ duration, quesIndexArray }) {
+  const { questionLength, setIndex, index } = useStateContext();
   const [time, setTime] = useState(duration);
-  useEffect(() => {
-    let Arr = [];
-    for (let i = 0; i < questionLength; i++) {
-      Arr.push({ color: null });
+
+  const changeColor = () => {
+    let newArr = JSON.parse(JSON.stringify(arr));
+    const foundEl = newArr.find((_arr, idx) => idx == index);
+    if (foundEl) {
+      newArr[idx].color = "Green";
     }
-    setquesIndexArray(Arr);
-  }, []);
+    setArr(newArr);
+  };
   useEffect(() => {
     setTimeout(() => {
       setTime((prevtime) => prevtime - 1000);

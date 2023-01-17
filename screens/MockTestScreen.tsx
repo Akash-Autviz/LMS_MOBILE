@@ -34,9 +34,6 @@ export default function MockTest(props: any) {
   const [color, setColor] = useState(true);
   const [color1, setColor1] = useState(false);
   useEffect(() => {
-    SecureStore.getItemAsync("user_id").then((user_id: any) => {
-      setStutendId(user_id);
-    });
     upComingData();
   }, []);
 

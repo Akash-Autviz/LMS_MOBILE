@@ -1,16 +1,8 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
-import {
-  StyleSheet,
-  Image,
-  ScrollView,
-  TouchableOpacity,
-  BackHandler,
-  FlatList,
-  View,
-} from "react-native";
+import React, { useEffect, useState } from "react";
+import { ScrollView, TouchableOpacity, BackHandler, View } from "react-native";
 import moment from "moment";
 import { ActivityIndicator } from "react-native-paper";
-import AnswerOption from "../components/AnswerOption";
+
 import HeaderNav from "../components/HeaderNav";
 import TestCountDownTimer from "../components/TestCountDownTimer";
 import { Text } from "../components/Themed";
@@ -23,30 +15,35 @@ import { baseUrl } from "../utils";
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 export default function MockTestSubjectTest(props: any) {
+  const [quesIndexArray, setquesIndexArray] = useState<any>();
   const [duration, setDuration] = useState<any>();
-  const { index, setIndex, access_token, questionLength, setQuestionLength } =
-    useStateContext();
-
+  const { index, setIndex, access_token, questionLength } = useStateContext();
   const [loading, setLoading] = useState(true);
-  const [isSkip, setIsSkip] = useState(false);
   const [currentSection, setCurrentSection] = useState("");
   const [CurrentSectionId, setCurrentSectionId] = useState("");
   const [testSections, setTestSections] = useState<any>([]);
   const [quesData, setQuestionData] = useState<any>([]);
   const [isSection, setSectionsTrue] = useState(false);
+  const [sectionLength, setSectionLength] = useState<number>();
+  const [allQuestionlength, setAllQuestionLength] = useState<number>();
 
-  const [isValue, setValue] = useState("");
-
-  const [valueButton, setValueButton] = useState("Next");
-  const [currQuestionOnTyep, setcurrQuestionOnTyep] = useState();
+  const [sectionIdx, setSectionIdx] = useState<any>(0);
+  useEffect(() => {
+    let Arr: any = [];
+    for (let i = 0; i < questionLength; i++) {
+      if (i == 0) Arr.push({ color: "green" });
+      else Arr.push({ color: null });
+    }
+    setquesIndexArray(Arr);
+  }, [questionLength]);
   const mockid = props.route.params.id;
-
   useEffect(() => {
     getTestSections();
     const otherDate = moment(new Date());
     const currentDate = moment("2023-12-22T12:23:34Z");
     var duration = currentDate.diff(otherDate, "milliseconds");
     setDuration(duration);
+    setIndex(0);
   }, []);
 
   useEffect(() => {
@@ -56,19 +53,15 @@ export default function MockTestSubjectTest(props: any) {
     };
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
   });
-  // useEffect(() => {
-  //   checkButton(index);
-  // }, [index]);
-
   const getQuestions = async () => {
     setLoading(true);
     try {
       const data: any = await axios.get(
         `${baseUrl}/api/services/app/MockTest/getMockTestQuestions?mockTestId=${props.route.params.id}`
       );
-
       if (data.data.result != null) {
         await setQuestionData(data.data);
+        setAllQuestionLength(data.data.result.length);
         setLoading(false);
       }
     } catch (error: any) {}
@@ -88,16 +81,10 @@ export default function MockTestSubjectTest(props: any) {
         config
       );
       if (res.data.result != null) {
-        setTestSections(
-          new Set(
-            res.data.result.map((e: any) => {
-              return e.subject;
-            })
-          )
-        );
         setTestSections(res.data.result);
-        setCurrentSection(res.data.result[0].subject.subjectName);
-        setCurrentSectionId(res.data.result[0].subjectId);
+        setSectionLength(res.data.result.length);
+        setCurrentSection(res.data.result[sectionIdx].subject.subjectName);
+        setCurrentSectionId(res.data.result[sectionIdx].subjectId);
         setSectionsTrue(true);
         getQuestions();
       } else {
@@ -107,14 +94,24 @@ export default function MockTestSubjectTest(props: any) {
       console.log(error);
     }
   };
-
-  const setSection: any = async (name: any, id: any) => {
-    setValue(name);
-    setCurrentSection(name);
-    setCurrentSectionId(id);
+  useEffect(() => {
+    changeColor;
+  }, [index]);
+  const changeColor = (color: string) => {
+    let newArr = JSON.parse(JSON.stringify(quesIndexArray));
+    const foundEl = newArr.find((_arr: any, idx: number) => index == idx);
+    if (foundEl) {
+      newArr[index].color = "Green";
+    }
+    setquesIndexArray(newArr);
+  };
+  console.log(quesIndexArray);
+  const setSection: any = async (idx: any) => {
+    setSectionIdx(idx);
+    setCurrentSection(testSections[idx].subject.subjectName);
+    setCurrentSectionId(testSections[idx].subjectId);
   };
 
-  console.log("testSction", testSections);
   return (
     <>
       {loading == false ? (
@@ -133,78 +130,77 @@ export default function MockTestSubjectTest(props: any) {
                     <HeaderNav name="Test" navigation={props.navigation} />
                   </View>
                   <View style={{ backgroundColor: "#FAFAFB" }}>
-                    <TestCountDownTimer duration={duration} />
-                  </View>
-                  <ScrollView
-                    horizontal
-                    style={{
-                      width: wid,
-                      position: "absolute",
-                      height: high / 20,
-                      left: 10,
-                      marginTop: high / 4.5,
-                      backgroundColor: "#FAFAFB",
-                    }}
-                    contentContainerStyle={{
-                      alignContent: "flex-start",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {testSections?.map((data: any) => {
-                      return (
-                        <>
-                          <TouchableOpacity
-                            onPress={() =>
-                              setSection(
-                                data.subject.subjectName,
-                                data.subjectId
-                              )
-                            }
-                            style={{
-                              width: wid / 3.5,
-                              marginHorizontal: 10,
-                              backgroundColor:
-                                currentSection === data.subject.subjectName
-                                  ? "#498BEA"
-                                  : "lightgrey",
-                              flexDirection: "row",
-                              height: "100%",
-                              borderRadius: 15,
-                              justifyContent: "center",
-                              alignItems: "center",
-                              alignContent: "center",
-                            }}
-                          >
-                            <Text
+                    <TestCountDownTimer
+                      quesIndexArray={quesIndexArray}
+                      duration={duration}
+                    />
+                    <ScrollView
+                      horizontal
+                      style={{
+                        width: wid,
+                        height: high / 20,
+                        left: 10,
+                        backgroundColor: "#FAFAFB",
+                      }}
+                      contentContainerStyle={{
+                        alignContent: "flex-start",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {testSections?.map((data: any, idx: number) => {
+                        return (
+                          <>
+                            <TouchableOpacity
+                              onPress={() => setSection(idx)}
                               style={{
-                                color:
+                                width: wid / 3.5,
+                                marginHorizontal: 10,
+                                backgroundColor:
                                   currentSection === data.subject.subjectName
-                                    ? "white"
-                                    : "black",
-                                alignSelf: "center",
+                                    ? "#498BEA"
+                                    : "lightgrey",
+                                flexDirection: "row",
                                 height: "100%",
-                                fontFamily: "Poppins-Medium",
-                                fontSize: 14,
-                                textAlignVertical: "center",
-                                // width: wid,
+                                borderRadius: 15,
+                                justifyContent: "center",
+                                alignItems: "center",
+                                alignContent: "center",
                               }}
                             >
-                              {data.subject.subjectName}
-                            </Text>
-                          </TouchableOpacity>
-                        </>
-                      );
-                    })}
-                  </ScrollView>
+                              <Text
+                                style={{
+                                  color:
+                                    currentSection === data.subject.subjectName
+                                      ? "white"
+                                      : "black",
+                                  alignSelf: "center",
+                                  height: "100%",
+                                  fontFamily: "Poppins-Medium",
+                                  fontSize: 14,
+                                  textAlignVertical: "center",
+                                }}
+                              >
+                                {data.subject.subjectName}
+                              </Text>
+                            </TouchableOpacity>
+                          </>
+                        );
+                      })}
+                    </ScrollView>
+                  </View>
+                  <Text></Text>
 
                   <CurrentSubject
+                    setCurrentSection={setCurrentSection}
+                    setCurrentSectionId={setCurrentSectionId}
                     CurrentSectionId={CurrentSectionId}
                     quesData={quesData}
-                    setValueButton={setValueButton}
-                    setIsSkip={setIsSkip}
-                    valueButton={valueButton}
                     mockid={mockid}
+                    testSections={testSections}
+                    setSectionIdx={setSectionIdx}
+                    sectionLength={sectionLength}
+                    sectionIdx={sectionIdx}
                   />
                 </>
               </View>

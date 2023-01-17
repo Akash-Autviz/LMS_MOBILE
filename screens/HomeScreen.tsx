@@ -25,7 +25,7 @@ export default function HomeScreen({ route, navigation }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [enrData, SetEnrData] = useState<any>([]);
   const [freeVideoData, SetFreeVideoData] = useState<any>([]);
-  const { userDetail, setAccess_token, setUserDetail, setuserImage } =
+  const { setAccess_token, setUserDetail, setuserImage } =
     useStateContext();
   const getUserImage = async (access_token: string, userId: string) => {
     const config = {
