@@ -20,6 +20,7 @@ const high = Dimensions.get("window").height;
 export default function ProfilePage(props: any) {
   const navigation = useNavigation();
   const { userDetail, userImage } = useStateContext();
+  console.log(userDetail, "userSDeaawfkjkl");
 
   const logoutButtonHandler = async () => {
     try {

@@ -5,18 +5,24 @@ import { FontAwesome } from "@expo/vector-icons";
 import ResultModal from "./modal/Modal";
 import { useStateContext } from "../screens/Context/ContextProvider";
 
-function TestCountDownTimer({ duration, quesIndexArray }) {
+function TestCountDownTimer({
+  duration,
+  quesIndexArray,
+  setquesIndexArray,
+  currentSection,
+  setCurrentSectionId,
+}) {
   const { questionLength, setIndex, index } = useStateContext();
   const [time, setTime] = useState(duration);
 
-  const changeColor = () => {
-    let newArr = JSON.parse(JSON.stringify(arr));
-    const foundEl = newArr.find((_arr, idx) => idx == index);
-    if (foundEl) {
-      newArr[idx].color = "Green";
-    }
-    setArr(newArr);
-  };
+  // const changeColor = () => {
+  //   let newArr = JSON.parse(JSON.stringify(arr));
+  //   const foundEl = newArr.find((_arr, idx) => idx == index);
+  //   if (foundEl) {
+  //     newArr[idx].color = "Green";
+  //   }
+  //   setArr(newArr);
+  // };
   useEffect(() => {
     setTimeout(() => {
       setTime((prevtime) => prevtime - 1000);
@@ -88,7 +94,12 @@ function TestCountDownTimer({ duration, quesIndexArray }) {
               borderRadius: 11,
             }}
           >
-            <ResultModal quesIndexArray={quesIndexArray} />
+            <ResultModal
+              setquesIndexArray={setquesIndexArray}
+              quesIndexArray={quesIndexArray}
+              currentSection={currentSection}
+              setCurrentSectionId={setCurrentSectionId}
+            />
           </TouchableOpacity>
         </View>
       </View>

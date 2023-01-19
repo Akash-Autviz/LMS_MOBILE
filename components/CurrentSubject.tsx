@@ -11,81 +11,127 @@ import { useStateContext } from "../screens/Context/ContextProvider";
 import AnswerOption from "./AnswerOption";
 import axios from "axios";
 import { baseUrl } from "../utils";
+import moment from "moment";
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 export default function CurrentSubject(props: any) {
   const { index, setIndex, access_token, questionLength, setQuestionLength } =
     useStateContext();
   const [answer, setAnswer] = useState("");
-  const [correct, setCorrectAnswer] = useState("");
-  const [quesId, setQuesId] = useState("");
   const [isSkip, setIsSkip] = useState(false);
   const [isMarkup, setisMarkup] = useState(false);
   const [buttonValue, setButtonValue] = useState("Next");
+  const [filterQuestionsData, setfilterQuestionsData] = useState([]);
+  const [currentSectionTypeQuestoion, SetCurrentSectionTypeQuestoion] =
+    useState<any>([]);
+
   const {
     quesData,
     CurrentSectionId,
-    mockid,
     setSectionIdx,
     sectionLength,
     sectionIdx,
     setCurrentSection,
     setCurrentSectionId,
     testSections,
+    paramsData,
   } = props;
+  console.log(quesData);
+  const {
+    id,
+    isBuy,
+    isReattempt,
+    isResulted,
+    isSubmitted,
+    mockTestId,
+    studentId,
+  } = paramsData;
 
-  const [currentSectionTypeQuestoion, SetCurrentSectionTypeQuestoion] =
-    useState<any>([]);
+  const MarkIsSubmitted = async (id: any) => {
+    let config: any = {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": " application/json",
+        "Abp-TenantId": "1",
+        // "Access-Control-Allow-Origin": `http://192.168.18.95:19000`,
+      },
+    };
+    try {
+      const res = await axios.post(
+        `${baseUrl}/api/services/app/EnrollMockTest/MarkIsSubmitted?id=${id}`,
+        config
+      );
+      console.log("MarkIsSubmitted Api Hit Sucees");
+    } catch (error) {
+      console.log("MarkIsSubmitted", error);
+    }
+  };
+  const GetResultById = async () => {
+    try {
+      let config = {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": " application/json",
+          "Abp-TenantId": "1",
+          // "Access-Control-Allow-Origin": `http://192.168.18.95:19000`,
+        },
+      };
+      const res = await axios.get(
+        `${baseUrl}/api/services/app/MockTestResultService/GetResultById?id=${mockTestId}`,
+        config
+      );
+      console.log("qwestiondatat", res.data.result);
+      setfilterQuestionsData(res.data.result);
+    } catch (error) {
+      console.log("GetResultById API Hit SUCEESS", error);
+    }
+  };
   useEffect(() => {
-    let quesArray = [];
-    quesArray = quesData.result.filter(
-      (e: any) => e.subjectId == CurrentSectionId
-    );
-    SetCurrentSectionTypeQuestoion(quesArray);
-    console.log(quesArray, "sfahskdfhajks");
-    setQuestionLength(quesArray.length);
+    if (quesData) {
+      let quesArray = [];
+      quesArray = quesData.result.filter(
+        (e: any) => e.question.subjectId == CurrentSectionId
+      );
+      SetCurrentSectionTypeQuestoion(quesArray);
+      setQuestionLength(quesArray.length);
+    }
   }, [CurrentSectionId]);
-  // const getResult = () => {
-  //   var data = JSON.stringify([
-  //     {
-  //       mockTestId: mockid,
-  //       questionId: quesId,
-  //       // question: {
-  //       //   answer: correctAnswer,
-  //       // },
-  //       userAnswer: answer,
-  //       tenantId: 1,
-  //       skip: false,
-  //       isMarkUp: false,
-  //     },
-  //   ]);
-  //   var config = {
-  //     method: "post",
-  //     url: `${baseUrl}/api/services/app/MockTestUserAns/SaveResult`,
-  //     headers: {
-  //       Authorization: `Bearer ${access_token}`,
-  //       "Content-Type": "application/json",
-  //     },
-  //     data: data,
-  //   };
+  useEffect(() => {}, []);
+  const getResult = (filterQuestionsData: any) => {
+    var data = JSON.stringify(filterQuestionsData);
+    var config = {
+      method: "post",
+      url: `${baseUrl}/api/services/app/MockTestUserAns/SaveResult`,
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+        "Abp-TenantId": "1",
+      },
+      data: data,
+    };
 
-  //   axios(config)
-  //     .then(function (response: any) {})
-  //     .catch(function (error: any) {
-  //       console.log("Sorry", config);
-  //     });
-  // };
+    axios(config)
+      .then(function (response: any) {
+        console.log(response, "getResult");
+      })
+      .catch(function (error: any) {
+        console.log(error);
+        console.log("grtResultApi Failed", error);
+      });
+  };
 
   const updateUserAnswer = (token: any) => {
-    var data = JSON.stringify({
-      id: quesId,
-      mockTestId: mockid,
-      isDeleted: false,
-      questionId: quesId,
-      userAnswer: answer,
-      skip: isSkip,
-      isMarkUp: isMarkup,
-      tenantId: 1,
+    let data = JSON.stringify({
+      // creationTime: moment(),
+      // id: currentSectionTypeQuestoion[index].id,
+      // mockTestId: currentSectionTypeQuestoion[index].mockTestId,
+      // isDeleted: currentSectionTypeQuestoion[index].question.isDeleted,
+      // userAnswer: answer,
+      // quesId: currentSectionTypeQuestoion[index].questionId,
+      // creatorUserId: currentSectionTypeQuestoion[index].creatorUserId,
+      // skip: isSkip,
+      // isMarkUp: isMarkup,
+      // tenantId: 1,
     });
 
     var config = {
@@ -100,7 +146,8 @@ export default function CurrentSubject(props: any) {
     axios(config)
       .then(function (response: any) {
         alert("answer Submitted");
-        console.log(response);
+        console.log("Anwer Sumited SuccesFull");
+        GetResultById();
       })
       .catch(function (error: any) {
         console.log(data);
@@ -108,6 +155,31 @@ export default function CurrentSubject(props: any) {
       });
   };
 
+  // const getMockTestExplanationById = async () => {
+  //   // const res = await axios.get(
+  //   //   `${baseUrl}/api/services/app/MockTestResultService/GetResultById?id=${id}`
+  //   // );
+  // };
+  const UpdateUserMockTestSection = async () => {
+    try {
+      let header = JSON.stringify({});
+      let config = {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": " application/json",
+          "Abp-TenantId": "1",
+          // "Access-Control-Allow-Origin": `http://192.168.18.95:19000`,
+        },
+      };
+      const res = await axios.put(
+        `${baseUrl}/api/services/app/MockTestUserAns/UpdateUserMockTestSection`,
+        config
+      );
+      console.log("UpdateUserMockTestSection Hit Sucees", res);
+    } catch (error) {
+      console.log("UpdateUserMockTestSection ", error);
+    }
+  };
   const checkButton = () => {
     if (
       index === currentSectionTypeQuestoion.length - 1 &&
@@ -125,10 +197,6 @@ export default function CurrentSubject(props: any) {
   }, [index, sectionIdx]);
   const checkIndex = (value: string, id: number) => {
     if (value == "increment") {
-      var str = currentSectionTypeQuestoion[index].answer;
-      var sliced = str.slice(1, 2);
-      setCorrectAnswer(sliced);
-      setQuesId(currentSectionTypeQuestoion[index].id);
       updateUserAnswer(access_token);
       setAnswer("");
       setisMarkup(false);
@@ -147,6 +215,15 @@ export default function CurrentSubject(props: any) {
       if (index > 0) setIndex(index - 1);
     }
   };
+  // console.log("currQuestion", currentSectionTypeQuestoion[index].questionId);
+
+  const submitMockTest = () => {
+    updateUserAnswer(access_token);
+    MarkIsSubmitted(id);
+    getResult(filterQuestionsData);
+
+    alert("Test is Sumbit");
+  };
   const nextSection = async (sectionIdx: number) => {
     setCurrentSection(testSections[sectionIdx].subject.subjectName);
     setCurrentSectionId(testSections[sectionIdx].subjectId);
@@ -156,7 +233,7 @@ export default function CurrentSubject(props: any) {
 
   return (
     <>
-      {Array.isArray(currentSectionTypeQuestoion) &&
+      {/* {Array.isArray(currentSectionTypeQuestoion) &&
         currentSectionTypeQuestoion?.length > 0 && (
           <ScrollView
             style={{
@@ -175,7 +252,8 @@ export default function CurrentSubject(props: any) {
                 allowFontScaling={false}
                 style={{ fontSize: 13, fontFamily: "Poppins-Bold" }}
               >
-                {index + 1}. {currentSectionTypeQuestoion[index].questions}
+                {index + 1}.{" "}
+                {currentSectionTypeQuestoion[index].question.questions}
               </Text>
             </View>
             <View style={{ backgroundColor: "#FAFAFB" }}>
@@ -190,62 +268,62 @@ export default function CurrentSubject(props: any) {
                     <AnswerOption
                       key={1}
                       title={"A"}
-                      text={currentSectionTypeQuestoion[index].option1}
+                      text={currentSectionTypeQuestoion[index].question.option1}
                       isSelected={"isSelected"}
                     />
                   ) : (
                     <AnswerOption
-                      key={1}
+                      key={2}
                       title={"A"}
-                      text={currentSectionTypeQuestoion[index].option1}
+                      text={currentSectionTypeQuestoion[index].question.option1}
                     />
                   )}
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setAnswer("b")}>
                   {answer == "b" ? (
                     <AnswerOption
-                      key={2}
+                      key={3}
                       title={"B"}
-                      text={currentSectionTypeQuestoion[index].option2}
+                      text={currentSectionTypeQuestoion[index].question.option2}
                       isSelected={"isSelected"}
                     />
                   ) : (
                     <AnswerOption
-                      key={2}
+                      key={4}
                       title={"B"}
-                      text={currentSectionTypeQuestoion[index].option2}
+                      text={currentSectionTypeQuestoion[index].question.option2}
                     />
                   )}
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setAnswer("c")}>
                   {answer == "c" ? (
                     <AnswerOption
-                      key={3}
+                      key={5}
                       title={"C"}
-                      text={currentSectionTypeQuestoion[index].option3}
+                      text={currentSectionTypeQuestoion[index].question.option3}
                       isSelected={"isSelected"}
                     />
                   ) : (
                     <AnswerOption
-                      key={3}
+                      key={6}
                       title={"C"}
-                      text={currentSectionTypeQuestoion[index].option3}
+                      text={currentSectionTypeQuestoion[index].question.option3}
                     />
                   )}
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => setAnswer("d")}>
                   {answer == "d" ? (
                     <AnswerOption
-                      key={4}
+                      key={8}
                       title={"D"}
-                      text={currentSectionTypeQuestoion[index].option4}
+                      text={currentSectionTypeQuestoion[index].question.option4}
                       isSelected={"isSelected"}
                     />
                   ) : (
                     <AnswerOption
-                      key={4}
+                      key={9}
                       title={"D"}
-                      text={currentSectionTypeQuestoion[index].option4}
+                      text={currentSectionTypeQuestoion[index].question.option4}
                     />
                   )}
                 </TouchableOpacity>
@@ -253,16 +331,20 @@ export default function CurrentSubject(props: any) {
                   <TouchableOpacity onPress={() => setAnswer("e")}>
                     {answer == "e" ? (
                       <AnswerOption
-                        key={5}
+                        key={10}
                         title={"E"}
-                        text={currentSectionTypeQuestoion[index].option5}
+                        text={
+                          currentSectionTypeQuestoion[index].question.option5
+                        }
                         isSelected={"isSelected"}
                       />
                     ) : (
                       <AnswerOption
-                        key={5}
+                        key={11}
                         title={"E"}
-                        text={currentSectionTypeQuestoion[index].option5}
+                        text={
+                          currentSectionTypeQuestoion[index].question.option5
+                        }
                       />
                     )}
                   </TouchableOpacity>
@@ -382,36 +464,60 @@ export default function CurrentSubject(props: any) {
                   margin: 7,
                 }}
               >
-                <TouchableOpacity
-                  style={{
-                    alignItems: "center",
-                    justifyContent: "center",
-                    width: wid / 4,
-                    height: "110%",
-                    backgroundColor: "#319EAE",
-                    borderStyle: "solid",
-                    borderColor: "#E9E9E9",
-                    borderRadius: 6,
-                  }}
-                  onPress={() => {
-                    checkIndex(
-                      "increment",
-                      currentSectionTypeQuestoion[index].subjectId
-                    );
-                  }}
-                >
-                  <Text
+                {buttonValue == "Submit" ? (
+                  <TouchableOpacity
                     style={{
-                      color: "white",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: wid / 4,
+                      height: "110%",
+                      backgroundColor: "#319EAE",
+                      borderStyle: "solid",
+                      borderColor: "#E9E9E9",
+                      borderRadius: 6,
+                    }}
+                    onPress={() => submitMockTest()}
+                  >
+                    <Text
+                      style={{
+                        color: "white",
+                      }}
+                    >
+                      {buttonValue}
+                    </Text>
+                  </TouchableOpacity>
+                ) : (
+                  <TouchableOpacity
+                    style={{
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: wid / 4,
+                      height: "110%",
+                      backgroundColor: "#319EAE",
+                      borderStyle: "solid",
+                      borderColor: "#E9E9E9",
+                      borderRadius: 6,
+                    }}
+                    onPress={() => {
+                      checkIndex(
+                        "increment",
+                        currentSectionTypeQuestoion[index].question.subjectId
+                      );
                     }}
                   >
-                    {buttonValue}
-                  </Text>
-                </TouchableOpacity>
+                    <Text
+                      style={{
+                        color: "white",
+                      }}
+                    >
+                      {buttonValue}
+                    </Text>
+                  </TouchableOpacity>
+                )}
               </View>
             </View>
           </ScrollView>
-        )}
+        )} */}
     </>
   );
 }

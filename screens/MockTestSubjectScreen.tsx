@@ -12,10 +12,23 @@ import axios from "axios";
 import { useStateContext } from "./Context/ContextProvider";
 import CurrentSubject from "../components/CurrentSubject";
 import { baseUrl } from "../utils";
+
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 export default function MockTestSubjectTest(props: any) {
+  const {
+    id,
+    courseManagementId,
+    isReattempt,
+    isResulted,
+    isSubmitted,
+    isView,
+    mockTestId,
+    studentId,
+  } = props.route.params.data;
+
   const [quesIndexArray, setquesIndexArray] = useState<any>();
+  const [mockTestSectionData, setmockTestSectionData] = useState<any>();
   const [duration, setDuration] = useState<any>();
   const { index, setIndex, access_token, questionLength } = useStateContext();
   const [loading, setLoading] = useState(true);
@@ -26,17 +39,22 @@ export default function MockTestSubjectTest(props: any) {
   const [isSection, setSectionsTrue] = useState(false);
   const [sectionLength, setSectionLength] = useState<number>();
   const [allQuestionlength, setAllQuestionLength] = useState<number>();
-
+  const config: any = {
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+      // "Abp-TenantId": "1",
+      // "Access-Control-Allow-Origin": `http://192.168.18.95:19000`,
+    },
+  };
   const [sectionIdx, setSectionIdx] = useState<any>(0);
   useEffect(() => {
     let Arr: any = [];
     for (let i = 0; i < questionLength; i++) {
-      if (i == 0) Arr.push({ color: "green" });
-      else Arr.push({ color: null });
+      Arr.push({ color: null });
     }
     setquesIndexArray(Arr);
-  }, [questionLength]);
-  const mockid = props.route.params.id;
+  }, [questionLength, sectionIdx]);
+
   useEffect(() => {
     getTestSections();
     const otherDate = moment(new Date());
@@ -56,28 +74,56 @@ export default function MockTestSubjectTest(props: any) {
   const getQuestions = async () => {
     setLoading(true);
     try {
-      const data: any = await axios.get(
-        `${baseUrl}/api/services/app/MockTest/getMockTestQuestions?mockTestId=${props.route.params.id}`
-      );
-      if (data.data.result != null) {
-        await setQuestionData(data.data);
-        setAllQuestionLength(data.data.result.length);
-        setLoading(false);
-      }
-    } catch (error: any) {}
-  };
-
-  const getTestSections = async () => {
-    try {
-      const config = {
+      let config = {
         headers: {
           Authorization: `Bearer ${access_token}`,
-          // "Abp-TenantId": "1",
+          "Content-Type": " application/json",
+          "Abp-TenantId": "1",
           // "Access-Control-Allow-Origin": `http://192.168.18.95:19000`,
         },
       };
       const res = await axios.get(
-        `${baseUrl}/api/services/app/MockTest/GetMockTestSection?mockTestId=${props.route.params.id}`,
+        `${baseUrl}/api/services/app/MockTestResultService/GetResultById?id=${mockTestId}`,
+        config
+      );
+      console.log("GetResultById API Hit SUCEESS", res.data.result);
+      setQuestionData(res.data);
+      setAllQuestionLength(res.data.result.length);
+      setLoading(false);
+    } catch (error) {
+      console.log("GetResultById API Hit SUCEESS", error);
+    }
+  };
+  // const getQuestions = async () => {
+  //   setLoading(true);
+  //   try {
+  //     const data: any = await axios.get(
+  //       `${baseUrl}/api/services/app/MockTest/getMockTestQuestions?mockTestId=${mockTestId}`
+  //     );
+  //     if (data.data.result != null) {
+  //       await setQuestionData(data.data);
+  //       setAllQuestionLength(data.data.result.length);
+  //       setLoading(false);
+  //     }
+  //   } catch (error: any) {}
+  // };
+  const GetUserMockTestSection = async () => {
+    try {
+      const { data } = await axios.get(
+        `${baseUrl}/api/services/app/MockTestUserAns/GetUserMockTestSection?mocktestId=${mockTestId}&userId=${studentId}`,
+        config
+      );
+
+      setmockTestSectionData(mockTestSectionData);
+    } catch (error) {
+      console.log(error, "GetUserMockTestSection");
+    }
+  };
+
+  const getTestSections = async () => {
+    try {
+      const res = await axios.get(
+        `${baseUrl}/api/services/app/MockTest/GetMockTestSection?mockTestId=${mockTestId}`,
         config
       );
       if (res.data.result != null) {
@@ -87,6 +133,7 @@ export default function MockTestSubjectTest(props: any) {
         setCurrentSectionId(res.data.result[sectionIdx].subjectId);
         setSectionsTrue(true);
         getQuestions();
+        GetUserMockTestSection();
       } else {
         setLoading(true);
       }
@@ -95,17 +142,15 @@ export default function MockTestSubjectTest(props: any) {
     }
   };
   useEffect(() => {
-    changeColor;
+    // const changeColor = (color: string) => {
+    //   let newArr = JSON.parse(JSON.stringify(quesIndexArray));
+    //   const foundEl = newArr.find((_arr: any, idx: number) => index == idx);
+    //   if (foundEl) {
+    //     newArr[index].color = "#319EAE";
+    //   }
+    //   setquesIndexArray(newArr);
+    // };
   }, [index]);
-  const changeColor = (color: string) => {
-    let newArr = JSON.parse(JSON.stringify(quesIndexArray));
-    const foundEl = newArr.find((_arr: any, idx: number) => index == idx);
-    if (foundEl) {
-      newArr[index].color = "Green";
-    }
-    setquesIndexArray(newArr);
-  };
-  console.log(quesIndexArray);
   const setSection: any = async (idx: any) => {
     setSectionIdx(idx);
     setCurrentSection(testSections[idx].subject.subjectName);
@@ -133,6 +178,9 @@ export default function MockTestSubjectTest(props: any) {
                     <TestCountDownTimer
                       quesIndexArray={quesIndexArray}
                       duration={duration}
+                      setquesIndexArray={setquesIndexArray}
+                      currentSection={currentSection}
+                      setCurrentSectionId={setCurrentSectionId}
                     />
                     <ScrollView
                       horizontal
@@ -150,12 +198,12 @@ export default function MockTestSubjectTest(props: any) {
                     >
                       {testSections?.map((data: any, idx: number) => {
                         return (
-                          <>
+                          <View key={idx}>
                             <TouchableOpacity
-                              onPress={() => setSection(idx)}
+                              // onPress={() => setSection(idx)}
                               style={{
-                                width: wid / 3.5,
-                                marginHorizontal: 10,
+                                marginHorizontal: 6,
+                                paddingHorizontal: 10,
                                 backgroundColor:
                                   currentSection === data.subject.subjectName
                                     ? "#498BEA"
@@ -177,30 +225,30 @@ export default function MockTestSubjectTest(props: any) {
                                   alignSelf: "center",
                                   height: "100%",
                                   fontFamily: "Poppins-Medium",
-                                  fontSize: 14,
+                                  fontSize: 12,
                                   textAlignVertical: "center",
                                 }}
                               >
                                 {data.subject.subjectName}
                               </Text>
                             </TouchableOpacity>
-                          </>
+                          </View>
                         );
                       })}
                     </ScrollView>
                   </View>
-                  <Text></Text>
 
                   <CurrentSubject
                     setCurrentSection={setCurrentSection}
                     setCurrentSectionId={setCurrentSectionId}
                     CurrentSectionId={CurrentSectionId}
                     quesData={quesData}
-                    mockid={mockid}
+                    mockid={mockTestId}
                     testSections={testSections}
                     setSectionIdx={setSectionIdx}
                     sectionLength={sectionLength}
                     sectionIdx={sectionIdx}
+                    paramsData={props.route.params.data}
                   />
                 </>
               </View>

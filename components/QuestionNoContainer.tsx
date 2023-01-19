@@ -1,26 +1,33 @@
 import React from "react";
-import { StyleSheet, Dimensions, TouchableOpacity } from "react-native";
+import { Dimensions, TouchableOpacity } from "react-native";
 
-import { SafeAreaView } from "react-native-safe-area-context";
-import { View, Text } from "../components/Themed";
+import { Text } from "../components/Themed";
 import { useNavigation } from "@react-navigation/native";
 import { useStateContext } from "../screens/Context/ContextProvider";
 const wid = Dimensions.get("screen").width;
 const high = Dimensions.get("screen").height;
 const QuestionNoContainer = (props: any) => {
   const { index, setIndex } = useStateContext();
-
+  const changeColor = (color: string, changeColorIdx: number) => {
+    let newArr = JSON.parse(JSON.stringify(props.quesIndexArray));
+    console.log(index);
+    const foundEl = newArr.find(
+      (_arr: any, idx: number) => changeColorIdx == idx
+    );
+    if (foundEl) {
+      newArr[index].color = "#319EAE";
+    }
+    props.setquesIndexArray(newArr);
+  };
   const navigation = useNavigation();
 
-  const { quesno } = props;
+  const { quesno, color } = props;
   return (
     <TouchableOpacity
       onPress={() => {
-        // console.log(quesno);
-
+        changeColor("319EAE", index);
         setIndex(quesno - 1);
         props.setModalVisible(false);
-        //   navigation.navigate("Test", (quesno - 1) as never);
       }}
       style={{
         display: "flex",
@@ -29,7 +36,7 @@ const QuestionNoContainer = (props: any) => {
         borderRadius: 8,
 
         alignSelf: "center",
-        backgroundColor: props.color ? props.color : "#FAFAFB",
+        backgroundColor: color ? color : "#FAFAFB",
         width: wid / 7,
         margin: 8,
         height: "2.5%",
@@ -38,7 +45,11 @@ const QuestionNoContainer = (props: any) => {
     >
       <Text
         allowFontScaling={false}
-        style={{ fontSize: 23, fontFamily: "Poppins-Medium" }}
+        style={{
+          fontSize: 23,
+          fontFamily: "Poppins-Medium",
+          color: color ? "#FAFAFB" : "black",
+        }}
       >
         {quesno}
       </Text>

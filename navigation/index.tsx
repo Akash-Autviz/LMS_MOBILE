@@ -45,7 +45,6 @@ import { useStateContext } from "../screens/Context/ContextProvider";
 import MockTestTypeTest from "../screens/MockTestTypeTest";
 import ResetPassword from "../screens/ResetPassword";
 
-
 export default function Navigation({
   colorScheme,
 }: {
@@ -76,12 +75,16 @@ function RootNavigator() {
   const { userDetail, setUserDetail } = useStateContext();
 
   async function getValueFor() {
-    let accesToken = await SecureStore.getItemAsync("user_id");
+    try {
+      let accesToken = await SecureStore.getItemAsync("userId1");
 
-    let User = await SecureStore.getItemAsync("access_token");
+      let User = await SecureStore.getItemAsync("access_token");
 
-    if (accesToken || User) {
-      setisLogIn(true);
+      if (accesToken && User) {
+        setisLogIn(true);
+      }
+    } catch (error) {
+      alert("Session END");
     }
   }
   useEffect(() => {
@@ -146,6 +149,11 @@ function RootNavigator() {
         component={MockTestTypeTest}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="TestResult"
+        component={TestResultScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
@@ -196,6 +204,11 @@ function Home() {
       <Stack.Screen
         name="Videos"
         component={VideosScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="TestResult"
+        component={TestResultScreen}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
@@ -277,6 +290,7 @@ function Feed() {
         component={FeedScreen}
         options={{ headerShown: false }}
       />
+
       <Stack.Screen
         name="Affairs"
         component={AffairsView}
@@ -286,6 +300,11 @@ function Feed() {
           headerTitleAlign: "center",
           headerTitle: "My Feed",
         }}
+      />
+      <Stack.Screen
+        name="TestResult"
+        component={TestResultScreen}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

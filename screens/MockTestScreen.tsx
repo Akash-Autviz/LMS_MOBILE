@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   TouchableOpacity,
   StyleSheet,
@@ -9,7 +9,6 @@ import { Dimensions } from "react-native";
 import HeaderNav from "../components/HeaderNav";
 import axios from "axios";
 import { View, Text } from "../components/Themed";
-import * as SecureStore from "expo-secure-store";
 import MockTestCard from "../components/MockTestCard";
 import { ActivityIndicator } from "react-native-paper";
 import { useStateContext } from "./Context/ContextProvider";
@@ -55,6 +54,7 @@ export default function MockTest(props: any) {
       setMockData(data.result);
       setisLoading(false);
     } catch (error) {
+      console.log(error, "upcomingDataResonse");
       setisLoading(false);
     }
   };

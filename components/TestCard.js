@@ -12,6 +12,8 @@ import axios from "axios";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import { trimDate, trimName, trimText } from "../utils/Logics";
 import { baseUrl } from "../utils";
+
+import moment from "moment";
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 const TestCard = (props) => {
@@ -19,10 +21,24 @@ const TestCard = (props) => {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const [currrentCourseData, SetCurrrentCourseData] = useState({});
-
+  const [mockTestSectionData, setmockTestSectionData] = useState([]);
   const { userDetail, access_token } = useStateContext();
+  const config = {
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+      // "Abp-TenantId": "1",
+      // "Access-Control-Allow-Origin": `http://192.168.18.95:19000`,
+    },
+  };
+  let header = {
+    Authorization: `Bearer ${access_token}`,
+    "Content-Type": "application/json",
+    "Abp-TenantId": "1",
+  };
+
   useEffect(() => {
     getEnrollMockTestByUserIdAndCouresId();
+    GetUserMockTestSection();
   }, []);
 
   const headers = {
@@ -40,9 +56,121 @@ const TestCard = (props) => {
         SetCurrrentCourseData(res.data.result);
       }
       setLoading(false);
-    } catch (error) {}
+    } catch (error) {
+      console.log("GetEnrolledMockTestByUserIdAndMockTestId", error);
+    }
+  };
+  const GetUserMockTestSection = async () => {
+    try {
+      const { data } = await axios.get(
+        `${baseUrl}/api/services/app/MockTestUserAns/GetUserMockTestSection?mocktestId=${id}&userId=${userDetail.id}`,
+        config
+      );
+      if (mockTestSectionData.length < 1) setmockTestSectionData(data.result);
+
+      console.log("GetUserMockTestSection APi HIT SUCCESS");
+    } catch (error) {
+      console.log(error, "GetUserMockTestSection");
+    }
+  };
+  const createUserMockTestAllSection = async () => {
+    try {
+      var config = {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": " application/json",
+          "Abp-TenantId": "1",
+          // "Access-Control-Allow-Origin": `http://192.168.18.95:19000`,
+        },
+      };
+
+      const data = JSON.stringify(mockTestSectionData);
+      const res = await axios.post(
+        "http://13.126.218.96/api/services/app/MockTestUserAns/CreateUserMockTestAllSection",
+        data,
+        config
+      );
+      console.log("createUserMockTestAllSection API hit true", res);
+    } catch (error) {
+      console.log("createUserMockTestAllSection", error);
+    }
   };
 
+  const MarkIsView = async (id) => {
+    try {
+      const res = await axios.post(
+        `${baseUrl}/api/services/app/EnrollMockTest/MarkIsView?id=${id}`,
+        config
+      );
+      console.log("isView API hit Success");
+    } catch (error) {
+      console.log("MarkView Api", error);
+    }
+  };
+  const MarkIsSubmitted = async (id) => {
+    try {
+      const res = await axios.post(
+        `${baseUrl}/api/services/app/EnrollMockTest/MarkIsSubmitted?id=${id}`,
+        config
+      );
+      console.log("MarkIsSubmitted Api Hit Sucees");
+    } catch (error) {
+      console.log("MarkIsSubmitted", error);
+    }
+  };
+
+  const start = (data) => {
+    const { id, isView } = data;
+
+    if (isView) {
+      alert("Do you want to Resume the  mocktest...!!");
+      navigation.navigate("Test", {
+        data: currrentCourseData,
+      });
+    } else {
+      createUserMockTestAllSection();
+      MarkIsView(id);
+      navigation.navigate("Test", {
+        data: currrentCourseData,
+      });
+    }
+  };
+  const reattempt = (data) => {
+    const { id, isSubmitted } = data;
+    // const uniqueKeySection = new Map();
+
+    if (isSubmitted == true) {
+      MarkIsSubmitted(id);
+    }
+    // mockTestSectionData?.forEach((element) => {
+    //   element.creationTime = moment();
+    // updateUserMockTestSection(mockTestSectionData[0]);
+    // });
+    navigation.navigate("Test", {
+      data: currrentCourseData,
+    });
+  };
+  const updateUserMockTestSection = async (element) => {
+    var config = {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": " application/json",
+        "Abp-TenantId": "1",
+        // "Access-Control-Allow-Origin": `http://192.168.18.95:19000`,
+      },
+    };
+    const data = JSON.stringify(element);
+    try {
+      const res = await axios.put(
+        `http://13.126.218.96/api/services/app/MockTestUserAns/UpdateUserMockTestSection`,
+        data,
+        config
+      );
+      console.log("UpdateUserMockTestSection Api HIT Suceess");
+    } catch (error) {
+      console.log("UpdateUserMockTestSection", error);
+    }
+  };
   return (
     <>
       {loading == false && (
@@ -142,7 +270,7 @@ const TestCard = (props) => {
                     borderRadius: 4,
                   }}
                   onPress={() => {
-                    navigation.navigate("Test", {
+                    navigation.navigate("TestResult", {
                       id: currrentCourseData.mockTestId,
                     });
                   }}
@@ -174,9 +302,8 @@ const TestCard = (props) => {
                     borderRadius: 4,
                   }}
                   onPress={() => {
-                    navigation.navigate("Test", {
-                      id: currrentCourseData.mockTestId,
-                    });
+                    start(currrentCourseData);
+                    // reattempt(currrentCourseData);
                   }}
                 >
                   <Text
@@ -205,9 +332,7 @@ const TestCard = (props) => {
                     borderRadius: 4,
                   }}
                   onPress={() => {
-                    navigation.navigate("Test", {
-                      id: currrentCourseData.mockTestId,
-                    });
+                    reattempt(currrentCourseData);
                   }}
                 >
                   <Text

@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {
-  Platform,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  Image,
-} from "react-native";
+import { StyleSheet, Dimensions, TouchableOpacity, Image } from "react-native";
 
 import { Linking } from "react-native";
 
@@ -15,19 +9,10 @@ const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function VideoComponent(props: any) {
   const { description, image, title, fileName, creationTime } = props.item;
-  let detail = description;
+  let detail = description + "";
 
-  const [readMore, setReadMore] = useState(
-    detail.length < 50 ? "Read more..." : "Read less"
-  );
-  useEffect(() => {
-    if (readMore == "Read more...") {
-      detail = props.description;
-    } else {
-      detail = detail.substring(0, 200);
-    }
-  }, [readMore]);
-
+  const [readMore, setReadMore] = useState(detail.length > 50 ? true : false);
+  console.log(readMore, "ReadMore");
   return (
     <>
       <TouchableOpacity
@@ -87,11 +72,40 @@ export default function VideoComponent(props: any) {
         />
 
         <Text allowFontScaling={false} style={styles.cardDesc}>
-          {description && detail}
-          <TouchableOpacity onPress={() => setReadMore("Read less")}>
-            <Text style={{ color: "skyblue" }}>{readMore}</Text>
-          </TouchableOpacity>
+          {description && readMore === true ? detail.slice(0, 180) : detail}
         </Text>
+        {detail.length < 179 && (
+          <TouchableOpacity
+            style={{}}
+            onPress={() => {
+              setReadMore(!readMore);
+            }}
+          >
+            <Text
+              style={{
+                color: "#319EAE",
+                fontSize: 14,
+              }}
+            >
+              {readMore === true ? "... Read More" : "Read Less"}
+            </Text>
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity
+          style={{}}
+          onPress={() => {
+            setReadMore(!readMore);
+          }}
+        >
+          <Text
+            style={{
+              color: "#319EAE",
+              fontSize: 14,
+            }}
+          >
+            {readMore === true ? "... Read More" : "Read Less"}
+          </Text>
+        </TouchableOpacity>
       </TouchableOpacity>
     </>
   );
@@ -110,7 +124,8 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   cardDesc: {
-    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
     fontFamily: "Poppins-Medium",
     fontSize: 12,
   },

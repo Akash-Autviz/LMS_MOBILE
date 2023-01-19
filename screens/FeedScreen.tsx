@@ -63,24 +63,7 @@ export default function FeedScreen(props: any) {
       }
     });
   }, []);
-  const calcTime = (num1: any) => {
-    var slice1 = num1.slice(0, 10);
 
-    return slice1;
-  };
-  const calcTime1 = (num2: any) => {
-    var slice2 = num2.slice(0, 10);
-
-    return slice2;
-  };
-  const trimText = (desc: string) => {
-    let newDesc = desc.split(" ");
-    let res = "";
-    for (let i = 0; i <= 2; i++) {
-      res += newDesc[i] + " ";
-    }
-    return res + "...";
-  };
   const Jobnotification = async (token: any) => {
     var axios = require("axios");
     var data = "";
@@ -203,7 +186,7 @@ export default function FeedScreen(props: any) {
           </Text>
         </TouchableOpacity>
       </View>
-     
+
       <ScrollView style={{}}>
         {currentState == "Current Affairs" ? (
           <>

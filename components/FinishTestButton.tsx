@@ -21,6 +21,7 @@ const FinishButtonTest = (props: any) => {
     textColor,
     backgroudColor,
     marginRight,
+    setCurrentSectionId,
   } = props;
   return (
     <View
@@ -34,7 +35,8 @@ const FinishButtonTest = (props: any) => {
     >
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate("MockTest");
+          // setCurrentSectionId()
+          navigation.goBack();
         }}
         style={{
           alignItems: "center",

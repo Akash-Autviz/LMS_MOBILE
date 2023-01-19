@@ -17,13 +17,37 @@ import QuestionNoContainer from "../QuestionNoContainer";
 const wid = Dimensions.get("screen").width;
 const high = Dimensions.get("screen").height;
 const ResultModal = (props: any) => {
-  const { SetAnsResultIdx, ansResultIdx, setIndex } = useStateContext();
+  const { SetAnsResultIdx, ansResultIdx, setIndex, index } = useStateContext();
   const [modalVisible, setModalVisible] = useState(false);
-  const setCurrentIndex=(index:number)=>{
+  const setCurrentIndex = (index: number) => {
     setIndex(index);
-
-  }
-  useEffect(() => {setCurrentIndex;}, [ansResultIdx]);
+  };
+  var questionModel;
+  useEffect(() => {});
+  questionModel = props?.quesIndexArray?.map((e: any, id: number) => {
+    return index == id ? (
+      <QuestionNoContainer
+        setModalVisible={setModalVisible}
+        key={id}
+        quesno={id + 1}
+        color={"#319EAE"}
+        setquesIndexArray={props.setquesIndexArray}
+        quesIndexArray={props.quesIndexArray}
+      />
+    ) : (
+      <QuestionNoContainer
+        setModalVisible={setModalVisible}
+        key={id}
+        quesno={id + 1}
+        color={e.color}
+        setquesIndexArray={props.setquesIndexArray}
+        quesIndexArray={props.quesIndexArray}
+      />
+    );
+  });
+  useEffect(() => {
+    setCurrentIndex;
+  }, [ansResultIdx]);
 
   return (
     <View style={styles.centeredView}>
@@ -64,7 +88,7 @@ const ResultModal = (props: any) => {
                 color: "white",
               }}
             >
-              Quant
+              {props.currentSection}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -99,27 +123,12 @@ const ResultModal = (props: any) => {
               marginBottom: high / 4.5,
             }}
           >
-            {props?.quesIndexArray?.map((e: any, id: number) => {
-              if (e.color) {
-                return (
-                  <QuestionNoContainer
-                    setModalVisible={setModalVisible}
-                    key={id}
-                    quesno={id + 1}
-                  />
-                );
-              } else {
-                return (
-                  <QuestionNoContainer
-                    setModalVisible={setModalVisible}
-                    key={id}
-                    quesno={id + 1}
-                  />
-                );
-              }
-            })}
+            {questionModel}
 
-            <FinishButtonTest key={Math.random() * 100} />
+            <FinishButtonTest
+              setCurrentSectionId={props.setCurrentSectionId}
+              key={Math.random() * 100}
+            />
           </ScrollView>
         </View>
       </Modal>

@@ -8,16 +8,44 @@ import {
   BackHandler,
   Dimensions,
 } from "react-native";
-import { SafeAreaFrameContext } from "react-native-safe-area-context";
+
 import ResultScreenCard from "../components/ResultScreenCard";
 import { TestResultData } from "../data/TestResultData";
-import FinishButtonTest from "../components/FinishTestButton";
-import { CurrentRenderContext } from "@react-navigation/native";
-import QuestionNoContainer from "../components/QuestionNoContainer";
-import navigation from "../navigation";
+import axios from "axios";
+import { baseUrl } from "../utils";
+import { useStateContext } from "./Context/ContextProvider";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 const TestResultScreen = (props: any) => {
+  const { access_token } = useStateContext();
+  const [resutlData, SetResultData] = React.useState<any>();
+
+  const getMockTestResult = async () => {
+    try {
+      let data = "";
+      const config = {
+        method: "GET",
+        url: `${baseUrl}/api/services/app/MockTestResultService/GetMockTestResult?id=${props.route.params.id}`,
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Abp-TenantId": "1",
+        },
+        data: data,
+      };
+      await axios(config)
+        .then(function async(response: any) {
+          SetResultData(response.data.result);
+          console.log(response);
+        })
+        .catch(function (error: any) {
+          console.log(error);
+        });
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    getMockTestResult();
+  }, []);
   useEffect(() => {
     const backbuttonHander = () => {
       props.navigation.goBack();
@@ -26,112 +54,267 @@ const TestResultScreen = (props: any) => {
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
   });
   return (
-    <View
-      style={{
-        top: high / 12,
-        width: "90%",
-        height: "75%",
-        display: "flex",
-        alignSelf: "center",
-        borderRadius: 22,
-        padding: "2%",
-      }}
-    >
-      <View
-        style={{
-          display: "flex",
-          height: "6%",
-          alignItems: "flex-end",
-          marginRight: "6%",
-          marginTop: "4%",
-          borderRadius: 25,
-        }}
-      >
-        <TouchableOpacity onPress={() => props.navigation.goBack()}>
-          <Image
-            style={{ height: "70%", padding: 15 }}
-            resizeMode="cover"
-            source={require("../assets/images/close.png")}
-          ></Image>
-        </TouchableOpacity>
-      </View>
-      <View
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Image
-          style={{ margin: 10 }}
-          resizeMode="cover"
-          source={require("../assets/images/Trophy.png")}
-        ></Image>
-        <Text
-          style={{ fontSize: 25, marginTop: "1%", fontFamily: "Poppins-Bold" }}
-        >
-          SSC CGL Mock Test 1
-        </Text>
-      </View>
-      <View
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          flexWrap: "wrap",
-          justifyContent: "space-evenly",
-          marginTop: "6%",
-        }}
-      >
-        {TestResultData.map((res) => {
-          return (
-            <ResultScreenCard
-              key={Math.random() * 100}
-              fullMarks={res?.fullMarks}
-              marks={res?.marks}
-              name={res?.type}
-              icon_url={res?.icon_url}
-            />
-          );
-        })}
-      </View>
-      <View
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          marginTop: 30,
-        }}
-      >
+    <>
+      {resutlData && (
         <View
           style={{
-            width: "55%",
-            height: 40,
-            margin: 7,
+            top: high / 12,
+            width: "90%",
+            height: "75%",
+            display: "flex",
+            alignSelf: "center",
+            borderRadius: 22,
+            padding: "2%",
           }}
         >
-          <TouchableOpacity
+          <View
             style={{
-              alignItems: "center",
-              justifyContent: "center",
-              width: "100%",
-              height: "110%",
-              backgroundColor: "#319EAE",
-              borderRadius: 4,
+              display: "flex",
+              height: "6%",
+              alignItems: "flex-end",
+              marginRight: "6%",
+              marginTop: "4%",
+              borderRadius: 25,
             }}
           >
+            <TouchableOpacity onPress={() => props.navigation.goBack()}>
+              <Image
+                style={{ height: "70%", padding: 15 }}
+                resizeMode="cover"
+                source={require("../assets/images/close.png")}
+              ></Image>
+            </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Image
+              style={{ margin: 10 }}
+              resizeMode="cover"
+              source={require("../assets/images/Trophy.png")}
+            ></Image>
             <Text
               style={{
-                color: "white",
-                fontFamily: "Poppins-Regular",
-                fontSize: 17,
+                fontSize: 25,
+                marginTop: "1%",
+                fontFamily: "Poppins-Bold",
               }}
             >
-              View Explanation
+              Mocktest Result
             </Text>
-          </TouchableOpacity>
+          </View>
+          <View
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "space-evenly",
+              marginTop: "6%",
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: "transparent",
+                marginRight: 10,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                margin: "4.5%",
+              }}
+            >
+              <Image
+                style={{ margin: 10 }}
+                resizeMode="cover"
+                source={require("../assets/images/StarTropphy.png")}
+              ></Image>
+              <Text
+                style={{ fontSize: 17, marginTop: "1%", fontWeight: "500" }}
+              >
+                {resutlData.correct ? resutlData.correct : "0"}
+              </Text>
+              <Text
+                style={{
+                  color: "#B0B0B0",
+                  fontSize: 16,
+                  marginTop: "1%",
+                  fontWeight: "700",
+                }}
+              >
+                Correct
+              </Text>
+            </View>
+            <View
+              style={{
+                backgroundColor: "transparent",
+                marginRight: 10,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                margin: "4.5%",
+              }}
+            >
+              <Image
+                style={{ margin: 10 }}
+                resizeMode="cover"
+                source={require("../assets/images/ScoreMeter.png")}
+              ></Image>
+              <Text
+                style={{ fontSize: 17, marginTop: "1%", fontWeight: "500" }}
+              >
+                {resutlData.attempted ? resutlData.attempted : "0"}
+              </Text>
+              <Text
+                style={{
+                  color: "#B0B0B0",
+                  fontSize: 16,
+                  marginTop: "1%",
+                  fontWeight: "700",
+                }}
+              >
+                Attempted
+              </Text>
+            </View>
+            <View
+              style={{
+                backgroundColor: "transparent",
+                marginRight: 10,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                margin: "4.5%",
+              }}
+            >
+              <Image
+                style={{ margin: 10 }}
+                resizeMode="cover"
+                source={require("../assets/images/GreenCheck.png")}
+              ></Image>
+              <Text
+                style={{ fontSize: 17, marginTop: "1%", fontWeight: "500" }}
+              >
+                {resutlData.unattempted ? resutlData.unattempted : "0"}
+              </Text>
+              <Text
+                style={{
+                  color: "#B0B0B0",
+                  fontSize: 16,
+                  marginTop: "1%",
+                  fontWeight: "700",
+                }}
+              >
+                Unattempted
+              </Text>
+            </View>
+            <View
+              style={{
+                backgroundColor: "transparent",
+                marginRight: 10,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                margin: "4.5%",
+              }}
+            >
+              <Image
+                style={{ margin: 10 }}
+                resizeMode="cover"
+                source={require("../assets/images/Wrongmark.png")}
+              ></Image>
+              <Text
+                style={{ fontSize: 17, marginTop: "1%", fontWeight: "500" }}
+              >
+                {resutlData.attempted - resutlData.correct
+                  ? resutlData.attempted - resutlData.correct
+                  : "0"}
+              </Text>
+              <Text
+                style={{
+                  color: "#B0B0B0",
+                  fontSize: 16,
+                  marginTop: "1%",
+                  fontWeight: "700",
+                }}
+              >
+                Wrong
+              </Text>
+            </View>
+            <View
+              style={{
+                backgroundColor: "transparent",
+                marginRight: 10,
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                margin: "4.5%",
+              }}
+            >
+              <Image
+                style={{ margin: 10 }}
+                resizeMode="cover"
+                source={require("../assets/images/NoData.png")}
+              ></Image>
+              <Text
+                style={{ fontSize: 17, marginTop: "1%", fontWeight: "500" }}
+              >
+                {resutlData.correct ? resutlData.correct : "0"}
+              </Text>
+              <Text
+                style={{
+                  color: "#B0B0B0",
+                  fontSize: 16,
+                  marginTop: "1%",
+                  fontWeight: "700",
+                }}
+              >
+                Score
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginTop: 30,
+            }}
+          >
+            <View
+              style={{
+                width: "55%",
+                height: 40,
+                margin: 7,
+              }}
+            >
+              <TouchableOpacity
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "100%",
+                  height: "110%",
+                  backgroundColor: "#319EAE",
+                  borderRadius: 4,
+                }}
+                onPress={() => props.navigation.goBack()}
+              >
+                <Text
+                  style={{
+                    color: "white",
+                    fontFamily: "Poppins-Regular",
+                    fontSize: 17,
+                  }}
+                >
+                  Go Back
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
         </View>
-      </View>
-    </View>
+      )}
+    </>
   );
 };
 

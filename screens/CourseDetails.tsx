@@ -28,20 +28,6 @@ export default function CourseDetails(props: any) {
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
   });
 
-  function checkNull($value: any) {
-    if ($value == null) {
-      return "";
-    } else {
-      return $value;
-    }
-  }
-
-  const calculate = (num1: number, num2: number) => {
-    return (num1 * num2) / 100;
-  };
-  const calcTotal = (num1: number, num2: number) => {
-    return num1 + (num1 * num2) / 100;
-  };
   useEffect(() => {
     const backbuttonHander = () => {
       props.navigation.goBack();
@@ -104,7 +90,8 @@ export default function CourseDetails(props: any) {
             backgroundColor: "#F5F5F5",
           }}
         >
-          {courseData.courseManagement.imagePath == null ? (
+          {courseData.courseManagement.imagePath &&
+          courseData.courseManagement.imagePath == null ? (
             <Image
               source={require("../assets/images/bigEnglish.png")}
               style={{
@@ -129,6 +116,7 @@ export default function CourseDetails(props: any) {
               }}
             ></Image>
           )}
+
           <Text
             allowFontScaling={false}
             style={{
@@ -149,7 +137,6 @@ export default function CourseDetails(props: any) {
               left: wid / 12.7,
               height: "auto",
               width: "88%",
-              // marginBottom: high / 15,
             }}
           >
             {courseData.courseManagement.detail}
@@ -221,19 +208,7 @@ export default function CourseDetails(props: any) {
             >
               Valid Year
             </Text>
-            <Text
-              allowFontScaling={false}
-              style={{
-                color: "#A9A9A9",
-                alignSelf: "flex-start",
-                left: wid / 12.8,
-                fontFamily: "Poppins-Regular",
-                fontSize: 20,
-                top: high / 5.33,
-              }}
-            >
-              TAX (8.25 %)
-            </Text>
+
             <Text
               allowFontScaling={false}
               style={{
@@ -242,7 +217,7 @@ export default function CourseDetails(props: any) {
                 left: wid / 12.8,
                 fontFamily: "Poppins-Regular",
                 fontSize: 20,
-                top: 160,
+                top: 135,
               }}
             >
               Total
@@ -268,7 +243,7 @@ export default function CourseDetails(props: any) {
                 top: high / 21.35,
               }}
             >
-              $ {courseData.courseManagement.price}
+              {courseData.courseManagement.price}
             </Text>
             <Text
               allowFontScaling={false}
@@ -296,6 +271,7 @@ export default function CourseDetails(props: any) {
             >
               {calcValidity(courseData.courseManagement.creationTime)}
             </Text>
+
             <Text
               allowFontScaling={false}
               style={{
@@ -304,23 +280,10 @@ export default function CourseDetails(props: any) {
                 right: 20,
                 fontFamily: "Poppins-Regular",
                 fontSize: 20,
-                top: high / 5.33,
+                top: high / 5.57,
               }}
             >
-              $ {calculate(courseData.courseManagement.price, 8.25)}
-            </Text>
-            <Text
-              allowFontScaling={false}
-              style={{
-                color: "black",
-                alignSelf: "flex-end",
-                right: 20,
-                fontFamily: "Poppins-Regular",
-                fontSize: 20,
-                top: high / 4.27,
-              }}
-            >
-              ${calcTotal(courseData.courseManagement.price, 8.25)}
+              {courseData.courseManagement.price}
             </Text>
           </View>
         </View>
@@ -345,7 +308,7 @@ export default function CourseDetails(props: any) {
               color: "white",
             }}
           >
-            Buy $ {calcTotal(courseData.courseManagement.price, 8.25)}
+            Buy {courseData.courseManagement.price}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
