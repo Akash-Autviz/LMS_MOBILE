@@ -4,6 +4,7 @@ import {
   TouchableOpacity,
   Text,
   View,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useStateContext } from "../screens/Context/ContextProvider";
@@ -12,7 +13,6 @@ import axios from "axios";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import { trimDate, trimName, trimText } from "../utils/Logics";
 import { baseUrl } from "../utils";
-
 import moment from "moment";
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
@@ -20,7 +20,9 @@ const TestCard = (props) => {
   const { name, startTime, id, price } = props;
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
+  const [result, setResult] = useState(null);
   const [currrentCourseData, SetCurrrentCourseData] = useState({});
+  const [duration, Setduration] = useState("");
   const [mockTestSectionData, setmockTestSectionData] = useState([]);
   const { userDetail, access_token } = useStateContext();
   const config = {
@@ -30,22 +32,76 @@ const TestCard = (props) => {
       // "Access-Control-Allow-Origin": `http://192.168.18.95:19000`,
     },
   };
-  let header = {
-    Authorization: `Bearer ${access_token}`,
-    "Content-Type": "application/json",
-    "Abp-TenantId": "1",
-  };
 
+  const start = async (data) => {
+    const { id, isView } = data;
+    GetUserMockTestSection();
+    if (isView) {
+      Alert.alert(
+        "Do you want to Resume the  mocktest...!!",
+        "If you select Yes It will resume the test otherwise If you select Cancel it will start again",
+        [
+          {
+            text: "Resume",
+            onPress: () => {
+              (currrentCourseData.isDeleted = "changedTheValue"),
+                navigation.navigate("Test", {
+                  data: currrentCourseData,
+                });
+            },
+            style: "cancel",
+          },
+          { text: "Cancel", onPress: () => reattempt(currrentCourseData) },
+        ]
+      );
+    } else {
+      createUserMockTestAllSection();
+      MarkIsView(id);
+      navigation.navigate("Test", {
+        data: currrentCourseData,
+      });
+    }
+  };
+  const reattempt = (data) => {
+    const { id, isSubmitted } = data;
+    // const uniqueKeySection = new Map();
+    currrentCourseData.isReattempt = "changedTheValue";
+    if (isSubmitted == true) {
+      MarkIsSubmitted(id);
+    }
+    mockTestSectionData?.forEach((element) => {
+      element.creationTime = moment();
+    });
+    updateUserMockTestSection(mockTestSectionData[0]);
+    navigation.navigate("Test", {
+      data: currrentCourseData,
+    });
+  };
   useEffect(() => {
     getEnrollMockTestByUserIdAndCouresId();
-    GetUserMockTestSection();
-  }, []);
 
+    getMockTestDuartion();
+  }, []);
   const headers = {
     Authorization: `Bearer ${access_token}`,
     "Content-Type": "application/json",
     "Abp-TenantId": "1",
   };
+  const getMockTestDuartion = async () => {
+    try {
+      const res = await axios.get(
+        `${baseUrl}/api/services/app/MockTest/Get?Id=${id} `,
+        headers
+      );
+      if (res.data.result != null) {
+        Setduration(res.data.result.duration);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.log("GetEnrolledMockTestByUserIdAndMockTestId", error);
+    }
+  };
+
   const getEnrollMockTestByUserIdAndCouresId = async () => {
     try {
       const res = await axios.get(
@@ -54,6 +110,7 @@ const TestCard = (props) => {
       );
       if (res.data.result != null) {
         SetCurrrentCourseData(res.data.result);
+        console.log("User TEST SECTION", res.data.result);
       }
       setLoading(false);
     } catch (error) {
@@ -68,7 +125,7 @@ const TestCard = (props) => {
       );
       if (mockTestSectionData.length < 1) setmockTestSectionData(data.result);
 
-      console.log("GetUserMockTestSection APi HIT SUCCESS");
+      console.log("GetUserMockTestSection APi HIT SUCCESS", data);
     } catch (error) {
       console.log(error, "GetUserMockTestSection");
     }
@@ -119,37 +176,6 @@ const TestCard = (props) => {
     }
   };
 
-  const start = (data) => {
-    const { id, isView } = data;
-
-    if (isView) {
-      alert("Do you want to Resume the  mocktest...!!");
-      navigation.navigate("Test", {
-        data: currrentCourseData,
-      });
-    } else {
-      createUserMockTestAllSection();
-      MarkIsView(id);
-      navigation.navigate("Test", {
-        data: currrentCourseData,
-      });
-    }
-  };
-  const reattempt = (data) => {
-    const { id, isSubmitted } = data;
-    // const uniqueKeySection = new Map();
-
-    if (isSubmitted == true) {
-      MarkIsSubmitted(id);
-    }
-    // mockTestSectionData?.forEach((element) => {
-    //   element.creationTime = moment();
-    // updateUserMockTestSection(mockTestSectionData[0]);
-    // });
-    navigation.navigate("Test", {
-      data: currrentCourseData,
-    });
-  };
   const updateUserMockTestSection = async (element) => {
     var config = {
       headers: {
@@ -250,7 +276,7 @@ const TestCard = (props) => {
                       allowFontScaling={false}
                       style={[styles.fontColor, { marginLeft: wid / 64 }]}
                     >
-                      1 Hour
+                      {duration} min
                     </Text>
                   )}
                 </>

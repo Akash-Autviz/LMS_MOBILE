@@ -22,29 +22,50 @@ const ResultModal = (props: any) => {
   const setCurrentIndex = (index: number) => {
     setIndex(index);
   };
-  var questionModel;
-  useEffect(() => {});
-  questionModel = props?.quesIndexArray?.map((e: any, id: number) => {
-    return index == id ? (
-      <QuestionNoContainer
-        setModalVisible={setModalVisible}
-        key={id}
-        quesno={id + 1}
-        color={"#319EAE"}
-        setquesIndexArray={props.setquesIndexArray}
-        quesIndexArray={props.quesIndexArray}
-      />
-    ) : (
-      <QuestionNoContainer
-        setModalVisible={setModalVisible}
-        key={id}
-        quesno={id + 1}
-        color={e.color}
-        setquesIndexArray={props.setquesIndexArray}
-        quesIndexArray={props.quesIndexArray}
-      />
-    );
+  console.log("Result RENDERED");
+  var questionModel = props?.quesIndexArray.filter((e: any) => {
+    e.question?.subjectId == props.CurrentSectionId;
   });
+  console.log(questionModel);
+  // .map((e: any, id: number) => {
+  //   console.log(e, "fdasjkfhaskdfhk");
+  //   if (e.userAnswer) {
+  //     return (
+  //       <QuestionNoContainer
+  //         setModalVisible={setModalVisible}
+  //         key={id}
+  //         quesno={id + 1}
+  //         // color={"#319EAE"}
+  //         color={"#449504"}
+  //         setquesIndexArray={props.setquesIndexArray}
+  //         quesIndexArray={props.quesIndexArray}
+  //       />
+  //     );
+  //   } else if (e.qu) {
+  //     return index == id ? (
+  //       <QuestionNoContainer
+  //         setModalVisible={setModalVisible}
+  //         key={id}
+  //         quesno={id + 1}
+  //         color={"#319EAE"}
+  //         setquesIndexArray={props.setquesIndexArray}
+  //         quesIndexArray={props.quesIndexArray}
+  //       />
+  //     ) : (
+  //       // #FDD835
+  //       <QuestionNoContainer
+  //         setModalVisible={setModalVisible}
+  //         key={id}
+  //         quesno={id + 1}
+  //         color={
+  //           e.skip == true ? "#d94646" : e.isMarkUp == true ? "#FDD835" : null
+  //         }
+  //         setquesIndexArray={props.setquesIndexArray}
+  //         quesIndexArray={props.quesIndexArray}
+  //       />
+  //     );
+  //   }
+  // });
   useEffect(() => {
     setCurrentIndex;
   }, [ansResultIdx]);
@@ -117,9 +138,7 @@ const ResultModal = (props: any) => {
             }}
             style={{
               display: "flex",
-
               backgroundColor: "white",
-
               marginBottom: high / 4.5,
             }}
           >

@@ -25,8 +25,7 @@ export default function HomeScreen({ route, navigation }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [enrData, SetEnrData] = useState<any>([]);
   const [freeVideoData, SetFreeVideoData] = useState<any>([]);
-  const { setAccess_token, setUserDetail, setuserImage } =
-    useStateContext();
+  const { setAccess_token, setUserDetail, setuserImage } = useStateContext();
   const getUserImage = async (access_token: string, userId: string) => {
     const config = {
       headers: {
@@ -202,7 +201,7 @@ export default function HomeScreen({ route, navigation }: any) {
                         <View
                           style={{
                             flexDirection: "row",
-                            top: high / 9,
+                            top: high / 9.5,
                             backgroundColor: "transparent",
                           }}
                         >

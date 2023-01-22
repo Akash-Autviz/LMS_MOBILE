@@ -26,6 +26,7 @@ export default function CurrentSubject(props: any) {
     useState<any>([]);
 
   const {
+    setquesIndexArray,
     quesData,
     CurrentSectionId,
     setSectionIdx,
@@ -36,7 +37,7 @@ export default function CurrentSubject(props: any) {
     testSections,
     paramsData,
   } = props;
-  console.log(quesData);
+  console.log("child Renderd");
   const {
     id,
     isBuy,
@@ -80,17 +81,17 @@ export default function CurrentSubject(props: any) {
         `${baseUrl}/api/services/app/MockTestResultService/GetResultById?id=${mockTestId}`,
         config
       );
-      console.log("qwestiondatat", res.data.result);
+      setquesIndexArray(res.data.result);
       setfilterQuestionsData(res.data.result);
     } catch (error) {
-      console.log("GetResultById API Hit SUCEESS", error);
+      console.log("GetResultById API Hit Failed", error);
     }
   };
   useEffect(() => {
     if (quesData) {
       let quesArray = [];
       quesArray = quesData.result.filter(
-        (e: any) => e.question.subjectId == CurrentSectionId
+        (e: any) => e.question?.subjectId == CurrentSectionId
       );
       SetCurrentSectionTypeQuestoion(quesArray);
       setQuestionLength(quesArray.length);
@@ -122,16 +123,16 @@ export default function CurrentSubject(props: any) {
 
   const updateUserAnswer = (token: any) => {
     let data = JSON.stringify({
-      // creationTime: moment(),
-      // id: currentSectionTypeQuestoion[index].id,
-      // mockTestId: currentSectionTypeQuestoion[index].mockTestId,
-      // isDeleted: currentSectionTypeQuestoion[index].question.isDeleted,
-      // userAnswer: answer,
-      // quesId: currentSectionTypeQuestoion[index].questionId,
-      // creatorUserId: currentSectionTypeQuestoion[index].creatorUserId,
-      // skip: isSkip,
-      // isMarkUp: isMarkup,
-      // tenantId: 1,
+      creationTime: moment(),
+      id: currentSectionTypeQuestoion[index].id,
+      mockTestId: currentSectionTypeQuestoion[index].mockTestId,
+      isDeleted: currentSectionTypeQuestoion[index].question.isDeleted,
+      userAnswer: answer,
+      quesId: currentSectionTypeQuestoion[index].questionId,
+      creatorUserId: currentSectionTypeQuestoion[index].creatorUserId,
+      skip: isSkip,
+      isMarkUp: isMarkup,
+      tenantId: 1,
     });
 
     var config = {
@@ -145,12 +146,9 @@ export default function CurrentSubject(props: any) {
     };
     axios(config)
       .then(function (response: any) {
-        alert("answer Submitted");
-        console.log("Anwer Sumited SuccesFull");
         GetResultById();
       })
       .catch(function (error: any) {
-        console.log(data);
         console.log(error);
       });
   };
@@ -201,6 +199,7 @@ export default function CurrentSubject(props: any) {
       setAnswer("");
       setisMarkup(false);
       setisMarkup(false);
+      console.log("updated Anwerer");
       if (buttonValue === "Next Section" && sectionIdx + 1 < sectionLength) {
         nextSection(sectionIdx + 1);
       } else if (index < questionLength - 1) {
@@ -215,7 +214,6 @@ export default function CurrentSubject(props: any) {
       if (index > 0) setIndex(index - 1);
     }
   };
-  // console.log("currQuestion", currentSectionTypeQuestoion[index].questionId);
 
   const submitMockTest = () => {
     updateUserAnswer(access_token);
@@ -233,7 +231,7 @@ export default function CurrentSubject(props: any) {
 
   return (
     <>
-      {/* {Array.isArray(currentSectionTypeQuestoion) &&
+      {Array.isArray(currentSectionTypeQuestoion) &&
         currentSectionTypeQuestoion?.length > 0 && (
           <ScrollView
             style={{
@@ -517,7 +515,7 @@ export default function CurrentSubject(props: any) {
               </View>
             </View>
           </ScrollView>
-        )} */}
+        )}
     </>
   );
 }

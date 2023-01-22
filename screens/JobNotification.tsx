@@ -76,13 +76,75 @@ export default function JobNotification(props: any) {
       }}
     >
       {jobData.map((data: any) => {
-        if (data == null) {
-          return <></>;
+        if (!data.link || data.link == null) {
+          return (
+            <TouchableOpacity
+              key={Math.random() * 100}
+              onPress={() => alert("Link Not Available")}
+              style={styles.topicCntr}
+            >
+              <View
+                style={{
+                  alignSelf: "flex-start",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  marginBottom: 1.5,
+                  width: wid / 1.4,
+                  backgroundColor: "transparent",
+                }}
+              >
+                <Text allowFontScaling={false} style={styles.cardText}>
+                  {data.nameOfJob}
+                </Text>
+
+                <Text allowFontScaling={false} style={styles.number}>
+                  {data.description && trimText(data.description)}
+                </Text>
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    backgroundColor: "transparent",
+                    alignItems: "center",
+                    alignSelf: "flex-start",
+                    marginTop: 1.5,
+                  }}
+                >
+                  <FontAwesome
+                    name="eye"
+                    size={10}
+                    style={{ color: "#8A8A8A" }}
+                  />
+                  <Text
+                    style={{
+                      marginLeft: 5,
+                      color: "#8A8A8A",
+                      marginTop: 1.5,
+                      backgroundColor: "transparent",
+                    }}
+                  >
+                    {data.startDate && calcTime(data.startDate)}
+                  </Text>
+                  <Text
+                    style={{
+                      color: "#8A8A8A",
+                      marginTop: 1.5,
+                      marginLeft: 8,
+                      backgroundColor: "transparent",
+                    }}
+                  >
+                    {data.lastDate && calcTime1(data.lastDate)}
+                  </Text>
+                </View>
+              </View>
+              <AntDesign name="right" size={24} color="black" />
+            </TouchableOpacity>
+          );
         } else {
           return (
             <TouchableOpacity
               key={Math.random() * 100}
-              onPress={() => Linking.openURL(`${data.link}`)}
+              onPress={() => Linking.openURL(data.link)}
               style={styles.topicCntr}
             >
               <View

@@ -8,24 +8,11 @@ const wid = Dimensions.get("screen").width;
 const high = Dimensions.get("screen").height;
 const QuestionNoContainer = (props: any) => {
   const { index, setIndex } = useStateContext();
-  const changeColor = (color: string, changeColorIdx: number) => {
-    let newArr = JSON.parse(JSON.stringify(props.quesIndexArray));
-    console.log(index);
-    const foundEl = newArr.find(
-      (_arr: any, idx: number) => changeColorIdx == idx
-    );
-    if (foundEl) {
-      newArr[index].color = "#319EAE";
-    }
-    props.setquesIndexArray(newArr);
-  };
-  const navigation = useNavigation();
 
   const { quesno, color } = props;
   return (
     <TouchableOpacity
       onPress={() => {
-        changeColor("319EAE", index);
         setIndex(quesno - 1);
         props.setModalVisible(false);
       }}

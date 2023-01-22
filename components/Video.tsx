@@ -4,7 +4,7 @@ import { StyleSheet, Dimensions, TouchableOpacity, Image } from "react-native";
 import { Linking } from "react-native";
 
 import { Text, View } from "../components/Themed";
-import { trimDate } from "../utils/Logics";
+import { trimDate, getVideoId } from "../utils/Logics";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function VideoComponent(props: any) {
@@ -14,7 +14,7 @@ export default function VideoComponent(props: any) {
   const [readMore, setReadMore] = useState(detail.length > 50 ? true : false);
   console.log(readMore, "ReadMore");
   return (
-    <>
+    <View>
       <TouchableOpacity
         onPress={() => Linking.openURL(fileName)}
         style={{
@@ -63,12 +63,17 @@ export default function VideoComponent(props: any) {
           style={{
             width: "100%",
             alignSelf: "center",
-            height: high / 6.569,
+            height: high / 5.9,
             resizeMode: "cover",
             borderRadius: 5,
-            marginVertical: high / 80,
+            marginVertical: high / 100,
           }}
-          source={require("../assets/images/bigEnglish.png")}
+          resizeMode="stretch"
+          source={{
+            uri: `https://img.youtube.com/vi/${getVideoId(
+              fileName
+            )}/hqdefault.jpg`,
+          }}
         />
 
         <Text allowFontScaling={false} style={styles.cardDesc}>
@@ -107,7 +112,7 @@ export default function VideoComponent(props: any) {
           </Text>
         </TouchableOpacity>
       </TouchableOpacity>
-    </>
+    </View>
   );
 }
 

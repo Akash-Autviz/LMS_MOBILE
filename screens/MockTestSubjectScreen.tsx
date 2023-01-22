@@ -12,6 +12,7 @@ import axios from "axios";
 import { useStateContext } from "./Context/ContextProvider";
 import CurrentSubject from "../components/CurrentSubject";
 import { baseUrl } from "../utils";
+import { useNavigation } from "@react-navigation/native";
 
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
@@ -26,7 +27,7 @@ export default function MockTestSubjectTest(props: any) {
     mockTestId,
     studentId,
   } = props.route.params.data;
-
+  const navigation = useNavigation();
   const [quesIndexArray, setquesIndexArray] = useState<any>();
   const [mockTestSectionData, setmockTestSectionData] = useState<any>();
   const [duration, setDuration] = useState<any>();
@@ -39,6 +40,7 @@ export default function MockTestSubjectTest(props: any) {
   const [isSection, setSectionsTrue] = useState(false);
   const [sectionLength, setSectionLength] = useState<number>();
   const [allQuestionlength, setAllQuestionLength] = useState<number>();
+  console.log("Parenet Renderd");
   const config: any = {
     headers: {
       Authorization: `Bearer ${access_token}`,
@@ -47,26 +49,15 @@ export default function MockTestSubjectTest(props: any) {
     },
   };
   const [sectionIdx, setSectionIdx] = useState<any>(0);
-  useEffect(() => {
-    let Arr: any = [];
-    for (let i = 0; i < questionLength; i++) {
-      Arr.push({ color: null });
-    }
-    setquesIndexArray(Arr);
-  }, [questionLength, sectionIdx]);
 
   useEffect(() => {
     getTestSections();
-    const otherDate = moment(new Date());
-    const currentDate = moment("2023-12-22T12:23:34Z");
-    var duration = currentDate.diff(otherDate, "milliseconds");
-    setDuration(duration);
-    setIndex(0);
+    getQuestions();
   }, []);
 
   useEffect(() => {
     const backbuttonHander = () => {
-      props.navigation.navigate("MockTestScreen");
+      navigation.goBack();
       return true;
     };
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
@@ -87,8 +78,10 @@ export default function MockTestSubjectTest(props: any) {
         config
       );
       console.log("GetResultById API Hit SUCEESS", res.data.result);
-      setQuestionData(res.data);
-      setAllQuestionLength(res.data.result.length);
+      if (res.data.result) {
+        setquesIndexArray(res.data.result);
+        setQuestionData(res.data);
+      }
       setLoading(false);
     } catch (error) {
       console.log("GetResultById API Hit SUCEESS", error);
@@ -126,14 +119,13 @@ export default function MockTestSubjectTest(props: any) {
         `${baseUrl}/api/services/app/MockTest/GetMockTestSection?mockTestId=${mockTestId}`,
         config
       );
-      if (res.data.result != null) {
+      if (testSections.length < 1 && res.data.result != null) {
         setTestSections(res.data.result);
         setSectionLength(res.data.result.length);
+
         setCurrentSection(res.data.result[sectionIdx].subject.subjectName);
         setCurrentSectionId(res.data.result[sectionIdx].subjectId);
         setSectionsTrue(true);
-        getQuestions();
-        GetUserMockTestSection();
       } else {
         setLoading(true);
       }
@@ -148,7 +140,7 @@ export default function MockTestSubjectTest(props: any) {
     //   if (foundEl) {
     //     newArr[index].color = "#319EAE";
     //   }
-    //   setquesIndexArray(newArr);
+    //
     // };
   }, [index]);
   const setSection: any = async (idx: any) => {
@@ -180,6 +172,7 @@ export default function MockTestSubjectTest(props: any) {
                       duration={duration}
                       setquesIndexArray={setquesIndexArray}
                       currentSection={currentSection}
+                      CurrentSectionId={CurrentSectionId}
                       setCurrentSectionId={setCurrentSectionId}
                     />
                     <ScrollView
@@ -241,6 +234,7 @@ export default function MockTestSubjectTest(props: any) {
                   <CurrentSubject
                     setCurrentSection={setCurrentSection}
                     setCurrentSectionId={setCurrentSectionId}
+                    setquesIndexArray={setquesIndexArray}
                     CurrentSectionId={CurrentSectionId}
                     quesData={quesData}
                     mockid={mockTestId}

@@ -11,6 +11,7 @@ function TestCountDownTimer({
   setquesIndexArray,
   currentSection,
   setCurrentSectionId,
+  CurrentSectionId,
 }) {
   const { questionLength, setIndex, index } = useStateContext();
   const [time, setTime] = useState(duration);
@@ -99,6 +100,7 @@ function TestCountDownTimer({
               quesIndexArray={quesIndexArray}
               currentSection={currentSection}
               setCurrentSectionId={setCurrentSectionId}
+              CurrentSectionId={CurrentSectionId}
             />
           </TouchableOpacity>
         </View>

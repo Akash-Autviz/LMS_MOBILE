@@ -38,8 +38,6 @@ export default function MockTestCard(props: any) {
     "Content-Type": "application/json",
     "Abp-TenantId": "1",
   };
-  setMockTestId(props.id);
-
   const createPayment = async () => {
     var data = JSON.stringify({});
     var config = {
