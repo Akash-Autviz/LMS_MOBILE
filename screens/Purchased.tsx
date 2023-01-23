@@ -7,12 +7,12 @@ import axios from "axios";
 import { TouchableOpacity, Image, Dimensions } from "react-native";
 import { View, Text } from "../components/Themed";
 
-
 import VideoCard from "../components/VideoCard";
 import { getVideoId } from "../utils/Logics";
 import TestCard from "../components/TestCard";
 import { useStateContext } from "./Context/ContextProvider";
 import { baseUrl } from "../utils";
+import TestCardCoponent from "../components/TestCardCoponent";
 
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
@@ -236,11 +236,10 @@ export default function Purchased(props: any) {
 
           {res == "Mock Tests" ? (
             <ScrollView style={{ marginTop: 20, marginBottom: 20 }}>
-              {courseData.mockTests?.map((item: any) => {
+              {courseData.mockTests?.map((item: any, idx: any) => {
                 return (
-                  <TestCard
-                    navigation={props.navigation}
-                    key={Math.random() * 100}
+                  <TestCardCoponent
+                    key={idx}
                     id={item.id}
                     name={item.title}
                     details={item.detail}

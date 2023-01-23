@@ -5,6 +5,7 @@ import {
   Dimensions,
   Text,
   View,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useStateContext } from "../screens/Context/ContextProvider";
@@ -12,23 +13,21 @@ import AnswerOption from "./AnswerOption";
 import axios from "axios";
 import { baseUrl } from "../utils";
 import moment from "moment";
+import { StackActions, useNavigation } from "@react-navigation/native";
+
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 export default function CurrentSubject(props: any) {
+  const navigation = useNavigation();
   const { index, setIndex, access_token, questionLength, setQuestionLength } =
     useStateContext();
   const [answer, setAnswer] = useState("");
   const [isSkip, setIsSkip] = useState(false);
   const [isMarkup, setisMarkup] = useState(false);
   const [buttonValue, setButtonValue] = useState("Next");
-  const [filterQuestionsData, setfilterQuestionsData] = useState([]);
-  const [currentSectionTypeQuestoion, SetCurrentSectionTypeQuestoion] =
-    useState<any>([]);
-
   const {
-    setquesIndexArray,
-    quesData,
-    CurrentSectionId,
+    currentSectionTypeQuestoion,
+    SetCurrentSectionTypeQuestoion,
     setSectionIdx,
     sectionLength,
     sectionIdx,
@@ -36,6 +35,7 @@ export default function CurrentSubject(props: any) {
     setCurrentSectionId,
     testSections,
     paramsData,
+    setDuration,
   } = props;
   console.log("child Renderd");
   const {
@@ -74,30 +74,19 @@ export default function CurrentSubject(props: any) {
           Authorization: `Bearer ${access_token}`,
           "Content-Type": " application/json",
           "Abp-TenantId": "1",
-          // "Access-Control-Allow-Origin": `http://192.168.18.95:19000`,
         },
       };
       const res = await axios.get(
         `${baseUrl}/api/services/app/MockTestResultService/GetResultById?id=${mockTestId}`,
         config
       );
-      setquesIndexArray(res.data.result);
-      setfilterQuestionsData(res.data.result);
+      console.log("GoTResult");
+      if (res.data.result) getResult(res.data.result);
     } catch (error) {
       console.log("GetResultById API Hit Failed", error);
     }
   };
-  useEffect(() => {
-    if (quesData) {
-      let quesArray = [];
-      quesArray = quesData.result.filter(
-        (e: any) => e.question?.subjectId == CurrentSectionId
-      );
-      SetCurrentSectionTypeQuestoion(quesArray);
-      setQuestionLength(quesArray.length);
-    }
-  }, [CurrentSectionId]);
-  useEffect(() => {}, []);
+
   const getResult = (filterQuestionsData: any) => {
     var data = JSON.stringify(filterQuestionsData);
     var config = {
@@ -110,17 +99,23 @@ export default function CurrentSubject(props: any) {
       },
       data: data,
     };
-
     axios(config)
       .then(function (response: any) {
         console.log(response, "getResult");
       })
       .catch(function (error: any) {
-        console.log(error);
         console.log("grtResultApi Failed", error);
       });
   };
-
+  const changeValue = (value: any) => {
+    if (value == "ans") {
+      currentSectionTypeQuestoion[index].userAnswer = answer;
+    } else if (value == "skip") {
+      currentSectionTypeQuestoion[index].skip = true;
+    } else if (value == "markup") {
+      currentSectionTypeQuestoion[index].isMarkUp = true;
+    }
+  };
   const updateUserAnswer = (token: any) => {
     let data = JSON.stringify({
       creationTime: moment(),
@@ -145,9 +140,7 @@ export default function CurrentSubject(props: any) {
       data: data,
     };
     axios(config)
-      .then(function (response: any) {
-        GetResultById();
-      })
+      .then(function (response: any) {})
       .catch(function (error: any) {
         console.log(error);
       });
@@ -179,6 +172,7 @@ export default function CurrentSubject(props: any) {
     }
   };
   const checkButton = () => {
+    console.log(sectionIdx, sectionLength - 1);
     if (
       index === currentSectionTypeQuestoion.length - 1 &&
       sectionIdx === sectionLength - 1
@@ -190,25 +184,34 @@ export default function CurrentSubject(props: any) {
       setButtonValue("Next");
     }
   };
+  const RessetAllForNextQuestion = () => {
+    setAnswer("");
+    setisMarkup(false);
+    setisMarkup(false);
+  };
   useEffect(() => {
     checkButton();
   }, [index, sectionIdx]);
   const checkIndex = (value: string, id: number) => {
+    console.log("comes Herers");
     if (value == "increment") {
-      updateUserAnswer(access_token);
-      setAnswer("");
-      setisMarkup(false);
-      setisMarkup(false);
-      console.log("updated Anwerer");
+      if (isMarkup == false) {
+        changeValue("ans");
+        updateUserAnswer(access_token);
+      }
+      RessetAllForNextQuestion();
       if (buttonValue === "Next Section" && sectionIdx + 1 < sectionLength) {
+        setDuration(testSections[sectionIdx + 1].duration * 60000);
         nextSection(sectionIdx + 1);
-      } else if (index < questionLength - 1) {
+      } else if (index < currentSectionTypeQuestoion.length - 1) {
         setIndex(index + 1);
       }
     } else if (value == "skip") {
-      if (index < questionLength - 1) {
+      if (index < currentSectionTypeQuestoion.length - 1) {
+        changeValue("skip");
         setIndex(index + 1);
         setIsSkip(true);
+        RessetAllForNextQuestion();
       }
     } else {
       if (index > 0) setIndex(index - 1);
@@ -217,10 +220,19 @@ export default function CurrentSubject(props: any) {
 
   const submitMockTest = () => {
     updateUserAnswer(access_token);
-    MarkIsSubmitted(id);
-    getResult(filterQuestionsData);
+    GetResultById();
+    if (isSubmitted == false) {
+      MarkIsSubmitted(id);
+    }
 
-    alert("Test is Sumbit");
+    Alert.alert("", "Your Test is Submitted", [
+      {
+        text: "Ok",
+        onPress: () => {
+          navigation.dispatch(StackActions.replace("Root"));
+        },
+      },
+    ]);
   };
   const nextSection = async (sectionIdx: number) => {
     setCurrentSection(testSections[sectionIdx].subject.subjectName);
@@ -433,7 +445,11 @@ export default function CurrentSubject(props: any) {
                 }}
               >
                 <TouchableOpacity
-                  onPress={() => setisMarkup(true)}
+                  onPress={() => {
+                    setisMarkup(true);
+                    changeValue("markup");
+                    // RessetAllForNextQuestion();
+                  }}
                   style={{
                     alignItems: "center",
                     justifyContent: "center",

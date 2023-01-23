@@ -1,3 +1,4 @@
+import moment from "moment";
 const getVideoId = (url: any) => {
   var id = "";
   if (url != undefined) {
@@ -13,6 +14,7 @@ const getVideoId = (url: any) => {
     }
   }
 };
+
 const trimText = (desc: string) => {
   if (desc == null) return "Details Not Available";
   let newDesc = desc.split(" ");
@@ -37,5 +39,13 @@ const trimDate = (num: any) => {
   var str = `${num}`;
   var sliced = str.slice(0, 10);
   return sliced;
+};
+const timerStart = (duration: any) => {
+  var startTime = moment().subtract("5", "hours").subtract("30", "minutes");
+  var endTime = userMockTestSection?.creationTime;
+  var endTime = endTime?.add("second", duration * 60);
+  var timer = endTime.diff(startTime, "milliseconds");
+  // console.log(this.timer, this.userMockTestSection);
+  return timer;
 };
 export { getVideoId, trimName, trimText, trimDate };

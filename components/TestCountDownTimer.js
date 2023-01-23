@@ -13,9 +13,10 @@ function TestCountDownTimer({
   setCurrentSectionId,
   CurrentSectionId,
 }) {
-  const { questionLength, setIndex, index } = useStateContext();
-  const [time, setTime] = useState(duration);
-
+  const [time, setTime] = useState();
+  useEffect(() => {
+    setTime(duration);
+  }, [duration]);
   // const changeColor = () => {
   //   let newArr = JSON.parse(JSON.stringify(arr));
   //   const foundEl = newArr.find((_arr, idx) => idx == index);
@@ -74,7 +75,7 @@ function TestCountDownTimer({
               backgroundColor: "#F3FBFC",
             }}
           >
-            {getFormattedTime(time)}
+            {getFormattedTime(time) && getFormattedTime(time)}
           </Text>
         </View>
         <View
@@ -105,7 +106,6 @@ function TestCountDownTimer({
           </TouchableOpacity>
         </View>
       </View>
-      <View></View>
     </View>
   );
 }

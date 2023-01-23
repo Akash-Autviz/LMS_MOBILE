@@ -19,11 +19,12 @@ const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function ProfilePage(props: any) {
   const navigation = useNavigation();
-  const { userDetail, userImage } = useStateContext();
+  const { userDetail, userImage, setAccess_token } = useStateContext();
   console.log(userDetail, "userSDeaawfkjkl");
 
   const logoutButtonHandler = async () => {
     try {
+      setAccess_token(null);
       await SecureStore.deleteItemAsync("userId1");
       await SecureStore.deleteItemAsync("user_id");
       await SecureStore.deleteItemAsync("access_token");

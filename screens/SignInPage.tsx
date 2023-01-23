@@ -15,14 +15,16 @@ import { View, Text } from "../components/Themed";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { baseUrl } from "../utils";
+import { useStateContext } from "./Context/ContextProvider";
 
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 
-const save = async (key: string, value: any) => {
+const save = async (key: string, value: string) => {
   await SecureStore.setItemAsync(key, value);
 };
 export default function SignInPage(props: any) {
+  const { setAccess_token } = useStateContext();
   const navigation = useNavigation();
   const [userMailId, setUserMailId] = useState("");
   const [userPassword, setUserPassword] = useState("");
@@ -59,8 +61,10 @@ export default function SignInPage(props: any) {
           JSON.stringify(res.data.result.userId)
         );
         if (data1 != null) {
+          setAccess_token(res.data.result.accessToken);
           save("user_id", JSON.stringify(res.data.result.user_id));
           save("access_token", res.data.result.accessToken);
+
           navigation.dispatch(StackActions.replace("Root"));
         } else {
           Alert.alert("Invalid credentials", "Incorrect Email or Password", [

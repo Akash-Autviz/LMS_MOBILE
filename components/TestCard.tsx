@@ -10,20 +10,21 @@ import React, { useEffect, useState } from "react";
 import { useStateContext } from "../screens/Context/ContextProvider";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
+import { StackActions } from "@react-navigation/native";
 import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import { trimDate, trimName, trimText } from "../utils/Logics";
 import { baseUrl } from "../utils";
 import moment from "moment";
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
-const TestCard = (props) => {
+const TestCard = (props: any) => {
   const { name, startTime, id, price } = props;
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const [result, setResult] = useState(null);
-  const [currrentCourseData, SetCurrrentCourseData] = useState({});
+  const [currrentCourseData, SetCurrrentCourseData] = useState<any>({});
   const [duration, Setduration] = useState("");
-  const [mockTestSectionData, setmockTestSectionData] = useState([]);
+  const [mockTestSectionData, setmockTestSectionData] = useState<any>([]);
   const { userDetail, access_token } = useStateContext();
   const config = {
     headers: {
@@ -32,8 +33,10 @@ const TestCard = (props) => {
       // "Access-Control-Allow-Origin": `http://192.168.18.95:19000`,
     },
   };
-
-  const start = async (data) => {
+  console.log(
+    "adfhjakshdfjksahfjklashdfkljsahflkjsahdfljkashfdkjlashfkjdlhaskfhkjlsahk"
+  );
+  const start = async (data: any) => {
     const { id, isView } = data;
     GetUserMockTestSection();
     if (isView) {
@@ -44,10 +47,10 @@ const TestCard = (props) => {
           {
             text: "Resume",
             onPress: () => {
-              (currrentCourseData.isDeleted = "changedTheValue"),
-                navigation.navigate("Test", {
-                  data: currrentCourseData,
-                });
+              // (currrentCourseData.isDeleted = "changedTheValue"),
+              navigation.navigate("Test", {
+                data: currrentCourseData,
+              } as never);
             },
             style: "cancel",
           },
@@ -57,32 +60,32 @@ const TestCard = (props) => {
     } else {
       createUserMockTestAllSection();
       MarkIsView(id);
+      // navigation.dispatch(StackActions.replace("Root"));
       navigation.navigate("Test", {
         data: currrentCourseData,
-      });
+      } as never);
     }
   };
-  const reattempt = (data) => {
+  const reattempt = (data: any) => {
     const { id, isSubmitted } = data;
     // const uniqueKeySection = new Map();
-    currrentCourseData.isReattempt = "changedTheValue";
+    // currrentCourseData.isReattempt = "changedTheValue";
     if (isSubmitted == true) {
       MarkIsSubmitted(id);
     }
-    mockTestSectionData?.forEach((element) => {
+    mockTestSectionData?.forEach((element: any) => {
       element.creationTime = moment();
     });
     updateUserMockTestSection(mockTestSectionData[0]);
-    navigation.navigate("Test", {
-      data: currrentCourseData,
-    });
+    navigation.dispatch(StackActions.replace("Test"), {});
+    navigation.navigate("Test", );
   };
   useEffect(() => {
     getEnrollMockTestByUserIdAndCouresId();
 
     getMockTestDuartion();
   }, []);
-  const headers = {
+  const headers: any = {
     Authorization: `Bearer ${access_token}`,
     "Content-Type": "application/json",
     "Abp-TenantId": "1",
@@ -153,7 +156,7 @@ const TestCard = (props) => {
     }
   };
 
-  const MarkIsView = async (id) => {
+  const MarkIsView = async (id: any) => {
     try {
       const res = await axios.post(
         `${baseUrl}/api/services/app/EnrollMockTest/MarkIsView?id=${id}`,
@@ -164,7 +167,7 @@ const TestCard = (props) => {
       console.log("MarkView Api", error);
     }
   };
-  const MarkIsSubmitted = async (id) => {
+  const MarkIsSubmitted = async (id: any) => {
     try {
       const res = await axios.post(
         `${baseUrl}/api/services/app/EnrollMockTest/MarkIsSubmitted?id=${id}`,
@@ -176,7 +179,7 @@ const TestCard = (props) => {
     }
   };
 
-  const updateUserMockTestSection = async (element) => {
+  const updateUserMockTestSection = async (element: any) => {
     var config = {
       headers: {
         Authorization: `Bearer ${access_token}`,
@@ -298,7 +301,7 @@ const TestCard = (props) => {
                   onPress={() => {
                     navigation.navigate("TestResult", {
                       id: currrentCourseData.mockTestId,
-                    });
+                    } as never);
                   }}
                 >
                   <Text
