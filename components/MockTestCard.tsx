@@ -31,8 +31,9 @@ export default function MockTestCard(props: any) {
     price,
     isBuy,
     isMockTest,
+    upComingData,
   } = props;
-  let buy = isBuy;
+  var buy = isBuy;
   const headers = {
     Authorization: `Bearer ${access_token}`,
     "Content-Type": "application/json",
@@ -89,7 +90,8 @@ export default function MockTestCard(props: any) {
 
     axios(config)
       .then(function (response: any) {
-        buy = true;
+        buy = "View";
+        upComingData();
         console.log(response, "Create Enroll Success");
       })
       .catch(function (error: any) {

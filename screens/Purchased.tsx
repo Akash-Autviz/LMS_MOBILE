@@ -40,6 +40,8 @@ export default function Purchased(props: any) {
     axios(config)
       .then(function (response: any) {
         if (response.data.name !== null) {
+          console.log(response);
+
           setCourseData(response.data.result);
           setIsTrue(true);
         }
@@ -237,6 +239,7 @@ export default function Purchased(props: any) {
           {res == "Mock Tests" ? (
             <ScrollView style={{ marginTop: 20, marginBottom: 20 }}>
               {courseData.mockTests?.map((item: any, idx: any) => {
+                console.log(item);
                 return (
                   <TestCardCoponent
                     key={idx}

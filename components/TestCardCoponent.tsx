@@ -21,6 +21,7 @@ const wid = Dimensions.get("window").width;
 
 const TestCardCoponent = (props: any) => {
   const { name, startTime, id, price } = props;
+  console.log("idddd", id);
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const [result, setResult] = useState(null);
@@ -279,7 +280,7 @@ const TestCardCoponent = (props: any) => {
                   allowFontScaling={false}
                   style={[styles.fontColor, { marginLeft: wid / 64 }]}
                 >
-                  {duration} min
+                  {!duration ? 60 : duration} min
                 </Text>
               )}
             </>

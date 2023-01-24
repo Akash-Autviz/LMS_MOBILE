@@ -23,8 +23,10 @@ export default function CurrentAffairs(props: any) {
     }
     return res + "...";
   };
+  console.log(props.item);
   const { title, description, image } = props.item;
   console.log(image);
+  console.log(title);
 
   return (
     <ScrollView

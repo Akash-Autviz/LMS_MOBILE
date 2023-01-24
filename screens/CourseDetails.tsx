@@ -61,7 +61,9 @@ export default function CourseDetails(props: any) {
     axios(config)
       .then(function (response: any) {
         setCourseData(response.data.result[0]);
+
         if (courseData.courseManagement.name == null) {
+          console.log(response);
           setIsTrue(false);
         } else {
           setIsTrue(true);
@@ -71,7 +73,6 @@ export default function CourseDetails(props: any) {
         console.log(error);
       });
   };
-
   return isTrue ? (
     <View
       style={{

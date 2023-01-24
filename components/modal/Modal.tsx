@@ -17,13 +17,13 @@ import QuestionNoContainer from "../QuestionNoContainer";
 const wid = Dimensions.get("screen").width;
 const high = Dimensions.get("screen").height;
 const ResultModal = (props: any) => {
-  const { SetAnsResultIdx, ansResultIdx, setIndex, index } = useStateContext();
+  const { ansResultIdx, setIndex, index } = useStateContext();
   const [modalVisible, setModalVisible] = useState(false);
   const setCurrentIndex = (index: number) => {
     setIndex(index);
   };
+  const { SumbitTest } = props;
   var questionModel = props?.quesIndexArray.map((e: any, id: any) => {
-    console.log(e);
     return index == id ? (
       <QuestionNoContainer
         setModalVisible={setModalVisible}
@@ -132,6 +132,7 @@ const ResultModal = (props: any) => {
             {questionModel}
 
             <FinishButtonTest
+              SumbitTest={SumbitTest}
               setCurrentSectionId={props.setCurrentSectionId}
               key={Math.random() * 100}
             />

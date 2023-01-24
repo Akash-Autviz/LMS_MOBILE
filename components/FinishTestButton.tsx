@@ -1,9 +1,7 @@
 import React from "react";
 import { View, Text } from "./Themed";
 import {
-  StyleSheet,
-  Image,
-  ScrollView,
+  
   TouchableOpacity,
   Dimensions,
 } from "react-native";
@@ -22,6 +20,7 @@ const FinishButtonTest = (props: any) => {
     backgroudColor,
     marginRight,
     setCurrentSectionId,
+    SumbitTest,
   } = props;
   return (
     <View
@@ -36,7 +35,7 @@ const FinishButtonTest = (props: any) => {
       <TouchableOpacity
         onPress={() => {
           // setCurrentSectionId()
-          navigation.goBack();
+          SumbitTest();
         }}
         style={{
           alignItems: "center",

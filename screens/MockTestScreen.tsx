@@ -96,7 +96,6 @@ export default function MockTest(props: any) {
       setColor1(true);
     }
   };
-
   return (
     <>
       <View style={{ flex: 1 }}>
@@ -184,17 +183,20 @@ export default function MockTest(props: any) {
               <ScrollView style={{ height: high / 1.33 }}>
                 {mockData.map((item: any) => {
                   return (
-                    <MockTestCard
-                      key={Math.random() * 100}
-                      id={item.id}
-                      name={item.name}
-                      details={
-                        item.detail ? item.detail : "No Details Available"
-                      }
-                      price={item.price}
-                      date={item.creationTime}
-                      isBuy={item.isBuy == false ? "Buy" : "View"}
-                    />
+                    item.isBuy == false && (
+                      <MockTestCard
+                        key={Math.random() * 100}
+                        id={item.id}
+                        name={item.name}
+                        details={
+                          item.detail ? item.detail : "No Details Available"
+                        }
+                        upComingData={upComingData}
+                        price={item.price}
+                        date={item.creationTime}
+                        isBuy={item.isBuy == false ? "Buy" : "View"}
+                      />
+                    )
                   );
                 })}
               </ScrollView>
@@ -218,7 +220,6 @@ export default function MockTest(props: any) {
                           }
                           date={item.courseManagement.creationTime}
                           price={item.courseManagement.price}
-                          // endTime={item.endTime}
                           isBuy={"View"}
                         />
                       );

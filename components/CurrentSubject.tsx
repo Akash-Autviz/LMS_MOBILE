@@ -5,7 +5,6 @@ import {
   Dimensions,
   Text,
   View,
-  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useStateContext } from "../screens/Context/ContextProvider";
@@ -13,17 +12,13 @@ import AnswerOption from "./AnswerOption";
 import axios from "axios";
 import { baseUrl } from "../utils";
 import moment from "moment";
-import { StackActions, useNavigation } from "@react-navigation/native";
-
+import { useNavigation } from "@react-navigation/native";
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 export default function CurrentSubject(props: any) {
   const navigation = useNavigation();
-  const { index, setIndex, access_token, questionLength, setQuestionLength } =
-    useStateContext();
+  const { index, setIndex, access_token } = useStateContext();
   const [answer, setAnswer] = useState("");
-  const [isSkip, setIsSkip] = useState(false);
-  const [isMarkup, setisMarkup] = useState(false);
   const [buttonValue, setButtonValue] = useState("Next");
   const {
     currentSectionTypeQuestoion,
@@ -35,36 +30,18 @@ export default function CurrentSubject(props: any) {
     setCurrentSectionId,
     testSections,
     paramsData,
+    quesData,
     setDuration,
+    SumbitTest,
   } = props;
-  console.log("child Renderd");
-  const {
-    id,
-    isBuy,
-    isReattempt,
-    isResulted,
-    isSubmitted,
-    mockTestId,
-    studentId,
-  } = paramsData;
-
-  const MarkIsSubmitted = async (id: any) => {
-    let config: any = {
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-        "Content-Type": " application/json",
-        "Abp-TenantId": "1",
-        // "Access-Control-Allow-Origin": `http://192.168.18.95:19000`,
-      },
-    };
-    try {
-      const res = await axios.post(
-        `${baseUrl}/api/services/app/EnrollMockTest/MarkIsSubmitted?id=${id}`,
-        config
-      );
-      console.log("MarkIsSubmitted Api Hit Sucees");
-    } catch (error) {
-      console.log("MarkIsSubmitted", error);
+  console.log("child Renderd", quesData);
+  const changeValue = (value: any) => {
+    if (value == "ans") {
+      currentSectionTypeQuestoion[index].userAnswer = answer;
+    } else if (value == "skip") {
+      currentSectionTypeQuestoion[index].skip = true;
+    } else if (value == "markup") {
+      currentSectionTypeQuestoion[index].isMarkUp = true;
     }
   };
   const GetResultById = async () => {
@@ -77,59 +54,28 @@ export default function CurrentSubject(props: any) {
         },
       };
       const res = await axios.get(
-        `${baseUrl}/api/services/app/MockTestResultService/GetResultById?id=${mockTestId}`,
+        `${baseUrl}/api/services/app/MockTestResultService/GetResultById?id=${currentSectionTypeQuestoion[index].mockTestId}`,
         config
       );
-      console.log("GoTResult");
-      if (res.data.result) getResult(res.data.result);
+      console.log("resSult Api", res);
     } catch (error) {
       console.log("GetResultById API Hit Failed", error);
     }
   };
-
-  const getResult = (filterQuestionsData: any) => {
-    var data = JSON.stringify(filterQuestionsData);
-    var config = {
-      method: "post",
-      url: `${baseUrl}/api/services/app/MockTestUserAns/SaveResult`,
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-        "Content-Type": "application/json",
-        "Abp-TenantId": "1",
-      },
-      data: data,
-    };
-    axios(config)
-      .then(function (response: any) {
-        console.log(response, "getResult");
-      })
-      .catch(function (error: any) {
-        console.log("grtResultApi Failed", error);
-      });
-  };
-  const changeValue = (value: any) => {
-    if (value == "ans") {
-      currentSectionTypeQuestoion[index].userAnswer = answer;
-    } else if (value == "skip") {
-      currentSectionTypeQuestoion[index].skip = true;
-    } else if (value == "markup") {
-      currentSectionTypeQuestoion[index].isMarkUp = true;
-    }
-  };
-  const updateUserAnswer = (token: any) => {
+  const updateUserAnswer = (token: any, trueType: string) => {
     let data = JSON.stringify({
       creationTime: moment(),
       id: currentSectionTypeQuestoion[index].id,
       mockTestId: currentSectionTypeQuestoion[index].mockTestId,
       isDeleted: currentSectionTypeQuestoion[index].question.isDeleted,
-      userAnswer: answer,
+      userAnswer: trueType ? "" : answer,
       quesId: currentSectionTypeQuestoion[index].questionId,
       creatorUserId: currentSectionTypeQuestoion[index].creatorUserId,
-      skip: isSkip,
-      isMarkUp: isMarkup,
+      skip: trueType == "skip" ? true : false,
+      isMarkUp: trueType == "markup" ? true : false,
       tenantId: 1,
     });
-
+    console.log(data);
     var config = {
       method: "put",
       url: `${baseUrl}/api/services/app/MockTestUserAns/UpdateMockUserAns`,
@@ -140,17 +86,15 @@ export default function CurrentSubject(props: any) {
       data: data,
     };
     axios(config)
-      .then(function (response: any) {})
+      .then(function (response: any) {
+        console.log("answer Updatted", response);
+        setAnswer("");
+        GetResultById();
+      })
       .catch(function (error: any) {
         console.log(error);
       });
   };
-
-  // const getMockTestExplanationById = async () => {
-  //   // const res = await axios.get(
-  //   //   `${baseUrl}/api/services/app/MockTestResultService/GetResultById?id=${id}`
-  //   // );
-  // };
   const UpdateUserMockTestSection = async () => {
     try {
       let header = JSON.stringify({});
@@ -172,7 +116,6 @@ export default function CurrentSubject(props: any) {
     }
   };
   const checkButton = () => {
-    console.log(sectionIdx, sectionLength - 1);
     if (
       index === currentSectionTypeQuestoion.length - 1 &&
       sectionIdx === sectionLength - 1
@@ -184,34 +127,27 @@ export default function CurrentSubject(props: any) {
       setButtonValue("Next");
     }
   };
-  const RessetAllForNextQuestion = () => {
-    setAnswer("");
-    setisMarkup(false);
-    setisMarkup(false);
-  };
+
   useEffect(() => {
     checkButton();
   }, [index, sectionIdx]);
   const checkIndex = (value: string, id: number) => {
-    console.log("comes Herers");
     if (value == "increment") {
-      if (isMarkup == false) {
-        changeValue("ans");
-        updateUserAnswer(access_token);
-      }
-      RessetAllForNextQuestion();
+      changeValue("ans");
+      updateUserAnswer(access_token, "");
+
       if (buttonValue === "Next Section" && sectionIdx + 1 < sectionLength) {
-        setDuration(testSections[sectionIdx + 1].duration * 60000);
+        updateUserAnswer(access_token, "");
         nextSection(sectionIdx + 1);
       } else if (index < currentSectionTypeQuestoion.length - 1) {
         setIndex(index + 1);
       }
     } else if (value == "skip") {
+      setAnswer("");
+      updateUserAnswer(access_token, "skip");
       if (index < currentSectionTypeQuestoion.length - 1) {
         changeValue("skip");
         setIndex(index + 1);
-        setIsSkip(true);
-        RessetAllForNextQuestion();
       }
     } else {
       if (index > 0) setIndex(index - 1);
@@ -219,28 +155,25 @@ export default function CurrentSubject(props: any) {
   };
 
   const submitMockTest = () => {
-    updateUserAnswer(access_token);
-    GetResultById();
-    if (isSubmitted == false) {
-      MarkIsSubmitted(id);
-    }
-
-    Alert.alert("", "Your Test is Submitted", [
-      {
-        text: "Ok",
-        onPress: () => {
-          navigation.dispatch(StackActions.replace("Root"));
-        },
-      },
-    ]);
+    updateUserAnswer(access_token, "");
+    SumbitTest();
   };
   const nextSection = async (sectionIdx: number) => {
     setCurrentSection(testSections[sectionIdx].subject.subjectName);
     setCurrentSectionId(testSections[sectionIdx].subjectId);
+    if (
+      testSections[sectionIdx].duration != 0 &&
+      testSections[sectionIdx].duration
+    ) {
+      setDuration(testSections[sectionIdx].duration * 60000);
+    }
     setSectionIdx(sectionIdx);
     setIndex(0);
   };
-
+  const onMarkUpClick = () => {
+    changeValue("markup");
+    updateUserAnswer(access_token, "markup");
+  };
   return (
     <>
       {Array.isArray(currentSectionTypeQuestoion) &&
@@ -337,7 +270,7 @@ export default function CurrentSubject(props: any) {
                     />
                   )}
                 </TouchableOpacity>
-                {currentSectionTypeQuestoion[index].option5 && (
+                {currentSectionTypeQuestoion[index].question.option5 && (
                   <TouchableOpacity onPress={() => setAnswer("e")}>
                     {answer == "e" ? (
                       <AnswerOption
@@ -425,7 +358,9 @@ export default function CurrentSubject(props: any) {
                     borderWidth: 1,
                     borderRadius: 6,
                   }}
-                  onPress={() => checkIndex("skip", index)}
+                  onPress={() => {
+                    checkIndex("skip", index);
+                  }}
                 >
                   <Text
                     style={{
@@ -445,11 +380,7 @@ export default function CurrentSubject(props: any) {
                 }}
               >
                 <TouchableOpacity
-                  onPress={() => {
-                    setisMarkup(true);
-                    changeValue("markup");
-                    // RessetAllForNextQuestion();
-                  }}
+                  onPress={() => onMarkUpClick()}
                   style={{
                     alignItems: "center",
                     justifyContent: "center",

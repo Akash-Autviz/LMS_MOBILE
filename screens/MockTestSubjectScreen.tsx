@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { ScrollView, TouchableOpacity, BackHandler, View } from "react-native";
+import {
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  BackHandler,
+  View,
+} from "react-native";
 import moment from "moment";
 import { ActivityIndicator } from "react-native-paper";
-
 import HeaderNav from "../components/HeaderNav";
 import TestCountDownTimer from "../components/TestCountDownTimer";
 import { Text } from "../components/Themed";
 import { Dimensions } from "react-native";
 import axios from "axios";
-
 import { useStateContext } from "./Context/ContextProvider";
 import CurrentSubject from "../components/CurrentSubject";
 import { baseUrl } from "../utils";
-import { useNavigation } from "@react-navigation/native";
-import { isLoading } from "expo-font";
+import { StackActions, useNavigation } from "@react-navigation/native";
 
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
@@ -25,6 +28,7 @@ export default function MockTestSubjectTest(props: any) {
     isResulted,
     isSubmitted,
     isView,
+    isDeleted,
     mockTestId,
     studentId,
   } = props.route.params.data;
@@ -76,7 +80,6 @@ export default function MockTestSubjectTest(props: any) {
     SetCurrentSectionTypeQuestoion(
       currArrr.filter((e: any) => e.question.subjectId == CurrentSectionId)
     );
-    
   };
 
   useEffect(() => {
@@ -84,14 +87,13 @@ export default function MockTestSubjectTest(props: any) {
   }, [CurrentSectionId, sectionIdx]);
 
   useEffect(() => {
-    console.log("use effect 3");
     const backbuttonHander = () => {
       navigation.goBack();
       return true;
     };
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
   }, []);
-  console.log(testSections);
+
   const headers: any = {
     Authorization: `Bearer ${access_token}`,
     "Content-Type": "application/json",
@@ -106,21 +108,21 @@ export default function MockTestSubjectTest(props: any) {
           Authorization: `Bearer ${access_token}`,
           "Content-Type": " application/json",
           "Abp-TenantId": "1",
-          // "Access-Control-Allow-Origin": `http://192.168.18.95:19000`,
         },
       };
-      const res = await axios.get(
-        `${baseUrl}/api/services/app/MockTestUserAns/GetMockTestById?Id=${mockTestId}&isReattempt=${
-          isReattempt == "changedTheValue" ? true : false
-        }&isResume=false`,
-        config
-      );
-      // filterQuestion(res.data.result);
+      let url = `${baseUrl}/api/services/app/MockTestUserAns/GetMockTestById?Id=${mockTestId}`;
+      if (isReattempt == "changedTheValue") {
+        url = `${baseUrl}/api/services/app/MockTestUserAns/GetMockTestById?Id=${mockTestId}&isReattempt=true`;
+      } else if (isDeleted == "changedTheValue") {
+        url = `${baseUrl}/api/services/app/MockTestUserAns/GetMockTestById?Id=${mockTestId}&isResume=true`;
+      }
+      const res = await axios.get(url, config);
 
+      console.log("QuetionApi", res);
       SetCurrentSectionTypeQuestoion(
         res.data.result.filter((e: any) => e.question.subjectId == sectionId)
       );
-      console.log("QuetionApi", res);
+
       if (res.data.result) {
         await setQuestionData(res.data.result);
       }
@@ -129,19 +131,7 @@ export default function MockTestSubjectTest(props: any) {
       console.log("Quetion Api", error);
     }
   };
-  // const getQuestions = async () => {
-  //   setLoading(true);
-  //   try {
-  //     const data: any = await axios.get(
-  //       `${baseUrl}/api/services/app/MockTest/getMockTestQuestions?mockTestId=${mockTestId}`
-  //     );
-  //     if (data.data.result != null) {
-  //       await setQuestionData(data.data);
-  //       setAllQuestionLength(data.data.result.length);
-  //       setLoading(false);
-  //     }
-  //   } catch (error: any) {}
-  // };
+
   const GetUserMockTestSection = async () => {
     try {
       const { data } = await axios.get(
@@ -149,7 +139,7 @@ export default function MockTestSubjectTest(props: any) {
         config
       );
 
-      setmockTestSectionData(mockTestSectionData);
+      // setmockTestSectionData(mockTestSectionData);
     } catch (error) {
       console.log(error, "GetUserMockTestSection");
     }
@@ -161,7 +151,7 @@ export default function MockTestSubjectTest(props: any) {
         `${baseUrl}/api/services/app/MockTest/GetMockTestSection?mockTestId=${mockTestId}`,
         config
       );
-      console.log("Called");
+      console.log("Called", res);
       if (res.data.result != null && testSections.length < 1) {
         setTestSections(res.data.result);
         setSectionLength(res.data.result.length);
@@ -169,7 +159,6 @@ export default function MockTestSubjectTest(props: any) {
         setCurrentSectionId(res.data.result[sectionIdx].subjectId);
         setSectionsTrue(true);
         setIndex(0);
-
         setDuration(res.data.result[sectionIdx]?.duration * 60000);
         getQuestions(res.data.result[sectionIdx].subjectId);
       }
@@ -178,13 +167,93 @@ export default function MockTestSubjectTest(props: any) {
       console.log(error);
     }
   };
+  const SumbitTest = () => {
+    GetResultById();
+    Alert.alert("", "Your Test is Submitted", [
+      {
+        text: "Ok",
+        onPress: () => {
+          navigation.dispatch(StackActions.replace("Root"));
+        },
+      },
+    ]);
+  };
+  const GetResultById = async () => {
+    try {
+      let config = {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": " application/json",
+          "Abp-TenantId": "1",
+        },
+      };
+      const res = await axios.get(
+        `${baseUrl}/api/services/app/MockTestResultService/GetResultById?id=${mockTestId}`,
+        config
+      );
+      console.log("GoTResult", res.data.result);
+      let payload: any = [];
+      res.data.result.forEach((e: any, idx: number) => {
+        let payloadObject: any = {
+          id: e.id,
+          mockTestId: e.mockTestId,
+          mockTest: e.mockTest,
+          questionId: quesData[idx].questionId,
+          question: quesData[idx].question,
+          userAnswer: e.userAnswer ? `${e.userAnswer}` : null,
+          tenantId: 1,
+          skip: e.skip,
+          isMarkUp: e.isMarkUp,
+        };
+        payload.push(payloadObject);
+      });
 
-  // const setSection: any = async (idx: any) => {
-  //   setSectionIdx(idx);
-  //   setCurrentSection(testSections[idx].subject.subjectName);
-  //   setCurrentSectionId(testSections[idx].subjectId);
-  // };
-  console.log(loading, quesData, isSection, "end results");
+      if (payload) SaveResult(payload);
+    } catch (error) {
+      console.log("GetResultById API Hit Failed", error);
+    }
+  };
+  const SaveResult = (payload: any) => {
+    console.log("payload", payload);
+    var data = JSON.stringify(payload);
+    var config = {
+      method: "post",
+      url: `${baseUrl}/api/services/app/MockTestUserAns/SaveResult`,
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+        "Abp-TenantId": "1",
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(function (response: any) {
+        console.log(response, "getResult");
+        MarkIsSubmitted(id);
+      })
+      .catch(function (error: any) {
+        console.log("grtResultApi Failed", error);
+      });
+  };
+  const MarkIsSubmitted = async (id: any) => {
+    let config: any = {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": " application/json",
+        "Abp-TenantId": "1",
+      },
+    };
+    try {
+      const res = await axios.post(
+        `${baseUrl}/api/services/app/EnrollMockTest/MarkIsSubmitted?id=${id}`,
+        config
+      );
+      console.log("MarkIsSubmitted Api Hit Sucees");
+    } catch (error) {
+      console.log("MarkIsSubmitted", error);
+    }
+  };
   return (
     <>
       {loading ? (
@@ -205,8 +274,9 @@ export default function MockTestSubjectTest(props: any) {
             </View>
             <View style={{ backgroundColor: "#FAFAFB" }}>
               <TestCountDownTimer
+                SumbitTest={SumbitTest}
                 quesIndexArray={currentSectionTypeQuestoion}
-                duration={duration}
+                duration={duration ? duration : quesData[0].mockTest.duration}
                 setquesIndexArray={setquesIndexArray}
                 currentSection={currentSection}
                 CurrentSectionId={CurrentSectionId}
@@ -275,6 +345,7 @@ export default function MockTestSubjectTest(props: any) {
               CurrentSectionId={CurrentSectionId}
               quesData={quesData}
               mockid={mockTestId}
+              SumbitTest={SumbitTest}
               currentSectionTypeQuestoion={currentSectionTypeQuestoion}
               testSections={testSections}
               setSectionIdx={setSectionIdx}

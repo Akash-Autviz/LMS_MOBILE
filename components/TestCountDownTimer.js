@@ -3,8 +3,6 @@ import { TouchableOpacity, StyleSheet, Image } from "react-native";
 import { View, Text } from "./Themed";
 import { FontAwesome } from "@expo/vector-icons";
 import ResultModal from "./modal/Modal";
-import { useStateContext } from "../screens/Context/ContextProvider";
-
 function TestCountDownTimer({
   duration,
   quesIndexArray,
@@ -12,6 +10,7 @@ function TestCountDownTimer({
   currentSection,
   setCurrentSectionId,
   CurrentSectionId,
+  SumbitTest,
 }) {
   const [time, setTime] = useState();
   useEffect(() => {
@@ -102,6 +101,7 @@ function TestCountDownTimer({
               currentSection={currentSection}
               setCurrentSectionId={setCurrentSectionId}
               CurrentSectionId={CurrentSectionId}
+              SumbitTest={SumbitTest}
             />
           </TouchableOpacity>
         </View>

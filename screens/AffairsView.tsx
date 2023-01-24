@@ -61,7 +61,7 @@ export default function AffairsView(props: any) {
               marginTop: high / 28.46,
             }}
           >
-            {prop.subjectName}
+            {prop.title}
           </Text>
           <Text
             allowFontScaling={false}
