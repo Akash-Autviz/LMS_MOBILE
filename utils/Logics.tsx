@@ -40,6 +40,29 @@ const trimDate = (num: any) => {
   var sliced = str.slice(0, 10);
   return sliced;
 };
+ const calcValidity = (num: any) => {
+    var str = `${num}`;
+    var sliced = str.slice(0, 10);
+    return sliced;
+  };
+    const enrollTrimText = (desc: string) => {
+    let newDesc = desc.split(" ");
+    let res = "";
+    for (let i = 0; i <= 9 && i < newDesc.length; i++) {
+      res += newDesc[i] + " ";
+    }
+    if (newDesc.length <= 10) return res;
+    return res + "...";
+  };
+  const enrollTrimTextName = (desc: string) => {
+    let newDesc = desc.split(" ");
+    if (newDesc.length < 3) return desc;
+    let res = "";
+    for (let i = 0; i <= 3 && i < newDesc.length; i++) {
+      res += newDesc[i] + " ";
+    }
+    return res + "...";
+  }
 const timerStart = (duration: any) => {
   var startTime = moment().subtract("5", "hours").subtract("30", "minutes");
   var endTime = userMockTestSection?.creationTime;
@@ -48,4 +71,4 @@ const timerStart = (duration: any) => {
   // console.log(this.timer, this.userMockTestSection);
   return timer;
 };
-export { getVideoId, trimName, trimText, trimDate };
+export { getVideoId, trimName, trimText, trimDate ,calcValidity,enrollTrimText,enrollTrimTextName};

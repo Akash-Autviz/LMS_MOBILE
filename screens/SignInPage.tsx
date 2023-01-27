@@ -60,12 +60,14 @@ export default function SignInPage(props: any) {
           "userId1",
           JSON.stringify(res.data.result.userId)
         );
+         console.log("signInSucecesFull", res);
         if (data1 != null) {
           setAccess_token(res.data.result.accessToken);
           save("user_id", JSON.stringify(res.data.result.user_id));
           save("access_token", res.data.result.accessToken);
 
           navigation.dispatch(StackActions.replace("Root"));
+        
         } else {
           Alert.alert("Invalid credentials", "Incorrect Email or Password", [
             { text: "Okay" },

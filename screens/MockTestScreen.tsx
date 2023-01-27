@@ -181,24 +181,38 @@ export default function MockTest(props: any) {
           <View>
             {res == "Upcoming" && (
               <ScrollView style={{ height: high / 1.33 }}>
-                {mockData.map((item: any) => {
-                  return (
-                    item.isBuy == false && (
-                      <MockTestCard
-                        key={Math.random() * 100}
-                        id={item.id}
-                        name={item.name}
-                        details={
-                          item.detail ? item.detail : "No Details Available"
-                        }
-                        upComingData={upComingData}
-                        price={item.price}
-                        date={item.creationTime}
-                        isBuy={item.isBuy == false ? "Buy" : "View"}
-                      />
-                    )
-                  );
-                })}
+                {mockData.length > 0 ? (
+                  mockData.map((item: any) => {
+                    return (
+                      item.isBuy == false && (
+                        <MockTestCard
+                          key={Math.random() * 100}
+                          id={item.id}
+                          name={item.name}
+                          details={
+                            item.detail ? item.detail : "No Details Available"
+                          }
+                          upComingData={upComingData}
+                          price={item.price}
+                          date={item.creationTime}
+                          isBuy={item.isBuy == false ? "Buy" : "View"}
+                        />
+                      )
+                    );
+                  })
+                ) : (
+                  <View
+                    style={{
+                      alignSelf: "center",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text style={{ fontFamily: "Poppins-Medium" }}>
+                      There is No Mock Test to Buy
+                    </Text>
+                  </View>
+                )}
               </ScrollView>
             )}
             {res == "My Mock" && (

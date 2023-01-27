@@ -67,6 +67,7 @@ export default function HomeScreen({ route, navigation }: any) {
   };
   useEffect(() => {
     SecureStore.getItemAsync("access_token").then((value: any) => {
+      console.log("AccessTokenFromLOCKa", value);
       SecureStore.getItemAsync("userId1").then((userId: any) => {
         if (value != null) {
           getUserData(value);
@@ -130,7 +131,7 @@ export default function HomeScreen({ route, navigation }: any) {
   };
 
   return (
-    <View
+    <ScrollView
       style={{ width: wid, flex: 1, height: high, backgroundColor: "#F7F7F7" }}
     >
       {isLoading === true ? (
@@ -243,6 +244,73 @@ export default function HomeScreen({ route, navigation }: any) {
                 )}
               />
             </View>
+            {/* {enrData[0] != undefined && (
+              <View
+                style={{
+                  backgroundColor: "#FAFAFB",
+                  width: wid,
+                }}
+              >
+                <Text
+                  allowFontScaling={false}
+                  style={{
+                    fontFamily: "Poppins-Medium",
+                    fontSize: 19,
+                    left: wid / 12.8,
+                    color: "#212121",
+                    marginBottom: high / 85.4,
+                  }}
+                >
+                  Ongoing Courses
+                </Text>
+                {enrData[0] != null ? (
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    style={{
+                      paddingVertical: 0,
+                      paddingLeft: wid / 12.8,
+                      // backgroundColor: "pink",
+                      flexDirection: "row",
+                      // height: high / 3.3,
+                    }}
+                  >
+                    {enrData.map((enr: any) => {
+                      return (
+                        <EnrolledCourse
+                          key={Math.random() * 100}
+                          item={enr}
+                          navigation={navigation}
+                        />
+                      );
+                    })}
+                  </ScrollView>
+                ) : (
+                  <View
+                    style={{
+                      // paddingLeft: wid / 12.8,
+                      backgroundColor: "#FAFAFB",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      alignSelf: "center",
+                      height: high / 5.3,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: "Poppins-Medium",
+                        width: "100%",
+                        fontSize: 13,
+                        alignSelf: "center",
+                        backgroundColor: "#FAFAFB",
+                      }}
+                    >
+                      No Course has fsafasfsda been purchased
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )} */}
             <View
               style={{
                 backgroundColor: "#FAFAFB",
@@ -291,7 +359,7 @@ export default function HomeScreen({ route, navigation }: any) {
                     alignItems: "center",
                     justifyContent: "center",
                     alignSelf: "center",
-                    height: high / 5.3,
+                    height: high / 14.3,
                   }}
                 >
                   <Text
@@ -328,67 +396,71 @@ export default function HomeScreen({ route, navigation }: any) {
                 Free Videos
               </Text>
               <View style={{ backgroundColor: "#FAFAFB" }}>
-                <ScrollView
-                  showsHorizontalScrollIndicator={false}
-                  horizontal
-                  contentContainerStyle={{ justifyContent: "space-evenly" }}
-                  style={{
-                    backgroundColor: "#FAFAFB",
-                    marginTop: high / 65,
-                    width: wid,
-                    marginRight: 30,
-                    height: high / 5.4,
-                    paddingLeft: wid / 12.8,
-                  }}
-                >
-                  {freeVideoData?.map((video: any) => {
-                    return (
-                      <VideoCard
-                        horizontal={true}
-                        key={video.id}
-                        startTime={video.startTime}
-                        videoUrl={video.videoUrl}
-                        title={video.title}
-                        videoId={getVideoId(video.videoUrl)}
-                        navigation={navigation}
-                      />
-                    );
-                  })}
-                </ScrollView>
-              </View>
-              {!freeVideoData && (
-                <View
-                  style={{
-                    backgroundColor: "#FAFAFB",
-                    width: wid,
-                    alignItems: "flex-start",
-                    justifyContent: "center",
-                    alignSelf: "flex-start",
-                    alignContent: "center",
-                    marginTop: 20,
-                    height: high / 5.3,
-                  }}
-                >
-                  <Text
+                {freeVideoData.length > 0 ? (
+                  <ScrollView
+                    showsHorizontalScrollIndicator={false}
+                    horizontal
+                    contentContainerStyle={{ justifyContent: "space-evenly" }}
                     style={{
-                      fontFamily: "Poppins-Medium",
-                      width: "100%",
-                      alignContent: "center",
-                      fontSize: 13,
-                      left: wid / 3.5,
-                      alignSelf: "center",
                       backgroundColor: "#FAFAFB",
+                      marginTop: high / 65,
+                      width: wid,
+                      marginRight: 30,
+                      height: high / 5.4,
+                      paddingLeft: wid / 12.8,
                     }}
                   >
-                    No Free Videos Available
-                  </Text>
-                </View>
-              )}
+                    {freeVideoData?.map((video: any) => {
+                      return (
+                        <VideoCard
+                          horizontal={true}
+                          key={video.id}
+                          startTime={video.startTime}
+                          videoUrl={video.videoUrl}
+                          title={video.title}
+                          videoId={getVideoId(video.videoUrl)}
+                          navigation={navigation}
+                        />
+                      );
+                    })}
+                  </ScrollView>
+                ) : (
+                  <View
+                    style={{
+                      backgroundColor: "#FAFAFB",
+                      width: wid,
+                      alignItems: "flex-start",
+                      justifyContent: "center",
+                      alignSelf: "flex-start",
+                      alignContent: "center",
+                      marginTop: 20,
+                      height: high / 14.3,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: "Poppins-Medium",
+                        width: "100%",
+                        alignContent: "center",
+                        fontSize: 13,
+                        left: wid / 3.5,
+                        alignSelf: "center",
+                        backgroundColor: "#FAFAFB",
+                      }}
+                    >
+                      No Free Videos Available Right Now
+                    </Text>
+                  </View>
+                )}
+              </View>
+              {/* {!freeVideoData && (
+                
+              )} */}
             </TouchableOpacity>
           </ScrollView>
         </>
       )}
-    </View>
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({

@@ -1,25 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { BackHandler, ScrollView, Text, View, StyleSheet } from "react-native";
 import { TouchableOpacity, Image, Dimensions } from "react-native";
-import axios from "axios";
-import * as SecureStore from "expo-secure-store";
-import { ActivityIndicator } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
+import RazorpayCheckout from "react-native-razorpay";
+import { useStateContext } from "./Context/ContextProvider";
 import { baseUrl } from "../utils";
+import axios from "axios";
+import { calcValidity } from "../utils/Logics";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function CourseDetails(props: any) {
-  const [courseData, setCourseData] = useState<any>([]);
-  const navigation = useNavigation();
-  const [dataTrue, setDataTrue] = useState(false);
-  const Courseid = props.route.params.id;
-  const [isTrue, setIsTrue] = useState(false);
-  const calcValidity = (num: any) => {
-    var str = `${num}`;
-    var sliced = str.slice(0, 10);
+  const { userDetail, access_token } = useStateContext();
 
-    return sliced;
+  const navigation = useNavigation();
+  const { data } = props.route.params;
+  console.log(data);
+  const headers = {
+    Authorization: `Bearer ${access_token}`,
+    "Content-Type": "application/json",
+    "Abp-TenantId": "1",
   };
+
   useEffect(() => {
     const backbuttonHander = () => {
       navigation.navigate("TabTwo");
@@ -35,45 +36,111 @@ export default function CourseDetails(props: any) {
     };
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
   });
-  useEffect(() => {
-    SecureStore.getItemAsync("access_token").then((value: any) => {
-      if (value != null) {
-        getCourseDetails(value, Courseid);
-      }
-    });
-  });
-  useEffect(() => {
-    setTimeout(() => {
-      setDataTrue(true);
-    }, 1000);
-  }, []);
-  const getCourseDetails = async (token: any, id: any) => {
-    var data = "";
-    var config = {
-      method: "get",
-      url: `${baseUrl}/api/services/app/CourseManagementAppServices/GetCourseContent?courseId=${Courseid}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
+  const [buttonValue, setButtonValue] = useState(
+    data.isBuy == false ? "Buy" : "False"
+  );
+  // useEffect(() => {
+  //   SecureStore.getItemAsync("access_token").then((value: any) => {
+  //     if (value != null) {
+  //       getCourseDetails(value, Courseid);
+  //     }
+  //   });
+  // }, []);
+
+  // const getCourseDetails = async (token: any, id: any) => {
+  //   var data = "";
+  //   var config = {
+  //     method: "get",
+  //     url: `${baseUrl}/api/services/app/CourseManagementAppServices/GetCourseContent?courseId=${Courseid}`,
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //     data: data,
+  //   };
+
+  //   axios(config)
+  //     .then(function (response: any) {
+  //       console.log(response);
+  //       setCourseData(response.data.result[0]);
+  //       setisLoading(false);
+  //     })
+  //     .catch(function (error: any) {
+  //       console.log(error);
+  //     });
+  // };
+
+  const BuyCourse = () => {
+    var options = {
+      description: "Credits towards Coures",
+      image: "https://i.imgur.com/3g7nmJC.jpg",
+      currency: "INR",
+      key: "rzp_test_zChmfgG09ShLe2",
+      amount: data.price * 100,
+      name: "Teacher's Vision",
+      prefill: {
+        email: userDetail.emailAddress,
+        contact: "",
+        name: userDetail.name,
       },
+      theme: { color: "#319EAE" },
+    };
+    RazorpayCheckout.open(options as any)
+      .then((data: any) => {
+        createPayment();
+        createEnrollementCoures();
+      })
+      .catch((error: any) => {
+        createPayment();
+        alert(
+          `Payment Failed if Money deducted from your account.Please Contact Admin`
+        );
+      });
+  };
+  const createEnrollementCoures = async () => {
+    let payload = JSON.stringify({
+      studentId: userDetail.id,
+      courseManagementId: data.id,
+    });
+    var config = {
+      method: "post",
+      url: `${baseUrl}/api/services/app/EnrollCourses/CreateEnrollCourse`,
+      headers,
+      data: payload,
+    };
+
+    axios(config)
+      .then(function (response: any) {
+        setButtonValue("View");
+        console.log(response, "Create Enroll Success");
+      })
+      .catch(function (error: any) {
+        console.log("Create Enroll Failed", error);
+      });
+  };
+
+  const createPayment = async () => {
+    var data = JSON.stringify({});
+    var config = {
+      method: "post",
+      url: `${baseUrl}/api/services/app/Payment/CreatePayment`,
+      headers,
       data: data,
     };
 
     axios(config)
       .then(function (response: any) {
-        setCourseData(response.data.result[0]);
-
-        if (courseData.courseManagement.name == null) {
-          console.log(response);
-          setIsTrue(false);
-        } else {
-          setIsTrue(true);
-        }
+        console.log("Create payment Api Sucess");
       })
       .catch(function (error: any) {
-        console.log(error);
+        console.log("create payment APi", error);
       });
   };
-  return isTrue ? (
+  const goToPurchasePage = () => {
+    props.navigation.navigate("Purchased", {
+      id: data.id,
+    });
+  };
+  return (
     <View
       style={{
         backgroundColor: "#F5F5F5",
@@ -91,11 +158,11 @@ export default function CourseDetails(props: any) {
             backgroundColor: "#F5F5F5",
           }}
         >
-          {courseData.courseManagement.imagePath &&
-          courseData.courseManagement.imagePath == null ? (
+          {data.imagePath && data.imagePath == null ? (
             <Image
               source={require("../assets/images/bigEnglish.png")}
               style={{
+                marginTop: high / 10,
                 width: "90%",
                 height: high / 3.17,
                 borderRadius: 10,
@@ -106,8 +173,9 @@ export default function CourseDetails(props: any) {
             ></Image>
           ) : (
             <Image
-              source={{ uri: `${courseData.courseManagement.imagePath}` }}
+              source={{ uri: data.imagePath }}
               style={{
+                marginTop: high / 10,
                 width: "90%",
                 height: high / 3.17,
                 borderRadius: 10,
@@ -128,7 +196,7 @@ export default function CourseDetails(props: any) {
               top: high / 28.46,
             }}
           >
-            {courseData.courseManagement.name}
+            {data.name}
           </Text>
           <Text
             allowFontScaling={false}
@@ -140,7 +208,7 @@ export default function CourseDetails(props: any) {
               width: "88%",
             }}
           >
-            {courseData.courseManagement.detail}
+            {data.detail}
           </Text>
         </View>
         <View
@@ -244,7 +312,7 @@ export default function CourseDetails(props: any) {
                 top: high / 21.35,
               }}
             >
-              {courseData.courseManagement.price}
+              {data.price}
             </Text>
             <Text
               allowFontScaling={false}
@@ -270,7 +338,7 @@ export default function CourseDetails(props: any) {
                 top: high / 7.11,
               }}
             >
-              {calcValidity(courseData.courseManagement.creationTime)}
+              {calcValidity(data.creationTime)}
             </Text>
 
             <Text
@@ -284,7 +352,7 @@ export default function CourseDetails(props: any) {
                 top: high / 5.57,
               }}
             >
-              {courseData.courseManagement.price}
+              {data.price}
             </Text>
           </View>
         </View>
@@ -300,6 +368,9 @@ export default function CourseDetails(props: any) {
             alignItems: "center",
             bottom: high / 3.84,
           }}
+          onPress={() => {
+            buttonValue == "Buy" ? BuyCourse() : goToPurchasePage();
+          }}
         >
           <Text
             allowFontScaling={false}
@@ -309,7 +380,7 @@ export default function CourseDetails(props: any) {
               color: "white",
             }}
           >
-            Buy {courseData.courseManagement.price}
+            {buttonValue == "Buy" ? `Buy ${data.price}` : "View"}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -340,14 +411,6 @@ export default function CourseDetails(props: any) {
           </Text>
         </TouchableOpacity>
       </ScrollView>
-    </View>
-  ) : !dataTrue ? (
-    <ActivityIndicator color={"grey"} size={"large"} style={styles.loader} />
-  ) : (
-    <View style={{ justifyContent: "center", flex: 1, alignItems: "center" }}>
-      <Text style={{ fontFamily: "Poppins-Medium", fontSize: 16 }}>
-        No Data Available
-      </Text>
     </View>
   );
 }

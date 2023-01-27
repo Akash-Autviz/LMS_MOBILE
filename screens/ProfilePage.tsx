@@ -223,36 +223,6 @@ export default function ProfilePage(props: any) {
             My Note
           </Text>
         </TouchableOpacity>
-        {/* <TouchableOpacity
-          style={{
-            backgroundColor: "white",
-            width: wid / 3,
-            height: high / 15,
-            borderRadius: 10,
-            justifyContent: "center",
-            flexDirection: "row",
-          }}
-        >
-          <TouchableOpacity
-            style={{
-              height: 30,
-              width: 30,
-              borderRadius: 11,
-              justifyContent: "center",
-              alignSelf: "center",
-              marginRight: 10,
-              backgroundColor: "#FCEAEA",
-            }}
-          >
-            <Image
-              style={{ alignSelf: "center" }}
-              source={require("../assets/images/wallet.png")}
-            />
-          </TouchableOpacity>
-          <Text allowFontScaling={false} style={{ alignSelf: "center" }}>
-            My Wallet
-          </Text>
-        </TouchableOpacity> */}
       </View>
       <View
         style={{
@@ -263,33 +233,6 @@ export default function ProfilePage(props: any) {
           alignContent: "flex-start",
         }}
       >
-        {/* <TouchableOpacity style={styles.cardCntnr}>
-          <Image
-            source={require("../assets/images/notes.png")}
-            style={{ alignSelf: "center", left: 10, tintColor: "#111111" }}
-          />
-          <Text allowFontScaling={false} style={styles.cardtext}>
-            My Exam Selection
-          </Text>
-          <Image
-            style={styles.cardImage}
-            source={require("../assets/images/arow.png")}
-          />
-        </TouchableOpacity> */}
-        {/* <TouchableOpacity style={styles.cardCntnr}>
-          <FontAwesome
-            name="question-circle-o"
-            size={20}
-            style={styles.cardFont}
-          ></FontAwesome>
-          <Text allowFontScaling={false} style={styles.cardtext}>
-            Help
-          </Text>
-          <Image
-            style={styles.cardImage}
-            source={require("../assets/images/arow.png")}
-          />
-        </TouchableOpacity> */}
         <TouchableOpacity style={styles.cardCntnr} onPress={() => shareApp()}>
           <FontAwesome
             name="share-alt"
@@ -321,23 +264,7 @@ export default function ProfilePage(props: any) {
             source={require("../assets/images/arow.png")}
           />
         </TouchableOpacity>
-        {/* <TouchableOpacity style={styles.cardCntnr}>
-          <Image
-            source={require("../assets/images/chat.png")}
-            style={{
-              backgroundColor: "#FAFAFB",
-              alignSelf: "center",
-              left: 10,
-            }}
-          />
-          <Text allowFontScaling={false} style={styles.cardtext}>
-            Chat
-          </Text>
-          <Image
-            style={styles.cardImage}
-            source={require("../assets/images/arow.png")}
-          />
-        </TouchableOpacity> */}
+
         <TouchableOpacity
           onPress={() => logoutButtonHandler()}
           style={{

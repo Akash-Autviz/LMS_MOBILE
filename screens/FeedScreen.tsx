@@ -223,7 +223,7 @@ export default function FeedScreen(props: any) {
           </ScrollView>
         ) : currentState == "Video" ? (
           <ScrollView
-            style={{ marginBottom: 70, backgroundColor: "transparent" }}
+            style={{ marginBottom: 90, backgroundColor: "transparent" }}
           >
             {data.map((data1: any) => {
               console.log(data1);
@@ -233,7 +233,7 @@ export default function FeedScreen(props: any) {
             })}
           </ScrollView>
         ) : currentState == "Quiz" ? (
-          <ScrollView style={{ marginBottom: 70 }}>
+          <ScrollView style={{ marginBottom: 90 }}>
             {quizData.map((data1: any, idx: any) => {
               return (
                 <Quiz

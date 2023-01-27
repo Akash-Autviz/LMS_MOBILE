@@ -276,7 +276,9 @@ export default function MockTestSubjectTest(props: any) {
               <TestCountDownTimer
                 SumbitTest={SumbitTest}
                 quesIndexArray={currentSectionTypeQuestoion}
-                duration={duration ? duration : quesData[0].mockTest.duration}
+                duration={
+                  duration ? duration : quesData[0].mockTest.duration * 60000
+                }
                 setquesIndexArray={setquesIndexArray}
                 currentSection={currentSection}
                 CurrentSectionId={CurrentSectionId}

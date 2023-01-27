@@ -11,24 +11,45 @@ import { useStateContext } from "../screens/Context/ContextProvider";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { StackActions } from "@react-navigation/native";
-import { AntDesign, FontAwesome } from "@expo/vector-icons";
-import { trimDate, trimName, trimText } from "../utils/Logics";
+import { AntDesign } from "@expo/vector-icons";
+
 import { baseUrl } from "../utils";
 import moment from "moment";
-import CourseDetails from "../screens/CourseDetails";
+
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 
 const TestCardCoponent = (props: any) => {
-  const { name, startTime, id, price } = props;
-  console.log("idddd", id);
-  const [loading, setLoading] = useState(true);
+  const { data, title } = props;
+  const {
+    id,
+    isBuy,
+    isReattempt,
+    isDeleted,
+    isResulted,
+    isSubmitted,
+    isView,
+    mockTestId,
+    studentId,
+    mockTest,
+  } = data;
   const navigation = useNavigation();
-  const [result, setResult] = useState(null);
-  const [currrentCourseData, SetCurrrentCourseData] = useState<any>({});
-  const [duration, Setduration] = useState("");
+  let currrentCourseData: any = {
+    id: id,
+    isReattempt: isReattempt,
+    isSubmitted: isSubmitted,
+    isView: isView,
+    studentId: studentId,
+    isBuy: isBuy,
+    isResulted: isResulted,
+    isDeleted: isDeleted,
+    mockTestId: mockTestId,
+  };
+
+  // const [currrentCourseData, SetCurrrentCourseData] = useState<any>();
   const [mockTestSectionData, setmockTestSectionData] = useState<any>([]);
-  const { userDetail, access_token } = useStateContext();
+  const { access_token } = useStateContext();
+
   const config = {
     headers: {
       Authorization: `Bearer ${access_token}`,
@@ -75,63 +96,31 @@ const TestCardCoponent = (props: any) => {
     if (isSubmitted == true) {
       MarkIsSubmitted(id);
     }
-    // mockTestSectionData?.forEach((element: any) => {
-    //   element.creationTime = moment();
-    // });
+    mockTestSectionData?.forEach((element: any) => {
+      element.creationTime = moment();
+    });
     updateUserMockTestSection(mockTestSectionData[0]);
     (currrentCourseData.isReattempt = "changedTheValue"),
       navigation.dispatch(
         StackActions.replace("Test", { data: currrentCourseData })
       );
   };
-  useEffect(() => {
-    getEnrollMockTestByUserIdAndCouresId();
-    getMockTestDuartion();
-  }, []);
   const headers: any = {
     Authorization: `Bearer ${access_token}`,
     "Content-Type": "application/json",
     "Abp-TenantId": "1",
   };
-  const getMockTestDuartion = async () => {
-    try {
-      const res = await axios.get(
-        `${baseUrl}/api/services/app/MockTest/Get?Id=${id} `,
-        headers
-      );
-      if (res.data.result != null) {
-        Setduration(res.data.result.duration);
-      }
-      setLoading(false);
-    } catch (error) {
-      console.log("GetEnrolledMockTestByUserIdAndMockTestId", error);
-    }
-  };
 
-  const getEnrollMockTestByUserIdAndCouresId = async () => {
-    try {
-      const res = await axios.get(
-        `${baseUrl}/api/services/app/EnrollMockTest/GetEnrolledMockTestByUserIdAndMockTestId?userId=${userDetail.id}&mockTestId=${id} `,
-        headers
-      );
-      if (res.data.result != null) {
-        SetCurrrentCourseData(res.data.result);
-        console.log("User TEST SECTION", res.data.result);
-      }
-      setLoading(false);
-    } catch (error) {
-      console.log("GetEnrolledMockTestByUserIdAndMockTestId", error);
-    }
-  };
   const GetUserMockTestSection = async () => {
     try {
-      const { data } = await axios.get(
-        `${baseUrl}/api/services/app/MockTestUserAns/GetUserMockTestSection?mocktestId=${id}&userId=${userDetail.id}`,
+      const res = await axios.get(
+        `${baseUrl}/api/services/app/MockTestUserAns/GetUserMockTestSection?mocktestId=${mockTestId}&userId=${studentId}`,
         config
       );
-      if (mockTestSectionData.length < 1) setmockTestSectionData(data.result);
+      if (mockTestSectionData.length < 1)
+        setmockTestSectionData(res.data.result);
 
-      console.log("GetUserMockTestSection APi HIT SUCCESS", data);
+      console.log("GetUserMockTestSection APi HIT SUCCESS", res);
     } catch (error) {
       console.log(error, "GetUserMockTestSection");
     }
@@ -162,7 +151,7 @@ const TestCardCoponent = (props: any) => {
   const MarkIsView = async (id: any) => {
     try {
       const res = await axios.post(
-        `${baseUrl}/api/services/app/EnrollMockTest/MarkIsView?id=${id}`,
+        `${baseUrl}/api/services/app/EnrollMockTest/MarkIsView?id=${currrentCourseData.id}`,
         config
       );
       console.log("isView API hit Success");
@@ -176,7 +165,7 @@ const TestCardCoponent = (props: any) => {
         `${baseUrl}/api/services/app/EnrollMockTest/MarkIsSubmitted?id=${id}`,
         config
       );
-      console.log("MarkIsSubmitted Api Hit Sucees");
+      console.log("MarkIsSubmitted Api Hit Sucees", res);
     } catch (error) {
       console.log("MarkIsSubmitted", error);
     }
@@ -230,7 +219,7 @@ const TestCardCoponent = (props: any) => {
           allowFontScaling={false}
           style={{ fontSize: 14, fontFamily: "Poppins-Bold" }}
         >
-          {name}
+          {title}
         </Text>
       </View>
 
@@ -255,38 +244,15 @@ const TestCardCoponent = (props: any) => {
             justifyContent: "space-evenly",
           }}
         >
-          {price ? (
-            <>
-              <FontAwesome name="rupee" size={18} color="black" />
-              <Text
-                allowFontScaling={false}
-                style={[styles.fontColor, { marginLeft: wid / 64 }]}
-              >
-                {price}
-              </Text>
-            </>
-          ) : (
-            <>
-              <AntDesign name="clockcircleo" size={20} color="#8A8A8A" />
-              {startTime ? (
-                <Text
-                  allowFontScaling={false}
-                  style={[styles.fontColor, { marginLeft: wid / 64 }]}
-                >
-                  {trimDate(startTime)}
-                </Text>
-              ) : (
-                <Text
-                  allowFontScaling={false}
-                  style={[styles.fontColor, { marginLeft: wid / 64 }]}
-                >
-                  {!duration ? 60 : duration} min
-                </Text>
-              )}
-            </>
-          )}
+          <AntDesign name="clockcircleo" size={22} color="black" />
+          <Text
+            allowFontScaling={false}
+            style={[styles.fontColor, { marginLeft: wid / 64 }]}
+          >
+            {!mockTest.duration ? 60 : mockTest.duration} min
+          </Text>
         </View>
-        {currrentCourseData.isSubmitted == true && (
+        {isSubmitted == true && (
           <View style={{}}>
             <TouchableOpacity
               style={{
@@ -301,7 +267,7 @@ const TestCardCoponent = (props: any) => {
               }}
               onPress={() => {
                 navigation.navigate("TestResult", {
-                  id: currrentCourseData.mockTestId,
+                  id: mockTestId,
                 } as never);
               }}
             >
@@ -319,7 +285,7 @@ const TestCardCoponent = (props: any) => {
             </TouchableOpacity>
           </View>
         )}
-        {!currrentCourseData.isSubmitted && (
+        {!isSubmitted && (
           <View style={{}}>
             <TouchableOpacity
               style={{
@@ -345,12 +311,12 @@ const TestCardCoponent = (props: any) => {
                   alignSelf: "center",
                 }}
               >
-                {currrentCourseData.isView == false ? "Start" : "Resume"}
+                {isView == true ? "Resume" : "Start"}
               </Text>
             </TouchableOpacity>
           </View>
         )}
-        {currrentCourseData.isSubmitted == true && (
+        {isSubmitted == true && (
           <View style={{}}>
             <TouchableOpacity
               style={{

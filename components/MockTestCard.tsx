@@ -19,8 +19,7 @@ const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 export default function MockTestCard(props: any) {
   const navigation = useNavigation();
-  const { mockTestId, setMockTestId, userDetail, access_token } =
-    useStateContext();
+  const { userDetail, access_token } = useStateContext();
   const {
     name,
     details,
@@ -49,7 +48,9 @@ export default function MockTestCard(props: any) {
     };
 
     axios(config)
-      .then(function (response: any) {})
+      .then(function (response: any) {
+        console.log("Create payment Api Sucess");
+      })
       .catch(function (error: any) {
         console.log("create payment APi", error);
       });

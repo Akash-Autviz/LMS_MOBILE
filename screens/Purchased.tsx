@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react";
 import React from "react";
 import { StyleSheet, ScrollView, Linking } from "react-native";
-
 import { ActivityIndicator } from "react-native-paper";
 import axios from "axios";
 import { TouchableOpacity, Image, Dimensions } from "react-native";
 import { View, Text } from "../components/Themed";
-
 import VideoCard from "../components/VideoCard";
 import { getVideoId } from "../utils/Logics";
-import TestCard from "../components/TestCard";
 import { useStateContext } from "./Context/ContextProvider";
 import { baseUrl } from "../utils";
 import TestCardCoponent from "../components/TestCardCoponent";
@@ -19,15 +16,17 @@ const high = Dimensions.get("window").height;
 
 export default function Purchased(props: any) {
   const [courseData, setCourseData] = useState<any>([]);
-  const { access_token } = useStateContext();
+  const { access_token, userDetail } = useStateContext();
   const Courseid = props.route.params.id;
-
+  const [currrentCourseData, SetCurrrentCourseData] = useState<any>([]);
+  const [res, setRes] = useState("Mock Tests");
   useEffect(() => {
+    getEnrollMockTestByUserIdAndCouresId();
     getCourseDetails(access_token, Courseid);
-  }, []);
+  }, [props]);
   const [isTrue, setIsTrue] = useState(false);
   const getCourseDetails = async (token: any, id: any) => {
-    var data = "";
+    let data = "";
     var config = {
       method: "get",
       url: `${baseUrl}/api/services/app/CourseManagementAppServices/GetStudentCourse?id=${id}`,
@@ -36,22 +35,35 @@ export default function Purchased(props: any) {
       },
       data: data,
     };
-
     axios(config)
       .then(function (response: any) {
-        if (response.data.name !== null) {
-          console.log(response);
+        console.log(response);
 
-          setCourseData(response.data.result);
-          setIsTrue(true);
-        }
+        setCourseData(response.data.result);
+        setIsTrue(true);
       })
       .catch(function (error: any) {
         console.log(error);
       });
   };
-  const val = "Start";
-  const [res, setRes] = useState("Mock Tests");
+  const headers: any = {
+    Authorization: `Bearer ${access_token}`,
+    "Content-Type": "application/json",
+    "Abp-TenantId": "1",
+  };
+  const getEnrollMockTestByUserIdAndCouresId = async () => {
+    setIsTrue(true);
+    try {
+      const res = await axios.get(
+        `${baseUrl}/api/services/app/EnrollMockTest/GetEnrolledMockTestByUserIdAndCourseId?userId=${userDetail.id}&courseId=${Courseid}`,
+        headers
+      );
+      await SetCurrrentCourseData(res.data.result);
+    } catch (error) {
+      console.log("GetEnrolledMockTestByUserIdAndMockTestId", error);
+    }
+  };
+
   const [color, setColor] = useState(true);
   const [color1, setColor1] = useState(false);
   const [color2, setColor2] = useState(false);
@@ -75,8 +87,8 @@ export default function Purchased(props: any) {
       setColor2(true);
       setColor3(false);
     }
-    console.log(res);
   };
+  console.log("Purchased Rendered");
 
   return isTrue ? (
     <ScrollView style={{ backgroundColor: "#FAFAFB", flex: 1, height: high }}>
@@ -237,18 +249,14 @@ export default function Purchased(props: any) {
           </View>
 
           {res == "Mock Tests" ? (
-            <ScrollView style={{ marginTop: 20, marginBottom: 20 }}>
-              {courseData.mockTests?.map((item: any, idx: any) => {
-                console.log(item);
+            <ScrollView style={{ marginTop: 20, marginBottom: 60 }}>
+              {currrentCourseData?.map((item: any, idx: any) => {
+                console.log(courseData);
                 return (
                   <TestCardCoponent
                     key={idx}
-                    id={item.id}
-                    name={item.title}
-                    details={item.detail}
-                    date={item.creationTime}
-                    button={val}
-                    isMockTest={true}
+                    title={item.mockTest.title}
+                    data={item}
                   />
                 );
               })}
@@ -276,8 +284,7 @@ export default function Purchased(props: any) {
             <ScrollView
               style={{
                 marginTop: 20,
-                marginBottom: high / 2,
-
+                marginBottom: 60,
                 width: wid,
               }}
               contentContainerStyle={{
@@ -285,7 +292,7 @@ export default function Purchased(props: any) {
                 justifyContent: "center",
               }}
             >
-              {courseData ? (
+              {courseData.videos > 0 ? (
                 courseData.videos?.map((video: any) => {
                   return (
                     <VideoCard
@@ -306,7 +313,7 @@ export default function Purchased(props: any) {
                       alignSelf: "center",
                       backgroundColor: "#FAFAFB",
 
-                      height: high / 4.27,
+                      height: high / 14.27,
                     }}
                   >
                     <Text

@@ -23,6 +23,7 @@ import { baseUrl } from "../utils";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function TabTwoScreen({ routes, navigation }: any) {
+  const { access_token } = useStateContext();
   const colorScheme = useColorScheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [color, setIsActive] = useState(false);
@@ -45,10 +46,12 @@ export default function TabTwoScreen({ routes, navigation }: any) {
   useEffect(() => {
     SecureStore.getItemAsync("access_token").then((value) => {
       if (value != null) {
-        GetCourseInformation(value);
         GetEnrolledCourseInformation(value, userDetail.id);
       }
     });
+  }, []);
+  useEffect(() => {
+    GetCourseInformation();
   }, []);
 
   const GetEnrolledCourseInformation = async (
@@ -72,17 +75,19 @@ export default function TabTwoScreen({ routes, navigation }: any) {
     }
     setIsLoading(false);
   };
-  const GetCourseInformation = async (access_token: any) => {
+  const GetCourseInformation = async () => {
     try {
       const config = {
         headers: {
           Authorization: `Bearer  ${access_token}`,
+          "Abp-TenantId": "1",
         },
       };
       const res = await axios.get(
-        `${baseUrl}/api/services/app/CourseManagementAppServices/GetAllDataBasedOnCategory`,
+        `${baseUrl}/api/services/app/CourseManagementAppServices/GetAllDataBasedOnCategory?courseType=Hybrid`,
         config
       );
+      console.log(res);
       SetResData(res.data.result);
       setNameData(res.data.result);
     } catch (error) {
@@ -325,7 +330,7 @@ export default function TabTwoScreen({ routes, navigation }: any) {
                   <TouchableOpacity
                     onPress={() =>
                       navigation.navigate("CourseDetails", {
-                        id: item.id,
+                        data: item,
                       })
                     }
                     style={styles.topicCntr}

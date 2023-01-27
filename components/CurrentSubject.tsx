@@ -11,25 +11,21 @@ import { useStateContext } from "../screens/Context/ContextProvider";
 import AnswerOption from "./AnswerOption";
 import axios from "axios";
 import { baseUrl } from "../utils";
-import moment from "moment";
-import { useNavigation } from "@react-navigation/native";
+import moment from "moment";          
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 export default function CurrentSubject(props: any) {
-  const navigation = useNavigation();
   const { index, setIndex, access_token } = useStateContext();
   const [answer, setAnswer] = useState("");
   const [buttonValue, setButtonValue] = useState("Next");
   const {
     currentSectionTypeQuestoion,
-    SetCurrentSectionTypeQuestoion,
     setSectionIdx,
     sectionLength,
     sectionIdx,
     setCurrentSection,
     setCurrentSectionId,
     testSections,
-    paramsData,
     quesData,
     setDuration,
     SumbitTest,
@@ -42,24 +38,6 @@ export default function CurrentSubject(props: any) {
       currentSectionTypeQuestoion[index].skip = true;
     } else if (value == "markup") {
       currentSectionTypeQuestoion[index].isMarkUp = true;
-    }
-  };
-  const GetResultById = async () => {
-    try {
-      let config = {
-        headers: {
-          Authorization: `Bearer ${access_token}`,
-          "Content-Type": " application/json",
-          "Abp-TenantId": "1",
-        },
-      };
-      const res = await axios.get(
-        `${baseUrl}/api/services/app/MockTestResultService/GetResultById?id=${currentSectionTypeQuestoion[index].mockTestId}`,
-        config
-      );
-      console.log("resSult Api", res);
-    } catch (error) {
-      console.log("GetResultById API Hit Failed", error);
     }
   };
   const updateUserAnswer = (token: any, trueType: string) => {
@@ -89,7 +67,6 @@ export default function CurrentSubject(props: any) {
       .then(function (response: any) {
         console.log("answer Updatted", response);
         setAnswer("");
-        GetResultById();
       })
       .catch(function (error: any) {
         console.log(error);
@@ -173,6 +150,9 @@ export default function CurrentSubject(props: any) {
   const onMarkUpClick = () => {
     changeValue("markup");
     updateUserAnswer(access_token, "markup");
+    if (index < currentSectionTypeQuestoion.length - 1) {
+      setIndex(index + 1);
+    }
   };
   return (
     <>

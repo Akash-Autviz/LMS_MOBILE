@@ -41,11 +41,11 @@ const ResultModal = (props: any) => {
         quesno={id + 1}
         color={
           e.userAnswer
-            ? "#00b300"
+            ? "#63a461"
             : e.skip == true
             ? "#d94646"
             : e.isMarkUp == true
-            ? "#DAA520"
+            ? "#8c20d5"
             : null
         }
         setquesIndexArray={props.setquesIndexArray}
