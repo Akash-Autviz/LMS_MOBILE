@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Image,
   TextInput,
+  KeyboardAvoidingView,
   Alert,
 } from "react-native";
 import { View, Text } from "../components/Themed";
@@ -60,14 +61,13 @@ export default function SignInPage(props: any) {
           "userId1",
           JSON.stringify(res.data.result.userId)
         );
-         console.log("signInSucecesFull", res);
+        console.log("signInSucecesFull", res);
         if (data1 != null) {
           setAccess_token(res.data.result.accessToken);
           save("user_id", JSON.stringify(res.data.result.user_id));
           save("access_token", res.data.result.accessToken);
 
           navigation.dispatch(StackActions.replace("Root"));
-        
         } else {
           Alert.alert("Invalid credentials", "Incorrect Email or Password", [
             { text: "Okay" },
@@ -78,9 +78,11 @@ export default function SignInPage(props: any) {
       })
       .catch((error: any) => {
         console.log(error);
-        Alert.alert("Invalid credentials", "Incorrect Email or Password", [
+        Alert.alert(error.response.data.error.details, "Login Failed", [
           { text: "Okay" },
         ]);
+        setUserMailId("");
+        setUserPassword("");
       });
   };
   const toggleFocus = () => {
@@ -195,6 +197,7 @@ export default function SignInPage(props: any) {
                   left: wid / 76.8,
                   textAlignVertical: "center",
                 }}
+                value={userMailId}
                 autoCapitalize="none"
                 placeholder="Enter Your Email"
                 onChangeText={(e) => setUserMailId(e)}
@@ -257,6 +260,7 @@ export default function SignInPage(props: any) {
                   width: "80%",
                   textAlignVertical: "center",
                 }}
+                value={userPassword}
                 secureTextEntry={!focused}
                 autoCapitalize="none"
                 placeholder="Enter Your Password"
@@ -279,7 +283,10 @@ export default function SignInPage(props: any) {
               backgroundColor: "transparent",
             }}
           >
-            <TouchableOpacity onPress={() => navigation.navigate("reset")}>
+            <TouchableOpacity
+              style={{}}
+              onPress={() => navigation.navigate("reset")}
+            >
               <Text allowFontScaling={false} style={{ color: "#309EAF" }}>
                 Recovery Password
               </Text>
@@ -289,7 +296,7 @@ export default function SignInPage(props: any) {
             style={{
               width: "80%",
               alignSelf: "center",
-              flexDirection: "row",
+              flexDirection: "column",
               marginTop: high / 50,
               height: high / 21.35,
               justifyContent: "center",
@@ -322,6 +329,15 @@ export default function SignInPage(props: any) {
                 style={{ alignSelf: "center", left: wid / 38.4 }}
               ></FontAwesome>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={{ marginTop: high / 80, flexDirection: "row" }}
+              onPress={() => navigation.navigate("SignUp")}
+            >
+              <Text>Don’t have an account yet ? </Text>
+              <Text allowFontScaling={false} style={{ color: "#309EAF" }}>
+                Sign Up
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -342,6 +358,7 @@ const styles = StyleSheet.create({
     height: "100%",
     backgroundColor: "#FFFFFF",
   },
+
   image: {},
   BottomText: {
     fontFamily: "Poppins-Regular",

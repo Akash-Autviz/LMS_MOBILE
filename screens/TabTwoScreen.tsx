@@ -23,7 +23,7 @@ import { baseUrl } from "../utils";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function TabTwoScreen({ routes, navigation }: any) {
-  const { access_token } = useStateContext();
+  const { access_token, refresh } = useStateContext();
   const colorScheme = useColorScheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [color, setIsActive] = useState(false);
@@ -49,7 +49,7 @@ export default function TabTwoScreen({ routes, navigation }: any) {
         GetEnrolledCourseInformation(value, userDetail.id);
       }
     });
-  }, []);
+  }, [refresh]);
   useEffect(() => {
     GetCourseInformation();
   }, []);

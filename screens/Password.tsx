@@ -13,32 +13,22 @@ import axios from "axios";
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
 import { baseUrl } from "../utils";
+import { useStateContext } from "./Context/ContextProvider";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function Password() {
   const naviagation = useNavigation();
-  var token: any = "";
-  SecureStore.getItemAsync("access_token").then((value) => {
-    token = value;
-  });
+  const { access_token } = useStateContext();
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  const checkPasswordValidation = (password: any, newPassword: any) => {
+    if (newPassword.trim() == "" || newPassword.trim().length < 7) {
+      alert("Weak Password");
+    } else {
+      changePassword(password, newPassword);
+    }
+  };
   const changePassword = async (password: any, newPassword: any) => {
-    // const res = await axios.post(
-    //   `${baseUrl}/api/services/app/User/ChangePassword`,
-    //   { currentPassword: password, newPassword: newPassword },
-    //   {
-    //     headers: {
-    //       // Authorization: `Bearer ${token}`,
-    //       // //     // Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJhZG1pbkBhc3BuZXRib2lsZXJwbGF0ZS5jb20iLCJBc3BOZXQuSWRlbnRpdHkuU2VjdXJpdHlTdGFtcCI6Ijc2MWY4MmU5LWM2YWMtODE5Mi0zMDdlLTNhMDdkMGNiNjc4ZCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwic3ViIjoiMSIsImp0aSI6IjNkOGFjZTlkLTQ5ZWYtNDZhNy05YTA0LWU4ZDkwNzVkZTFiNSIsImlhdCI6MTY2OTY5NzY3MCwibmJmIjoxNjY5Njk3NjcwLCJleHAiOjE2Njk3ODQwNzAsImlzcyI6IkxtcyIsImF1ZCI6IkxtcyJ9.QHelMCjOSld_dhXK0hKMV5MKcRhf-LOlNbgO5uMudvY`,
-    //       "Content-Type": "application/json",
-    //       Authorization: `Bearer ${token}`,
-    //       //  'Content-Type: application/json-patch+json'
-    //     },
-    //   }
-    // );
-    // console.log(res);
-
     var data = JSON.stringify({
       currentPassword: password,
       newPassword: newPassword,
@@ -50,9 +40,8 @@ export default function Password() {
       method: "post",
       url: `${baseUrl}/api/services/app/User/ChangePassword`,
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${access_token}`,
         "Abp-TenantId": "1",
-        // Authorization: `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjEiLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiYWRtaW4iLCJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJhZG1pbkBhc3BuZXRib2lsZXJwbGF0ZS5jb20iLCJBc3BOZXQuSWRlbnRpdHkuU2VjdXJpdHlTdGFtcCI6Ijc2MWY4MmU5LWM2YWMtODE5Mi0zMDdlLTNhMDdkMGNiNjc4ZCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IkFkbWluIiwic3ViIjoiMSIsImp0aSI6IjNkOGFjZTlkLTQ5ZWYtNDZhNy05YTA0LWU4ZDkwNzVkZTFiNSIsImlhdCI6MTY2OTY5NzY3MCwibmJmIjoxNjY5Njk3NjcwLCJleHAiOjE2Njk3ODQwNzAsImlzcyI6IkxtcyIsImF1ZCI6IkxtcyJ9.QHelMCjOSld_dhXK0hKMV5MKcRhf-LOlNbgO5uMudvY`,
         "Content-Type": "application/json",
       },
       data: data,
@@ -60,15 +49,24 @@ export default function Password() {
     axios(config)
       .then((res: any) => {
         Alert.alert("Success", "Password Changed Successfuly", [
-          { text: "Okay" },
+          {
+            text: "Okay",
+            onPress: () => {
+              naviagation.navigate("Home");
+            },
+          },
         ]);
-        naviagation.navigate("Rooot");
+        console.log(res);
+        setNewPassword("");
+        setPassword("");
       })
       .catch((error: any) => {
-        // console.log(config);
-        Alert.alert("Enter Old Password", "Enter Old Password", [
+        console.log(error);
+        Alert.alert("Enter Correct Old Password ", "Enter Old Password", [
           { text: "Okay" },
         ]);
+        setNewPassword("");
+        setPassword("");
       });
   };
 
@@ -106,6 +104,7 @@ export default function Password() {
             left: wid / 76.8,
             textAlignVertical: "center",
           }}
+          value={password}
           autoCapitalize="none"
           placeholder="Old Password"
           onChangeText={(e) => setPassword(e)}
@@ -136,13 +135,14 @@ export default function Password() {
             left: wid / 76.8,
             textAlignVertical: "center",
           }}
+          value={newPassword}
           autoCapitalize="none"
           placeholder="New Password"
           onChangeText={(e) => setNewPassword(e)}
         />
       </View>
       <TouchableOpacity
-        onPress={() => changePassword(password, newPassword)}
+        onPress={() => checkPasswordValidation(password, newPassword)}
         style={{
           width: "80%",
           alignSelf: "center",

@@ -12,13 +12,16 @@ export const ContextProvider = ({ children }) => {
   const [ansResultIdx, SetAnsResultIdx] = useState([{ color: "red" }]);
   const [userDetail, setUserDetail] = useState({});
   const [access_token, setAccess_token] = useState("");
-  
+  const [refresh, setRefresh] = useState("");
+
   const [userImage, setuserImage] = useState();
   const [questionLength, setQuestionLength] = useState();
 
   return (
     <StateContext.Provider
       value={{
+        refresh,
+        setRefresh,
         questionLength,
         setQuestionLength,
         userImage,

@@ -10,21 +10,23 @@ import { getVideoId } from "../utils/Logics";
 import { useStateContext } from "./Context/ContextProvider";
 import { baseUrl } from "../utils";
 import TestCardCoponent from "../components/TestCardCoponent";
-
+import * as SecureStore from "expo-secure-store";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 
 export default function Purchased(props: any) {
+  let token = "";
   const [courseData, setCourseData] = useState<any>([]);
   const { access_token, userDetail } = useStateContext();
   const Courseid = props.route.params.id;
   const [currrentCourseData, SetCurrrentCourseData] = useState<any>([]);
   const [res, setRes] = useState("Mock Tests");
+
   useEffect(() => {
     getEnrollMockTestByUserIdAndCouresId();
     getCourseDetails(access_token, Courseid);
   }, [props]);
-  const [isTrue, setIsTrue] = useState(false);
+  const [isTrue, setIsTrue] = useState(true);
   const getCourseDetails = async (token: any, id: any) => {
     let data = "";
     var config = {
@@ -40,28 +42,30 @@ export default function Purchased(props: any) {
         console.log(response);
 
         setCourseData(response.data.result);
-        setIsTrue(true);
       })
       .catch(function (error: any) {
         console.log(error);
       });
   };
+
+  useEffect(() => {}, []);
   const headers: any = {
     Authorization: `Bearer ${access_token}`,
-    "Content-Type": "application/json",
-    "Abp-TenantId": "1",
+    Accept: "text/plain",
+    "Abp-TenantId": 1,
   };
   const getEnrollMockTestByUserIdAndCouresId = async () => {
-    setIsTrue(true);
     try {
       const res = await axios.get(
         `${baseUrl}/api/services/app/EnrollMockTest/GetEnrolledMockTestByUserIdAndCourseId?userId=${userDetail.id}&courseId=${Courseid}`,
         headers
       );
-      await SetCurrrentCourseData(res.data.result);
+      console.log("GetEnrolledMockTestByUserIdAndCourseId", res);
+      SetCurrrentCourseData(res.data.result);
     } catch (error) {
       console.log("GetEnrolledMockTestByUserIdAndMockTestId", error);
     }
+    setIsTrue(false);
   };
 
   const [color, setColor] = useState(true);
@@ -90,7 +94,7 @@ export default function Purchased(props: any) {
   };
   console.log("Purchased Rendered");
 
-  return isTrue ? (
+  return !isTrue ? (
     <ScrollView style={{ backgroundColor: "#FAFAFB", flex: 1, height: high }}>
       <ScrollView
         style={{
@@ -251,7 +255,7 @@ export default function Purchased(props: any) {
           {res == "Mock Tests" ? (
             <ScrollView style={{ marginTop: 20, marginBottom: 60 }}>
               {currrentCourseData?.map((item: any, idx: any) => {
-                console.log(courseData);
+                console.log(currrentCourseData);
                 return (
                   <TestCardCoponent
                     key={idx}
@@ -260,22 +264,54 @@ export default function Purchased(props: any) {
                   />
                 );
               })}
+              {currrentCourseData.length < 1 && (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontFamily: "Poppins-Medium",
+                    fontSize: 16,
+                    marginTop: high / 20,
+                  }}
+                >
+                  No MockTest Available
+                </Text>
+              )}
             </ScrollView>
           ) : null}
           {res == "Notes" ? (
             <ScrollView>
-              <TouchableOpacity
-                onPress={() =>
-                  props.navigation.navigate("Web", {
-                    url: `${courseData.notes.notesUrl}`,
-                  })
-                }
-                style={styles.topicCntr}
-              >
-                <Text style={{ fontFamily: "Poppins-Medium", fontSize: 16 }}>
-                  Follow to link
+              {courseData.notes?.map((e: any, idx: number) => {
+                console.log(courseData.notes);
+                return (
+                  <TouchableOpacity
+                    key={idx}
+                    onPress={() =>
+                      props.navigation.navigate("Web", {
+                        url: `${courseData.notes.notesUrl}`,
+                      })
+                    }
+                    style={styles.topicCntr}
+                  >
+                    <Text
+                      style={{ fontFamily: "Poppins-Medium", fontSize: 16 }}
+                    >
+                      {e.title}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+              {courseData.notes.length < 1 && (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontFamily: "Poppins-Medium",
+                    fontSize: 16,
+                    marginTop: high / 20,
+                  }}
+                >
+                  No Notes Available
                 </Text>
-              </TouchableOpacity>
+              )}
             </ScrollView>
           ) : (
             <></>
@@ -292,49 +328,35 @@ export default function Purchased(props: any) {
                 justifyContent: "center",
               }}
             >
-              {courseData.videos > 0 ? (
-                courseData.videos?.map((video: any) => {
-                  return (
-                    <VideoCard
-                      key={video.id}
-                      startTime={video.startTime}
-                      videoUrl={video.videoUrl}
-                      title={video.title}
-                      videoId={getVideoId(video.videoUrl)}
-                      navigation={props.navigation}
-                    />
-                  );
-                })
-              ) : (
-                <>
-                  <View
-                    style={{
-                      justifyContent: "center",
-                      alignSelf: "center",
-                      backgroundColor: "#FAFAFB",
-
-                      height: high / 14.27,
-                    }}
-                  >
-                    <Text
-                      allowFontScaling={false}
-                      style={{
-                        fontFamily: "Poppins-Regular",
-                        alignSelf: "center",
-                        fontSize: 20,
-                      }}
-                    >
-                      No Videos Available
-                    </Text>
-                  </View>
-                </>
+              {courseData.videos?.map((video: any) => {
+                console.log(courseData);
+                return (
+                  <VideoCard
+                    key={video.id}
+                    startTime={video.startTime}
+                    videoUrl={video.videoUrl}
+                    title={video.title}
+                    videoId={getVideoId(video.videoUrl)}
+                    navigation={props.navigation}
+                  />
+                );
+              })}
+              {courseData.videos.length < 1 && (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontFamily: "Poppins-Medium",
+                    fontSize: 16,
+                    marginTop: high / 20,
+                  }}
+                >
+                  No Videos Available
+                </Text>
               )}
             </ScrollView>
           ) : (
             <></>
           )}
-          {/* </View> */}
-          {/* )} */}
         </View>
       </ScrollView>
     </ScrollView>

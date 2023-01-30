@@ -44,7 +44,7 @@ import Webview from "../screens/Webview";
 import { useStateContext } from "../screens/Context/ContextProvider";
 import MockTestTypeTest from "../screens/MockTestTypeTest";
 import ResetPassword from "../screens/ResetPassword";
-
+import SignUpScreen from "../screens/SignUpScreen";
 export default function Navigation({
   colorScheme,
 }: {
@@ -101,6 +101,11 @@ function RootNavigator() {
         />
       )}
 
+      <Stack.Screen
+        name="SignUp"
+        component={SignUpScreen}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="Root"
         component={BottomTabNavigator}

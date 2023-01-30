@@ -25,7 +25,14 @@ export default function HomeScreen({ route, navigation }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [enrData, SetEnrData] = useState<any>([]);
   const [freeVideoData, SetFreeVideoData] = useState<any>([]);
-  const { setAccess_token, setUserDetail, setuserImage } = useStateContext();
+  const {
+    setAccess_token,
+    access_token,
+    setUserDetail,
+    userDetail,
+    setuserImage,
+    refresh,
+  } = useStateContext();
   const getUserImage = async (access_token: string, userId: string) => {
     const config = {
       headers: {
@@ -67,29 +74,27 @@ export default function HomeScreen({ route, navigation }: any) {
   };
   useEffect(() => {
     SecureStore.getItemAsync("access_token").then((value: any) => {
-      console.log("AccessTokenFromLOCKa", value);
       SecureStore.getItemAsync("userId1").then((userId: any) => {
-        if (value != null) {
-          getUserData(value);
-          setAccess_token(value);
-          GetEnrolledCourseInformation(value, userId);
-          getUserImage(value, userId);
-          getVideoContent(value);
-        }
+        getUserData(value);
+        setAccess_token(value);
+        getUserImage(value, userId);
+        getVideoContent(value);
+        GetEnrolledCourseInformation(value, userId);
       });
     });
   }, []);
-
+  useEffect(() => {
+    GetEnrolledCourseInformation(access_token, userDetail.id);
+  }, [refresh]);
   useEffect(() => {
     const backbuttonHander = () => {
-      navigation.navigate("Home");
-      return true;
+      navigation.navigate("TabTwo");
+      return false;
     };
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
-  });
+  }, []);
 
   const getVideoContent = async (access_token: any) => {
-    setIsLoading(true);
     try {
       const config = {
         headers: {
@@ -123,7 +128,9 @@ export default function HomeScreen({ route, navigation }: any) {
         `${baseUrl}/api/services/app/EnrollCourses/GetAllEnrollCourses?studentId=${user_id}`,
         config
       );
-      if (res.data.result) SetEnrData(res.data.result);
+      console.log("Enroolled Api Called");
+
+      SetEnrData(res.data.result);
     } catch (error) {
       console.log(error);
     }
@@ -244,73 +251,7 @@ export default function HomeScreen({ route, navigation }: any) {
                 )}
               />
             </View>
-            {/* {enrData[0] != undefined && (
-              <View
-                style={{
-                  backgroundColor: "#FAFAFB",
-                  width: wid,
-                }}
-              >
-                <Text
-                  allowFontScaling={false}
-                  style={{
-                    fontFamily: "Poppins-Medium",
-                    fontSize: 19,
-                    left: wid / 12.8,
-                    color: "#212121",
-                    marginBottom: high / 85.4,
-                  }}
-                >
-                  Ongoing Courses
-                </Text>
-                {enrData[0] != null ? (
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    style={{
-                      paddingVertical: 0,
-                      paddingLeft: wid / 12.8,
-                      // backgroundColor: "pink",
-                      flexDirection: "row",
-                      // height: high / 3.3,
-                    }}
-                  >
-                    {enrData.map((enr: any) => {
-                      return (
-                        <EnrolledCourse
-                          key={Math.random() * 100}
-                          item={enr}
-                          navigation={navigation}
-                        />
-                      );
-                    })}
-                  </ScrollView>
-                ) : (
-                  <View
-                    style={{
-                      // paddingLeft: wid / 12.8,
-                      backgroundColor: "#FAFAFB",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      alignSelf: "center",
-                      height: high / 5.3,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontFamily: "Poppins-Medium",
-                        width: "100%",
-                        fontSize: 13,
-                        alignSelf: "center",
-                        backgroundColor: "#FAFAFB",
-                      }}
-                    >
-                      No Course has fsafasfsda been purchased
-                    </Text>
-                  </View>
-                )}
-              </View>
-            )} */}
+
             <View
               style={{
                 backgroundColor: "#FAFAFB",
@@ -376,7 +317,6 @@ export default function HomeScreen({ route, navigation }: any) {
                 </View>
               )}
             </View>
-
             <TouchableOpacity
               style={{
                 backgroundColor: "#FAFAFB",

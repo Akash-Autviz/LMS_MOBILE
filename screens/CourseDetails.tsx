@@ -10,7 +10,7 @@ import { calcValidity } from "../utils/Logics";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function CourseDetails(props: any) {
-  const { userDetail, access_token } = useStateContext();
+  const { userDetail, setRefresh, access_token } = useStateContext();
 
   const navigation = useNavigation();
   const { data } = props.route.params;
@@ -86,6 +86,7 @@ export default function CourseDetails(props: any) {
     };
     RazorpayCheckout.open(options as any)
       .then((data: any) => {
+        setRefresh(new Date().getTime());
         createPayment();
         createEnrollementCoures();
       })
@@ -158,7 +159,7 @@ export default function CourseDetails(props: any) {
             backgroundColor: "#F5F5F5",
           }}
         >
-          {data.imagePath && data.imagePath == null ? (
+          {data.imagePath || data.imagePath == null ? (
             <Image
               source={require("../assets/images/bigEnglish.png")}
               style={{
@@ -384,7 +385,7 @@ export default function CourseDetails(props: any) {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => props.navigation.goBack()}
+          onPress={() => navigation.goBack()}
           style={{
             backgroundColor: "#FAFAFB",
             width: wid / 1.371,

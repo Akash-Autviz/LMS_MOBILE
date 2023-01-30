@@ -12,7 +12,6 @@ function HeaderNav(props: any) {
   const { userImage, setuserImage, userDetail, access_token } =
     useStateContext();
 
-  useEffect(() => {}, []);
   const navigation = useNavigation();
   return (
     <View style={styles.container}>
