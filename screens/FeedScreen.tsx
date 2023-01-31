@@ -8,8 +8,6 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import AnswerOption from "../components/AnswerOption";
-
 import CurrentAffairs from "../components/CurrentAffairs";
 import HeaderNav from "../components/HeaderNav";
 import Quiz from "../components/Quiz";
@@ -67,7 +65,7 @@ export default function FeedScreen(props: any) {
       const res = await axios.get(
         `${baseUrl}/api/services/app/QuestionBlogAppSevice/GetAllBlogsQuestions?subjectId=0`
       );
-      console.log(res.data.result);
+
       setQuizDate(res.data.result);
     } catch (error) {
       console.log(error);
@@ -226,7 +224,6 @@ export default function FeedScreen(props: any) {
             style={{ marginBottom: 90, backgroundColor: "transparent" }}
           >
             {data.map((data1: any) => {
-              console.log(data1);
               if (data1.type == "Video") {
                 return <Video item={data1} key={Math.random() * 100} />;
               }

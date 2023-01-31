@@ -10,7 +10,7 @@ import { getVideoId } from "../utils/Logics";
 import { useStateContext } from "./Context/ContextProvider";
 import { baseUrl } from "../utils";
 import TestCardCoponent from "../components/TestCardCoponent";
-import * as SecureStore from "expo-secure-store";
+
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 
@@ -281,13 +281,12 @@ export default function Purchased(props: any) {
           {res == "Notes" ? (
             <ScrollView>
               {courseData.notes?.map((e: any, idx: number) => {
-                console.log(courseData.notes);
                 return (
                   <TouchableOpacity
                     key={idx}
                     onPress={() =>
                       props.navigation.navigate("Web", {
-                        url: `${courseData.notes.notesUrl}`,
+                        id: `${e.id}`,
                       })
                     }
                     style={styles.topicCntr}

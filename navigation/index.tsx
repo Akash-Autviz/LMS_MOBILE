@@ -102,11 +102,6 @@ function RootNavigator() {
       )}
 
       <Stack.Screen
-        name="SignUp"
-        component={SignUpScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
         name="Root"
         component={BottomTabNavigator}
         options={{ headerShown: false }}
@@ -114,6 +109,11 @@ function RootNavigator() {
       <Stack.Screen
         name="SignIn"
         component={SignInPage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="SignUp"
+        component={SignUpScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
