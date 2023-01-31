@@ -19,7 +19,7 @@ const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 export default function MockTestCard(props: any) {
   const navigation = useNavigation();
-  const { userDetail, access_token } = useStateContext();
+  const { userDetail, access_token, setRefresh } = useStateContext();
   const {
     name,
     details,
@@ -28,6 +28,7 @@ export default function MockTestCard(props: any) {
     endTime,
     id,
     price,
+
     isBuy,
     isMockTest,
     upComingData,
@@ -39,7 +40,13 @@ export default function MockTestCard(props: any) {
     "Abp-TenantId": "1",
   };
   const createPayment = async () => {
-    var data = JSON.stringify({});
+    var data = JSON.stringify({
+      courseManagementId: id,
+      name: userDetail.name,
+      paymentType: "Course",
+      purchaseTitle: name,
+      price: price,
+    });
     var config = {
       method: "post",
       url: `${baseUrl}/api/services/app/Payment/CreatePayment`,
@@ -93,6 +100,7 @@ export default function MockTestCard(props: any) {
       .then(function (response: any) {
         buy = "View";
         upComingData();
+        createPayment();
         console.log(response, "Create Enroll Success");
       })
       .catch(function (error: any) {
@@ -118,11 +126,10 @@ export default function MockTestCard(props: any) {
     RazorpayCheckout.open(options as any)
       .then((data: any) => {
         createCourseMockTest();
-        createPayment();
+        setRefresh(new Date().getTime());
         createEnrollementCoures();
       })
       .catch((error: any) => {
-        createPayment();
         alert(
           `Payment Failed if Money deducted from your account.Please Contact Admin`
         );

@@ -32,13 +32,24 @@ const SignUpScreen = () => {
     "Content-Type": "application/json",
   };
   const checkValidation = () => {
+    let PhoneNoRegex = new RegExp(/(0|91)?[6-9][0-9]{9}/);
+    let EmailRegex = new RegExp(
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+    );
+
     if (name.trim() == "") {
       alert("Enter Name");
     } else if (surName.trim() == "") {
       alert("Enter surName");
-    } else if (phoneNumber.length != 10) {
-      alert("Enter Correct PhoneNo");
-    } else if (email == "" || !email.includes("@")) {
+    } else if (
+      !PhoneNoRegex.test(phoneNumber) ||
+      phoneNumber == "" ||
+      phoneNumber.length != 10
+    ) {
+      if (!PhoneNoRegex.test(phoneNumber)) {
+        alert("Enter Correct PhoneNo");
+      } else alert("Enter 10 digit PhoneNo");
+    } else if (email == "" || EmailRegex.test(email)) {
       alert("Enter Correct Email");
     } else if (password.trim() == "" || password.trim().length < 5) {
       alert("Weak Password");
@@ -90,6 +101,7 @@ const SignUpScreen = () => {
           <View>
             <Text style={styles.textHeader}>Name</Text>
             <TextInput
+              value={name}
               placeholder="Enter Name"
               style={styles.textInput}
               onChangeText={(data: any) => setName(data.trim())}
@@ -99,6 +111,7 @@ const SignUpScreen = () => {
             <Text style={styles.textHeader}>SurName</Text>
             <TextInput
               placeholder="Enter SurName"
+              value={surName}
               style={styles.textInput}
               onChangeText={(data: any) => setSurName(data)}
             />
@@ -107,6 +120,7 @@ const SignUpScreen = () => {
             <Text style={styles.textHeader}>Phone Number</Text>
             <TextInput
               placeholder="Enter Phone No"
+              value={phoneNumber}
               textContentType="telephoneNumber"
               keyboardType="number-pad"
               style={styles.textInput}
@@ -118,6 +132,7 @@ const SignUpScreen = () => {
             <TextInput
               placeholder="Enter your email"
               keyboardType="email-address"
+              value={email}
               style={styles.textInput}
               onChangeText={(data: any) => setEmail(data)}
             />
@@ -127,6 +142,7 @@ const SignUpScreen = () => {
             <TextInput
               placeholder="Enter Password"
               style={styles.textInput}
+              value={password}
               onChangeText={(data: any) => setPassword(data)}
             />
           </View>

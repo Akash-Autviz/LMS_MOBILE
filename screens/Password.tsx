@@ -17,8 +17,12 @@ import { useStateContext } from "./Context/ContextProvider";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function Password() {
+  const save = async (key: string, value: string) => {
+    await SecureStore.setItemAsync(key, value);
+  };
   const naviagation = useNavigation();
-  const { access_token } = useStateContext();
+  const { access_token, setAccess_token, userDetail, setRefresh } =
+    useStateContext();
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const checkPasswordValidation = (password: any, newPassword: any) => {
@@ -28,14 +32,42 @@ export default function Password() {
       changePassword(password, newPassword);
     }
   };
+  const SignUpAgainUpdatePassWord = async () => {
+    var data = JSON.stringify({
+      userNameOrEmailAddress: userDetail.emailAddress,
+      password: newPassword,
+      rememberClient: false,
+    });
+
+    var config = {
+      method: "post",
+      url: `${baseUrl}/api/TokenAuth/Authenticate`,
+      headers: {
+        "Content-Type": "application/json",
+        "Abp-TenantId": "1",
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then((res: any) => {
+        SecureStore.setItemAsync(
+          "userId1",
+          JSON.stringify(res.data.result.userId)
+        );
+        console.log("signInSucecesFull", res);
+        setRefresh(new Date().getTime());
+        setAccess_token(res.data.result.accessToken);
+        save("user_id", JSON.stringify(res.data.result.user_id));
+        save("access_token", res.data.result.accessToken);
+      })
+      .catch((error: any) => {});
+  };
   const changePassword = async (password: any, newPassword: any) => {
     var data = JSON.stringify({
       currentPassword: password,
       newPassword: newPassword,
     });
-    // console.log(data);
-    // console.log(token);
-
     var config = {
       method: "post",
       url: `${baseUrl}/api/services/app/User/ChangePassword`,
@@ -48,6 +80,7 @@ export default function Password() {
     };
     axios(config)
       .then((res: any) => {
+        SignUpAgainUpdatePassWord();
         Alert.alert("Success", "Password Changed Successfuly", [
           {
             text: "Okay",

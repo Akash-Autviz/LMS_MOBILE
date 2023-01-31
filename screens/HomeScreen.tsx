@@ -82,10 +82,8 @@ export default function HomeScreen({ route, navigation }: any) {
         GetEnrolledCourseInformation(value, userId);
       });
     });
-  }, []);
-  useEffect(() => {
-    GetEnrolledCourseInformation(access_token, userDetail.id);
   }, [refresh]);
+
   useEffect(() => {
     const backbuttonHander = () => {
       navigation.navigate("TabTwo");

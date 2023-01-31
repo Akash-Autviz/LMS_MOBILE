@@ -257,7 +257,7 @@ export default function ProfilePage(props: any) {
           />
 
           <Text allowFontScaling={false} style={styles.cardtext}>
-            Change Password
+            Update Password
           </Text>
           <Image
             style={styles.cardImage}

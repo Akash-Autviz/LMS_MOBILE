@@ -9,7 +9,7 @@ import {
   StyleSheet,
   Image,
   TextInput,
-  KeyboardAvoidingView,
+  Keyboard,
   Alert,
 } from "react-native";
 import { View, Text } from "../components/Themed";
@@ -31,6 +31,7 @@ export default function SignInPage(props: any) {
   const [userPassword, setUserPassword] = useState("");
   const rememberClient = false;
   const [data1, setData] = useState("");
+  const [isTyping, setisTyping] = useState(false);
   const [focused, setFocused] = useState(false);
   useEffect(() => {
     setUserMailId("");
@@ -88,6 +89,19 @@ export default function SignInPage(props: any) {
   const toggleFocus = () => {
     setFocused((prev: any) => !prev);
   };
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setisTyping(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setisTyping(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
   return (
     <ScrollView style={styles.container}>
       <ImageBackground
@@ -110,7 +124,7 @@ export default function SignInPage(props: any) {
           <Image
             source={require("../assets/images/sampleImage.png")}
             style={{
-              marginTop: high / 20,
+              marginTop: isTyping == true ? -high / 20 : high / 20,
 
               alignSelf: "center",
               borderRadius: 18,
@@ -288,7 +302,7 @@ export default function SignInPage(props: any) {
               onPress={() => navigation.navigate("reset")}
             >
               <Text allowFontScaling={false} style={{ color: "#309EAF" }}>
-                Recovery Password
+                Forget Password
               </Text>
             </TouchableOpacity>
           </View>
