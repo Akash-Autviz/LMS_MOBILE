@@ -11,23 +11,20 @@ const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function CourseDetails(props: any) {
   const { userDetail, setRefresh, access_token } = useStateContext();
-
   const navigation = useNavigation();
   const { data } = props.route.params;
-  console.log(data);
   const headers = {
     Authorization: `Bearer ${access_token}`,
     "Content-Type": "application/json",
     "Abp-TenantId": "1",
   };
-
+  const backbuttonHander = () => {
+    navigation.navigate("TabTwo");
+    return true;
+  };
   useEffect(() => {
-    const backbuttonHander = () => {
-      navigation.navigate("TabTwo");
-      return true;
-    };
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
-  });
+  }, [backbuttonHander]);
 
   const [buttonValue, setButtonValue] = useState(
     data.isBuy == false ? "Buy" : "False"
@@ -113,12 +110,18 @@ export default function CourseDetails(props: any) {
   };
 
   const createPayment = async () => {
-    var data = JSON.stringify({});
+    var payload = JSON.stringify({
+      courseManagementId: data.id,
+      name: userDetail.name,
+      paymentType: "Course",
+      purchaseTitle: data.name,
+      price: data.price,
+    });
     var config = {
       method: "post",
       url: `${baseUrl}/api/services/app/Payment/CreatePayment`,
       headers,
-      data: data,
+      data: payload,
     };
 
     axios(config)
@@ -152,9 +155,9 @@ export default function CourseDetails(props: any) {
             backgroundColor: "#F5F5F5",
           }}
         >
-          {data.imagePath || data.imagePath == null ? (
+          {data.imagePath ? (
             <Image
-              source={require("../assets/images/bigEnglish.png")}
+              source={{ uri: data.imagePath }}
               style={{
                 marginTop: high / 10,
                 width: "90%",
@@ -167,7 +170,7 @@ export default function CourseDetails(props: any) {
             ></Image>
           ) : (
             <Image
-              source={{ uri: data.imagePath }}
+              source={require("../assets/images/bigEnglish.png")}
               style={{
                 marginTop: high / 10,
                 width: "90%",

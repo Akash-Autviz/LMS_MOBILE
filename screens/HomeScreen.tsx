@@ -19,12 +19,15 @@ import VideoCard from "../components/VideoCard";
 import { useStateContext } from "./Context/ContextProvider";
 import { getVideoId } from "../utils/Logics";
 import { baseUrl } from "../utils";
+import { tokens } from "react-native-paper/lib/typescript/styles/themes/v3/tokens";
+import OnGoinVideoCard from "../components/OnGoinVideoCard";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function HomeScreen({ route, navigation }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [enrData, SetEnrData] = useState<any>([]);
   const [freeVideoData, SetFreeVideoData] = useState<any>([]);
+  const [onGoingVideoCourse, setonGoingVideoCourse] = useState<any>([]);
   const {
     setAccess_token,
     access_token,
@@ -78,20 +81,32 @@ export default function HomeScreen({ route, navigation }: any) {
         getUserData(value);
         setAccess_token(value);
         getUserImage(value, userId);
+        // getOngoingVideoCourses(value);
         getVideoContent(value);
         GetEnrolledCourseInformation(value, userId);
       });
     });
   }, [refresh]);
-
-  useEffect(() => {
-    const backbuttonHander = () => {
-      navigation.navigate("TabTwo");
-      return false;
+  const getOngoingVideoCourses = async (token: any) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer  ${token}`,
+        "Abp-TenantId": "1",
+      },
     };
-    BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
-  }, []);
-
+    try {
+      const res = await axios.get(
+        `${baseUrl}/api/services/app/CourseManagementAppServices/GetAllDataBasedOnCategory?courseType=Hybrid`,
+        config
+      );
+      setonGoingVideoCourse(res.data.result);
+    } catch (error) {
+      console.log(
+        "app/CourseManagementAppServices/GetAllDataBasedOnCategory?courseType=Hybrid",
+        error
+      );
+    }
+  };
   const getVideoContent = async (access_token: any) => {
     try {
       const config = {
@@ -315,11 +330,10 @@ export default function HomeScreen({ route, navigation }: any) {
                 </View>
               )}
             </View>
-            <TouchableOpacity
+            <View
               style={{
                 backgroundColor: "#FAFAFB",
-                marginTop: high / 65,
-                width: wid / 0.45,
+                width: wid,
               }}
             >
               <Text
@@ -329,11 +343,77 @@ export default function HomeScreen({ route, navigation }: any) {
                   fontSize: 19,
                   left: wid / 12.8,
                   color: "#212121",
+                  marginBottom: high / 85.4,
+                }}
+              >
+                Ongoing Video Courses
+              </Text>
+              {onGoingVideoCourse ? (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{
+                    paddingVertical: 0,
+                    paddingLeft: wid / 12.8,
+                    // backgroundColor: "pink",
+                    flexDirection: "row",
+                    // height: high / 3.3,
+                  }}
+                >
+                  {onGoingVideoCourse.map((enr: any, idx: number) => {
+                    return (
+                      <OnGoinVideoCard
+                        key={idx}
+                        item={enr}
+                        navigation={navigation}
+                      />
+                    );
+                  })}
+                </ScrollView>
+              ) : (
+                <View
+                  style={{
+                    // paddingLeft: wid / 12.8,
+                    backgroundColor: "#FAFAFB",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    alignSelf: "center",
+                    height: high / 14.3,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontFamily: "Poppins-Medium",
+                      width: "100%",
+                      fontSize: 13,
+                      alignSelf: "center",
+                      backgroundColor: "#FAFAFB",
+                    }}
+                  >
+                    No Course has been purchased
+                  </Text>
+                </View>
+              )}
+            </View>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#FAFAFB",
+                marginTop: high / 65,
+                width: wid / 0.45,
+              }}
+            >
+              {/* <Text
+                allowFontScaling={false}
+                style={{
+                  fontFamily: "Poppins-Medium",
+                  fontSize: 19,
+                  left: wid / 12.8,
+                  color: "#212121",
                 }}
               >
                 Free Videos
-              </Text>
-              <View style={{ backgroundColor: "#FAFAFB" }}>
+              </Text> */}
+              {/* <View style={{ backgroundColor: "#FAFAFB" }}>
                 {freeVideoData.length > 0 ? (
                   <ScrollView
                     showsHorizontalScrollIndicator={false}
@@ -390,7 +470,7 @@ export default function HomeScreen({ route, navigation }: any) {
                     </Text>
                   </View>
                 )}
-              </View>
+              </View> */}
               {/* {!freeVideoData && (
                 
               )} */}

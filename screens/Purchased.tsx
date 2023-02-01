@@ -221,12 +221,42 @@ export default function Purchased(props: any) {
       </TouchableOpacity>
     </View>
   );
+  //   {
+  //     "studentId": 14,
+  //     "mockTestId": 22,
+  //     "courseManagementId": "10"
+  // }
+
   useEffect(() => {
-    getEnrollMockTestByUserIdAndCouresId();
+    //  CreateCourseMockTest(access_token);
     getCourseDetails(access_token, Courseid);
+    getEnrollMockTestByUserIdAndCouresId();
   }, [props]);
   const [isTrue, setIsTrue] = useState(true);
-
+  const CreateCourseMockTest = async (token: any) => {
+    let data = JSON.stringify({
+      studentId: userDetail.id,
+      // mockTestId: 22,
+      courseManagementId: "Courseid",
+    });
+    const config = {
+      method: "GET",
+      url: `${baseUrl}/api/services/app/Session/GetCurrentLoginInformations`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Abp-TenantId": "1",
+      },
+      data: data,
+    };
+    await axios(config)
+      .then(function async(response: any) {
+        if (response.data.result.user != null) {
+        }
+      })
+      .catch(function (error: any) {
+        console.log(error);
+      });
+  };
   const getCourseDetails = async (token: any, id: any) => {
     let data = "";
     var config = {
@@ -251,8 +281,7 @@ export default function Purchased(props: any) {
   useEffect(() => {}, []);
   const headers: any = {
     Authorization: `Bearer ${access_token}`,
-    Accept: "text/plain",
-    "Abp-TenantId": 1,
+    "Abp-TenantId": "1",
   };
   const getEnrollMockTestByUserIdAndCouresId = async () => {
     try {
@@ -288,7 +317,7 @@ export default function Purchased(props: any) {
         >
           {courseData.imagePath ? (
             <Image
-              source={{ uri: `${courseData.imagePath}` }}
+              source={{ uri: courseData.imagePath }}
               style={{
                 width: "80%",
                 top: 10,

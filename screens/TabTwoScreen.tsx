@@ -210,8 +210,7 @@ export default function TabTwoScreen({ routes, navigation }: any) {
                 <TouchableOpacity
                   onPress={() =>
                     navigation.navigate("CourseDetails", {
-                      id: item.id,
-                      navigation: { navigation },
+                      data: item,
                     })
                   }
                   style={styles.topicCntr}

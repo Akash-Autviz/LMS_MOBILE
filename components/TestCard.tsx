@@ -33,9 +33,7 @@ const TestCard = (props: any) => {
       // "Access-Control-Allow-Origin": `http://192.168.18.95:19000`,
     },
   };
-  console.log(
-    "adfhjakshdfjksahfjklashdfkljsahflkjsahdfljkashfdkjlashfkjdlhaskfhkjlsahk"
-  );
+
   const start = async (data: any) => {
     const { id, isView } = data;
     GetUserMockTestSection();
@@ -78,7 +76,7 @@ const TestCard = (props: any) => {
     });
     updateUserMockTestSection(mockTestSectionData[0]);
     navigation.dispatch(StackActions.replace("Test"), {});
-    navigation.navigate("Test", );
+    navigation.navigate("Test");
   };
   useEffect(() => {
     getEnrollMockTestByUserIdAndCouresId();
