@@ -1,100 +1,274 @@
 import { useEffect, useState } from "react";
 import React from "react";
 import { StyleSheet, ScrollView, Linking } from "react-native";
-
 import { ActivityIndicator } from "react-native-paper";
 import axios from "axios";
 import { TouchableOpacity, Image, Dimensions } from "react-native";
 import { View, Text } from "../components/Themed";
-import * as SecureStore from "expo-secure-store";
-import MockTestCard from "../components/MockTestCard";
-import { useNavigation } from "@react-navigation/native";
 import VideoCard from "../components/VideoCard";
-
+import { checkArrayIsEmpty, getVideoId } from "../utils/Logics";
+import { useStateContext } from "./Context/ContextProvider";
+import { baseUrl } from "../utils";
+import TestCardCoponent from "../components/TestCardCoponent";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
-
 export default function Purchased(props: any) {
-  const navigation = useNavigation();
   const [courseData, setCourseData] = useState<any>([]);
-  const [topicData, setTopicData] = useState<any>([]);
-  const [videoData, setVideoData] = useState<any>([]);
+  const [courseType, setCourseType] = useState<any>();
+  const { access_token, userDetail } = useStateContext();
   const Courseid = props.route.params.id;
-  // console.log(courseData.notes[0].notesUrl);
-  const getVideoId = (url: any) => {
-    var id = "";
-    if (Boolean(url)) {
-      id = url.split("v=")[1];
-      if (id != null) {
-        if (id.includes("&")) {
-          return id.split("&")[0];
-        } else {
-          return id;
-        }
-      }
-    }
-  };
-
+  const [currrentCourseData, SetCurrrentCourseData] = useState<any>([]);
+  const [res, setRes] = useState("Notes");
+  var Video = (
+    <View
+      style={{
+        flexDirection: "row",
+        width: wid / 1.2,
+        height: high / 17,
+        alignSelf: "center",
+        alignItems: "center",
+        borderRadius: 116,
+        borderWidth: 0.5,
+        borderColor: "#EEEEEE",
+        backgroundColor: "#FAFAFB",
+      }}
+    >
+      <TouchableOpacity
+        onPress={() => setRes("Notes")}
+        style={{
+          backgroundColor: res == "Notes" ? "#319EAE" : "#FAFAFB",
+          borderRadius: 116,
+          height: "100%",
+          width: wid / 2.42,
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          allowFontScaling={false}
+          style={{
+            color: res == "Notes" ? "white" : "black",
+            alignSelf: "center",
+            fontFamily: "Poppins-Regular",
+            fontSize: 15,
+          }}
+        >
+          Notes
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => setRes("Videos")}
+        style={{
+          backgroundColor: res == "Videos" ? "#319EAE" : "#FAFAFB",
+          borderRadius: 116,
+          height: "100%",
+          width: wid / 2.42,
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          allowFontScaling={false}
+          style={{
+            color: res == "Videos" ? "white" : "black",
+            alignSelf: "center",
+            fontFamily: "Poppins-Regular",
+            fontSize: 15,
+          }}
+        >
+          Videos
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+  var Mock = (
+    <View
+      style={{
+        flexDirection: "row",
+        width: wid / 1.2,
+        height: high / 17,
+        alignSelf: "center",
+        alignItems: "center",
+        borderRadius: 116,
+        borderWidth: 0.5,
+        borderColor: "#EEEEEE",
+        backgroundColor: "#FAFAFB",
+      }}
+    >
+      <TouchableOpacity
+        onPress={() => setRes("Notes")}
+        style={{
+          backgroundColor: res == "Notes" ? "#319EAE" : "#FAFAFB",
+          borderRadius: 116,
+          height: "100%",
+          width: wid / 2.42,
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          allowFontScaling={false}
+          style={{
+            color: res == "Notes" ? "white" : "black",
+            alignSelf: "center",
+            fontFamily: "Poppins-Regular",
+            fontSize: 15,
+          }}
+        >
+          Notes
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => setRes("Mock Tests")}
+        style={{
+          backgroundColor: res == "Mock Tests" ? "#319EAE" : "#FAFAFB",
+          borderRadius: 116,
+          height: "100%",
+          width: wid / 2.42,
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          allowFontScaling={false}
+          style={{
+            color: res == "Mock Tests" ? "white" : "black",
+            alignSelf: "center",
+            fontFamily: "Poppins-Regular",
+            fontSize: 15,
+          }}
+        >
+          Mock Tests
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+  var hrbrid = (
+    <View
+      style={{
+        flexDirection: "row",
+        width: "90%",
+        height: high / 17,
+        alignSelf: "center",
+        alignItems: "center",
+        borderRadius: 116,
+        borderWidth: 0.5,
+        borderColor: "#EEEEEE",
+        backgroundColor: "#FAFAFB",
+      }}
+    >
+      <TouchableOpacity
+        onPress={() => setRes("Notes")}
+        style={{
+          backgroundColor: res == "Notes" ? "#319EAE" : "#FAFAFB",
+          borderRadius: 116,
+          height: "100%",
+          width: "33.4%",
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          allowFontScaling={false}
+          style={{
+            color: res == "Notes" ? "white" : "black",
+            alignSelf: "center",
+            fontFamily: "Poppins-Regular",
+            fontSize: 15,
+          }}
+        >
+          Notes
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => setRes("Videos")}
+        style={{
+          backgroundColor: res == "Videos" ? "#319EAE" : "#FAFAFB",
+          borderRadius: 116,
+          height: "100%",
+          width: "33.4%",
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          allowFontScaling={false}
+          style={{
+            color: res == "Videos" ? "white" : "black",
+            alignSelf: "center",
+            fontFamily: "Poppins-Regular",
+            fontSize: 15,
+          }}
+        >
+          Videos
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => setRes("Mock Tests")}
+        style={{
+          backgroundColor: res == "Mock Tests" ? "#319EAE" : "#FAFAFB",
+          borderRadius: 116,
+          height: "100%",
+          width: "33.4%",
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          allowFontScaling={false}
+          style={{
+            color: res == "Mock Tests" ? "white" : "black",
+            alignSelf: "center",
+            fontFamily: "Poppins-Regular",
+            fontSize: 15,
+          }}
+        >
+          Mock Tests
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
   useEffect(() => {
-    SecureStore.getItemAsync("access_token").then((value: any) => {
-      if (value != null) {
-        getCourseDetails(value, Courseid);
-      }
-    });
-  }, []);
-  const [isTrue, setIsTrue] = useState(false);
+    getEnrollMockTestByUserIdAndCouresId();
+    getCourseDetails(access_token, Courseid);
+  }, [props]);
+  const [isTrue, setIsTrue] = useState(true);
+
   const getCourseDetails = async (token: any, id: any) => {
-    var data = "";
+    let data = "";
     var config = {
       method: "get",
-      url: `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/CourseManagementAppServices/GetStudentCourse?id=${id}`,
+      url: `${baseUrl}/api/services/app/CourseManagementAppServices/GetStudentCourse?id=${id}`,
       headers: {
         Authorization: `Bearer ${token}`,
       },
       data: data,
     };
-
     axios(config)
       .then(function (response: any) {
-        if (response.data.name !== null) {
-          console.log(response, "++++++++++++++++++++++++++");
-          setCourseData(response.data.result);
-          setIsTrue(true);
-        }
+        console.log(response);
+        setCourseType(response.data.result.type);
+        setCourseData(response.data.result);
       })
       .catch(function (error: any) {
         console.log(error);
       });
   };
-  const val = "Start";
-  const [res, setRes] = useState("Mock Tests");
-  const [color, setColor] = useState(true);
-  const [color1, setColor1] = useState(false);
-  const [color2, setColor2] = useState(false);
-  const [color3, setColor3] = useState(false);
 
-  const onPress = (text: string) => {
-    setRes(text);
-    if (text == "Mock Tests") {
-      setColor(true);
-      setColor1(false);
-      setColor2(false);
-      setColor3(false);
-    } else if (text == "Notes") {
-      setColor(false);
-      setColor1(true);
-      setColor2(false);
-      setColor3(false);
-    } else if (text == "Videos") {
-      setColor(false);
-      setColor1(false);
-      setColor2(true);
-      setColor3(false);
+  useEffect(() => {}, []);
+  const headers: any = {
+    Authorization: `Bearer ${access_token}`,
+    Accept: "text/plain",
+    "Abp-TenantId": 1,
+  };
+  const getEnrollMockTestByUserIdAndCouresId = async () => {
+    try {
+      const res = await axios.get(
+        `${baseUrl}/api/services/app/EnrollMockTest/GetEnrolledMockTestByUserIdAndCourseId?userId=${userDetail.id}&courseId=${Courseid}`,
+        headers
+      );
+      console.log("GetEnrolledMockTestByUserIdAndCourseId", res);
+      SetCurrrentCourseData(res.data.result);
+    } catch (error) {
+      console.log("GetEnrolledMockTestByUserIdAndMockTestId", error);
     }
-    console.log(res);
+    setIsTrue(false);
   };
 
-  return isTrue ? (
+  return !isTrue ? (
     <ScrollView style={{ backgroundColor: "#FAFAFB", flex: 1, height: high }}>
       <ScrollView
         style={{
@@ -171,125 +345,78 @@ export default function Purchased(props: any) {
             marginTop: 30,
           }}
         >
-          <View
-            style={{
-              flexDirection: "row",
-              width: "90%",
-              height: high / 17,
-              alignSelf: "center",
-              alignItems: "center",
-              borderRadius: 116,
-              borderWidth: 0.5,
-              borderColor: "#EEEEEE",
-              backgroundColor: "#FAFAFB",
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => onPress("Mock Tests")}
-              style={{
-                backgroundColor: color ? "#319EAE" : "#FAFAFB",
-                height: "100%",
-                width: "33.4%",
-                justifyContent: "center",
-                borderRadius: 116,
-              }}
-            >
-              <Text
-                allowFontScaling={false}
-                style={{
-                  color: color ? "white" : "black",
-                  alignSelf: "center",
-                  fontFamily: "Poppins-Regular",
-                  fontSize: 15,
-                }}
-              >
-                Tests
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => onPress("Notes")}
-              style={{
-                backgroundColor: color1 ? "#319EAE" : "#FAFAFB",
-                borderRadius: 116,
-                height: "100%",
-                width: "33.4%",
-                justifyContent: "center",
-              }}
-            >
-              <Text
-                allowFontScaling={false}
-                style={{
-                  color: color1 ? "white" : "black",
-                  alignSelf: "center",
-                  fontFamily: "Poppins-Regular",
-                  fontSize: 15,
-                }}
-              >
-                Notes
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => onPress("Videos")}
-              style={{
-                backgroundColor: color2 ? "#319EAE" : "#FAFAFB",
-                height: "100%",
-                borderRadius: 116,
-                width: "33.4%",
-                justifyContent: "center",
-              }}
-            >
-              <Text
-                allowFontScaling={false}
-                style={{
-                  color: color2 ? "white" : "black",
-                  alignSelf: "center",
-                  fontFamily: "Poppins-Regular",
-                  fontSize: 15,
-                }}
-              >
-                Videos
-              </Text>
-            </TouchableOpacity>
+          <View>
+            {/* select-Option Container */}
+            {/* {hrbrid} */}
+            {courseType == "Mock"
+              ? Mock
+              : courseType == "Hybrid"
+              ? hrbrid
+              : Video}
           </View>
 
-          {/* {courseData.mockTests && courseData.video && ( */}
-          {/* <View> */}
           {res == "Mock Tests" ? (
-            <ScrollView style={{ marginTop: 20, marginBottom: 20 }}>
-              {courseData.mockTests?.map((item: any) => {
+            <ScrollView style={{ marginTop: 20, marginBottom: 60 }}>
+              {currrentCourseData?.map((item: any, idx: any) => {
+                console.log(currrentCourseData);
                 return (
-                  <MockTestCard
-                    navigation={props.navigation}
-                    key={Math.random() * 100}
-                    id={item.id}
-                    name={item.title}
-                    details={item.detail}
-                    date={item.creationTime}
-                    button={val}
+                  <TestCardCoponent
+                    key={idx}
+                    title={item.mockTest.title}
+                    data={item}
+                    getEnrollMockTestByUserIdAndCouresId={
+                      getEnrollMockTestByUserIdAndCouresId
+                    }
                   />
                 );
               })}
+              {!currrentCourseData && (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontFamily: "Poppins-Medium",
+                    fontSize: 16,
+                    marginTop: high / 20,
+                  }}
+                >
+                  No MockTest Available
+                </Text>
+              )}
             </ScrollView>
           ) : null}
           {res == "Notes" ? (
             <ScrollView>
-              <TouchableOpacity
-                onPress={
-                  () =>
-                    props.navigation.navigate("Web", {
-                      url: `${courseData.notes.notesUrl}`,
-                      // url: ``,
-                    })
-                  // Linking.openURL(
-                  //   `http://samples.leanpub.com/thereactnativebook-sample.pdf`
-                  // )
-                }
-                style={styles.topicCntr}
-              >
-                <Text style={{ fontFamily: "Poppins-Medium", fontSize: 16 }}>
-                  Follow to link
+              {courseData.notes?.map((e: any, idx: number) => {
+                return (
+                  <TouchableOpacity
+                    key={idx}
+                    onPress={() =>
+                      props.navigation.navigate("Web", {
+                        id: `${e.id}`,
+                      })
+                    }
+                    style={styles.topicCntr}
+                  >
+                    <Text
+                      style={{ fontFamily: "Poppins-Medium", fontSize: 16 }}
+                    >
+                      {e.title}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+              {checkArrayIsEmpty(courseData.notes) && (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontFamily: "Poppins-Medium",
+                    fontSize: 16,
+                    marginTop: high / 20,
+                  }}
+                >
+                  No Notes Available
                 </Text>
-              </TouchableOpacity>
+              )}
             </ScrollView>
           ) : (
             <></>
@@ -298,8 +425,7 @@ export default function Purchased(props: any) {
             <ScrollView
               style={{
                 marginTop: 20,
-                marginBottom: high / 2,
-
+                marginBottom: 60,
                 width: wid,
               }}
               contentContainerStyle={{
@@ -307,49 +433,35 @@ export default function Purchased(props: any) {
                 justifyContent: "center",
               }}
             >
-              {courseData ? (
-                courseData.videos?.map((video: any) => {
-                  return (
-                    <VideoCard
-                      key={video.id}
-                      startTime={video.startTime}
-                      videoUrl={video.videoUrl}
-                      title={video.title}
-                      videoId={getVideoId(video.videoUrl)}
-                      navigation={props.navigation}
-                    />
-                  );
-                })
-              ) : (
-                <>
-                  <View
-                    style={{
-                      justifyContent: "center",
-                      alignSelf: "center",
-                      backgroundColor: "#FAFAFB",
-
-                      height: high / 4.27,
-                    }}
-                  >
-                    <Text
-                      allowFontScaling={false}
-                      style={{
-                        fontFamily: "Poppins-Regular",
-                        alignSelf: "center",
-                        fontSize: 20,
-                      }}
-                    >
-                      No Videos Available
-                    </Text>
-                  </View>
-                </>
+              {courseData.videos?.map((video: any) => {
+                console.log(courseData);
+                return (
+                  <VideoCard
+                    key={video.id}
+                    startTime={video.startTime}
+                    videoUrl={video.videoUrl}
+                    title={video.title}
+                    videoId={getVideoId(video.videoUrl)}
+                    navigation={props.navigation}
+                  />
+                );
+              })}
+              {checkArrayIsEmpty(courseData.videos) && (
+                <Text
+                  style={{
+                    textAlign: "center",
+                    fontFamily: "Poppins-Medium",
+                    fontSize: 16,
+                    marginTop: high / 20,
+                  }}
+                >
+                  No Videos Available
+                </Text>
               )}
             </ScrollView>
           ) : (
             <></>
           )}
-          {/* </View> */}
-          {/* )} */}
         </View>
       </ScrollView>
     </ScrollView>

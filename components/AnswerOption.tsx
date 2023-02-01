@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Checkbox } from "react-native-paper";
-import { TouchableOpacity, StyleSheet, Image, Dimensions } from "react-native";
+
+import {StyleSheet, Image, Dimensions } from "react-native";
 import { View, Text } from "../components/Themed";
-import { Item } from "react-native-paper/lib/typescript/components/List/List";
+
 const wid = Dimensions.get("screen").width;
 const high = Dimensions.get("screen").height;
 export default function AnswerOption(props: any) {

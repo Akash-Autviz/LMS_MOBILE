@@ -1,41 +1,20 @@
 import React, { useState, useEffect } from "react";
-import {
-  Platform,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  Image,
-} from "react-native";
+import { StyleSheet, Dimensions, TouchableOpacity, Image } from "react-native";
 
 import { Linking } from "react-native";
 
 import { Text, View } from "../components/Themed";
+import { trimDate, getVideoId } from "../utils/Logics";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function VideoComponent(props: any) {
   const { description, image, title, fileName, creationTime } = props.item;
-  let detail = description;
+  let detail = description + "";
 
-  const [readMore, setReadMore] = useState(
-    detail.length < 50 ? "Read more..." : "Read less"
-  );
-  useEffect(() => {
-    if (readMore == "Read more...") {
-      detail = props.description;
-    } else {
-      detail = detail.substring(0, 200);
-    }
-  }, [readMore]);
-
-  const trimDate = (num: any) => {
-    var str = `${num}`;
-    var sliced = str.slice(0, 10);
-
-    return sliced;
-  };
-
+  const [readMore, setReadMore] = useState(detail.length > 50 ? true : false);
+  console.log(readMore, "ReadMore");
   return (
-    <>
+    <View>
       <TouchableOpacity
         onPress={() => Linking.openURL(fileName)}
         style={{
@@ -84,22 +63,56 @@ export default function VideoComponent(props: any) {
           style={{
             width: "100%",
             alignSelf: "center",
-            height: high / 6.569,
+            height: high / 5.9,
             resizeMode: "cover",
             borderRadius: 5,
-            marginVertical: high / 80,
+            marginVertical: high / 100,
           }}
-          source={require("../assets/images/bigEnglish.png")}
+          resizeMode="stretch"
+          source={{
+            uri: `https://img.youtube.com/vi/${getVideoId(
+              fileName
+            )}/hqdefault.jpg`,
+          }}
         />
-        {/* <Image source={{ uri: `${image}` }} style={styles.image} /> */}
+
         <Text allowFontScaling={false} style={styles.cardDesc}>
-          {description && detail}
-          <TouchableOpacity onPress={() => setReadMore("Read less")}>
-            <Text style={{ color: "skyblue" }}>{readMore}</Text>
-          </TouchableOpacity>
+          {description && readMore === true ? detail.slice(0, 180) : detail}
         </Text>
+        {detail.length < 179 && (
+          <TouchableOpacity
+            style={{}}
+            onPress={() => {
+              setReadMore(!readMore);
+            }}
+          >
+            <Text
+              style={{
+                color: "#319EAE",
+                fontSize: 14,
+              }}
+            >
+              {readMore === true ? "... Read More" : "Read Less"}
+            </Text>
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity
+          style={{}}
+          onPress={() => {
+            setReadMore(!readMore);
+          }}
+        >
+          <Text
+            style={{
+              color: "#319EAE",
+              fontSize: 14,
+            }}
+          >
+            {readMore === true ? "... Read More" : "Read Less"}
+          </Text>
+        </TouchableOpacity>
       </TouchableOpacity>
-    </>
+    </View>
   );
 }
 
@@ -116,7 +129,8 @@ const styles = StyleSheet.create({
     alignSelf: "center",
   },
   cardDesc: {
-    alignSelf: "center",
+    justifyContent: "center",
+    alignItems: "center",
     fontFamily: "Poppins-Medium",
     fontSize: 12,
   },

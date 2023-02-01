@@ -1,3 +1,4 @@
+import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
 import React, { useEffect, useState } from "react";
@@ -7,13 +8,12 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
-import { ActivityIndicator } from "react-native-paper";
-
 import CurrentAffairs from "../components/CurrentAffairs";
 import HeaderNav from "../components/HeaderNav";
 import Quiz from "../components/Quiz";
 import { Text, View } from "../components/Themed";
 import Video from "../components/Video";
+import { baseUrl } from "../utils";
 
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
@@ -54,38 +54,38 @@ export default function FeedScreen(props: any) {
   };
   const [data, SetData] = useState<any>([]);
   const [feedData, setFeedData] = useState<any>([]);
+  const [quizData, setQuizDate] = useState<any>([]);
+  const getQuizQuestion = async (value: any) => {
+    try {
+      let config = {
+        headers: {
+          Authorization: `Bearer  ${value}`,
+        },
+      };
+      const res = await axios.get(
+        `${baseUrl}/api/services/app/QuestionBlogAppSevice/GetAllBlogsQuestions?subjectId=0`
+      );
 
+      setQuizDate(res.data.result);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   useEffect(() => {
     SecureStore.getItemAsync("access_token").then((value: any) => {
       if (value != null) {
         Jobnotification(value);
+        getQuizQuestion(value);
       }
     });
   }, []);
-  const calcTime = (num1: any) => {
-    var slice1 = num1.slice(0, 10);
 
-    return slice1;
-  };
-  const calcTime1 = (num2: any) => {
-    var slice2 = num2.slice(0, 10);
-
-    return slice2;
-  };
-  const trimText = (desc: string) => {
-    let newDesc = desc.split(" ");
-    let res = "";
-    for (let i = 0; i <= 2; i++) {
-      res += newDesc[i] + " ";
-    }
-    return res + "...";
-  };
   const Jobnotification = async (token: any) => {
     var axios = require("axios");
     var data = "";
     var config = {
       method: "get",
-      url: `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/BlogAppServices/GetAllBlogs?subjectId=0&courseId=0`,
+      url: `${baseUrl}/api/services/app/BlogAppServices/GetAllBlogs?subjectId=0&courseId=0`,
       headers: {
         Authorization: `Bearer  ${token}`,
       },
@@ -116,6 +116,7 @@ export default function FeedScreen(props: any) {
     <View
       style={{
         backgroundColor: "#F7F7F7",
+        height: high,
         flex: 1,
       }}
     >
@@ -124,9 +125,9 @@ export default function FeedScreen(props: any) {
         style={{
           flexDirection: "row",
           width: "90%",
-          top: high / 42.7,
+          marginTop: high / 28,
           height: high / 17,
-          marginBottom: high / 12.7,
+
           alignSelf: "center",
           alignItems: "center",
           borderRadius: 116,
@@ -139,7 +140,7 @@ export default function FeedScreen(props: any) {
           onPress={() => onPress("Quiz")}
           style={{
             backgroundColor: color ? "#319EAE" : "#FAFAFB",
-            height: "100%",
+            height: high / 17,
             width: "33%",
             justifyContent: "center",
             borderRadius: 116,
@@ -162,7 +163,7 @@ export default function FeedScreen(props: any) {
           style={{
             backgroundColor: color1 ? "#319EAE" : "#FAFAFB",
             borderRadius: 116,
-            height: "100%",
+            height: high / 17,
             width: "33%",
             justifyContent: "center",
           }}
@@ -183,7 +184,7 @@ export default function FeedScreen(props: any) {
           onPress={() => onPress("Video")}
           style={{
             backgroundColor: color3 ? "#319EAE" : "#FAFAFB",
-            height: "100%",
+            height: high / 17,
             width: "33%",
             justifyContent: "center",
             borderRadius: 116,
@@ -202,56 +203,45 @@ export default function FeedScreen(props: any) {
           </Text>
         </TouchableOpacity>
       </View>
-      {/* <View style={{ backgroundColor: "#FAFAFB", marginVertical: high / 40 }}>
-        <Text
-          allowFontScaling={false}
-          style={{
-            left: wid / 12.8,
-            fontSize: 30,
-            fontFamily: "Poppins-Regular",
-          }}
-        >
-          {currentState}
-        </Text>
-      </View> */}
-      <ScrollView style={{}}>
+
+      <ScrollView style={{ backgroundColor: "#FAFAFB", marginTop: high / 50 }}>
         {currentState == "Current Affairs" ? (
-          <>
+          <ScrollView>
             {data.map((data1: any) => {
               if (data1.type == "Current Affairs") {
                 return (
                   <CurrentAffairs
                     item={data1}
-                    // image={data1.image}
                     navigation={props.navigation}
                     key={Math.random() * 100}
                   />
                 );
               }
             })}
-          </>
+          </ScrollView>
         ) : currentState == "Video" ? (
-          <>
+          <ScrollView
+            style={{ marginBottom: 90, backgroundColor: "transparent" }}
+          >
             {data.map((data1: any) => {
               if (data1.type == "Video") {
                 return <Video item={data1} key={Math.random() * 100} />;
               }
             })}
-          </>
+          </ScrollView>
         ) : currentState == "Quiz" ? (
-          <>
-            {data.map((data1: any) => {
-              if (data1.type == "Daily Quiz") {
-                return (
-                  <Quiz
-                    key={Math.random() * 100}
-                    item={data1}
-                    navigation={props.navigation}
-                  />
-                );
-              }
+          <ScrollView style={{ marginBottom: 90 }}>
+            {quizData.map((data1: any, idx: any) => {
+              return (
+                <Quiz
+                  key={Math.random() * 100}
+                  data={data1}
+                  index={idx}
+                  navigation={props.navigation}
+                />
+              );
             })}
-          </>
+          </ScrollView>
         ) : (
           <></>
         )}

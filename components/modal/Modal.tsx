@@ -2,7 +2,6 @@ import { MaterialCommunityIcons, SimpleLineIcons } from "@expo/vector-icons";
 import React, { useState, useEffect } from "react";
 import { memo } from "react";
 import {
-  Alert,
   Modal,
   StyleSheet,
   Text,
@@ -18,11 +17,44 @@ import QuestionNoContainer from "../QuestionNoContainer";
 const wid = Dimensions.get("screen").width;
 const high = Dimensions.get("screen").height;
 const ResultModal = (props: any) => {
-
-  const { SetAnsResultIdx, ansResultIdx, setIndex } = useStateContext();
+  const { ansResultIdx, setIndex, index } = useStateContext();
   const [modalVisible, setModalVisible] = useState(false);
+  const setCurrentIndex = (index: number) => {
+    setIndex(index);
+  };
+  const { SumbitTest } = props;
+  var questionModel = props?.quesIndexArray.map((e: any, id: any) => {
+    return index == id ? (
+      <QuestionNoContainer
+        setModalVisible={setModalVisible}
+        key={id}
+        quesno={id + 1}
+        color={"#319EAE"}
+        setquesIndexArray={props.setquesIndexArray}
+        quesIndexArray={props.quesIndexArray}
+      />
+    ) : (
+      // #FDD835
+      <QuestionNoContainer
+        setModalVisible={setModalVisible}
+        key={id}
+        quesno={id + 1}
+        color={
+          e.userAnswer
+            ? "#63a461"
+            : e.skip == true
+            ? "#d94646"
+            : e.isMarkUp == true
+            ? "#8c20d5"
+            : null
+        }
+        setquesIndexArray={props.setquesIndexArray}
+        quesIndexArray={props.quesIndexArray}
+      />
+    );
+  });
   useEffect(() => {
-    console.log(ansResultIdx);
+    setCurrentIndex;
   }, [ansResultIdx]);
 
   return (
@@ -64,7 +96,7 @@ const ResultModal = (props: any) => {
                 color: "white",
               }}
             >
-              Quant
+              {props.currentSection}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -93,43 +125,17 @@ const ResultModal = (props: any) => {
             }}
             style={{
               display: "flex",
-
               backgroundColor: "white",
-
               marginBottom: high / 4.5,
             }}
           >
-            {ansResultIdx.map((e: any, id: number) => {
-              if (e.color) {
-                return (
-                  <QuestionNoContainer
-                    setModalVisible={setModalVisible}
-                    key={id}
-                    quesno={id + 1}
-                    color={e?.color}
-                  />
-                );
-              } else {
-                return (
-                  <QuestionNoContainer
-                    setModalVisible={setModalVisible}
-                    key={id}
-                    quesno={id + 1}
-                  />
-                );
-              }
-            })}
-            {/* {Array.from(Array(length), (e: any, l: any) => {
-              return (
-                <QuestionNoContainer
-                  key={l}
-                  quesno={l + 1}
-                  // backgroundColor={e.backgroundColor}
-                />
-              );
-            })} */}
+            {questionModel}
 
-            <FinishButtonTest key={Math.random() * 100} />
+            <FinishButtonTest
+              SumbitTest={SumbitTest}
+              setCurrentSectionId={props.setCurrentSectionId}
+              key={Math.random() * 100}
+            />
           </ScrollView>
         </View>
       </Modal>

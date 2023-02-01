@@ -27,32 +27,21 @@ const VideoCard = (props: any) => {
       }
       style={{
         marginBottom: 15,
-
         marginRight: wid / 50,
-
         height: high / 5.53,
-
         width: wid / 1.35,
-
         borderColor: "#C9C17F",
-
         borderRadius: 11,
-
         backgroundColor: "#FAFAFB",
-
         borderWidth: 1,
       }}
     >
       <ImageBackground
         style={{
           height: high / 5.53,
-
           width: wid / 1.35,
-
           padding: 6,
-
           flexDirection: "column",
-
           justifyContent: "space-between",
         }}
         imageStyle={{ borderRadius: 10 }}

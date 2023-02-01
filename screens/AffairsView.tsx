@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import { BackHandler, ScrollView } from "react-native";
 import { Image, Dimensions } from "react-native";
@@ -61,7 +61,7 @@ export default function AffairsView(props: any) {
               marginTop: high / 28.46,
             }}
           >
-            {prop.subjectName}
+            {prop.title}
           </Text>
           <Text
             allowFontScaling={false}

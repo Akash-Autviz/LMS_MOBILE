@@ -4,132 +4,156 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
-  Image,
-  Share,
+  ScrollView,
 } from "react-native";
-import { Linking } from "react-native";
+
 import { Text, View } from "../components/Themed";
+import AnswerOption from "./AnswerOption";
+
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function Quiz(props: any) {
-  const { title, subjectName, description, fileName } = props.item;
+  // const { title, subjectName, description, fileName } = props.item;
   const [like, setLike] = useState<boolean>(false);
-  const shareQuiz = async () => {
-    try {
-      const result = await Share.share({
-        message:
-          "React Native | A framework for building native apps using React",
-      });
-      if (result.action === Share.sharedAction) {
-        if (result.activityType) {
-          // shared with activity type of result.activityType
-        } else {
-          // shared
-        }
-      } else if (result.action === Share.dismissedAction) {
-        // dismissed
-      }
-    } catch (error: any) {
-      alert(error.message);
-    }
-  };
+  const [answer, setAnswer] = useState("");
+  const { data, index } = props;
+
+  // const shareQuiz = async () => {
+  //   try {
+  //     const result = await Share.share({
+  //       message:
+  //         "React Native | A framework for building native apps using React",
+  //     });
+  //     if (result.action === Share.sharedAction) {
+  //       if (result.activityType) {
+  //         // shared with activity type of result.activityType
+  //       } else {
+  //         // shared
+  //       }
+  //     } else if (result.action === Share.dismissedAction) {
+  //       // dismissed
+  //     }
+  //   } catch (error: any) {
+  //     alert(error.message);
+  //   }
+  // };
   return (
-    <>
-      <TouchableOpacity
-        onPress={() => {}}
+    <View>
+      <ScrollView
         style={{
-          width: "90%",
-          padding: 16,
-          marginBottom: high / 42.7,
-          borderRadius: 20,
-          borderWidth: 1.5,
-          borderColor: "#E8E8E8",
           backgroundColor: "#FAFAFB",
-          alignSelf: "center",
-          flexDirection: "column",
+          marginBottom: 20,
         }}
       >
         <View
           style={{
-            flexDirection: "row",
+            marginVertical: high / 100,
+            paddingHorizontal: wid / 19.2,
             backgroundColor: "#FAFAFB",
-            borderRadius: 20,
-            justifyContent: "space-between",
-            borderWidth: 0,
-            alignSelf: "center",
-            width: "100%",
           }}
         >
-          <Text allowFontScaling={false} style={styles.cardText}>
-            {title}
+          <Text
+            allowFontScaling={false}
+            style={{ fontSize: 13, fontFamily: "Poppins-Bold" }}
+          >
+            {index + 1} {data.question.questions}
           </Text>
-          <Image
-            source={require("../assets/images/dots.png")}
-            style={{ alignSelf: "center" }}
-          />
         </View>
-        <Text
-          allowFontScaling={false}
-          style={{
-            fontFamily: "Poppins-Bold",
-            fontSize: 10,
-            color: "#92A1B8",
-            paddingHorizontal: 4,
-          }}
-        >
-          {subjectName}
-        </Text>
-        <Image
-          style={{
-            width: "100%",
-            alignSelf: "center",
-            height: high / 6.569,
-            resizeMode: "cover",
-            borderRadius: 5,
-            marginVertical: high / 80,
-          }}
-          source={require("../assets/images/bigEnglish.png")}
-        />
-        <View
-          style={{
-            flexDirection: "row",
-            marginTop: high / 70,
-            marginBottom: high / 90,
-            backgroundColor: "transparent",
-          }}
-        >
-          <TouchableOpacity onPress={() => setLike(!like)}>
-            {like ? (
-              <FontAwesome
-                style={{ marginLeft: wid / 60 }}
-                name="heart"
-                size={28}
-                color="#319EAE"
-              />
-            ) : (
-              <FontAwesome5
-                style={{ marginLeft: wid / 60 }}
-                name="heart"
-                size={28}
-                color="black"
-              />
-            )}
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => shareQuiz()}>
-            <FontAwesome
-              style={{ marginLeft: wid / 20 }}
-              name="share-square-o"
-              size={28}
-              color="black"
-            />
-          </TouchableOpacity>
+        <View style={{ backgroundColor: "#FAFAFB" }}>
+          <View
+            style={{
+              marginVertical: high / 71.166,
+              backgroundColor: "#FAFAFB",
+            }}
+          >
+            <TouchableOpacity onPress={() => setAnswer("a")}>
+              {answer == "a" ? (
+                <AnswerOption
+                  key={1}
+                  title={"A"}
+                  text={data.question.option1}
+                  isSelected={"isSelected"}
+                />
+              ) : (
+                <AnswerOption
+                  key={2}
+                  title={"A"}
+                  text={data.question.option1}
+                />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setAnswer("b")}>
+              {answer == "b" ? (
+                <AnswerOption
+                  key={3}
+                  title={"B"}
+                  text={data.question.option2}
+                  isSelected={"isSelected"}
+                />
+              ) : (
+                <AnswerOption
+                  key={4}
+                  title={"B"}
+                  text={data.question.option2}
+                />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setAnswer("c")}>
+              {answer == "c" ? (
+                <AnswerOption
+                  key={5}
+                  title={"C"}
+                  text={data.question.option3}
+                  isSelected={"isSelected"}
+                />
+              ) : (
+                <AnswerOption
+                  key={6}
+                  title={"C"}
+                  text={data.question.option3}
+                />
+              )}
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setAnswer("d")}>
+              {answer == "d" ? (
+                <AnswerOption
+                  key={8}
+                  title={"D"}
+                  text={data.question.option4}
+                  isSelected={"isSelected"}
+                />
+              ) : (
+                <AnswerOption
+                  key={9}
+                  title={"D"}
+                  text={data.question.option4}
+                />
+              )}
+            </TouchableOpacity>
+          </View>
+          {answer ? (
+            <>
+              {answer != data.question.answer ? (
+                <View style={{ alignSelf: "center" }}>
+                  <Text style={{ color: "red", fontSize: 18 }}>
+                    Wrong Answer The correct Answer is{" "}
+                    {data.question.answer.toUpperCase()}
+                  </Text>
+                </View>
+              ) : (
+                <View style={{ alignSelf: "center" }}>
+                  <Text style={{ color: "green", fontSize: 18 }}>
+                    Correct Answer
+                  </Text>
+                </View>
+              )}
+            </>
+          ) : (
+            <></>
+          )}
         </View>
-        {/* <Image source={{ uri: `${image}` }} style={styles.image} /> */}
-        <Text allowFontScaling={false} style={styles.cardDesc}>
-          {description}
-        </Text>
-      </TouchableOpacity>
-    </>
+      </ScrollView>
+    </View>
   );
 }
 

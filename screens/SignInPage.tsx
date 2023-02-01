@@ -1,40 +1,37 @@
 import React, { useState, useEffect } from "react";
-import {
-  Dimensions,
-  KeyboardAvoidingView,
-  Linking,
-  ScrollView,
-} from "react-native";
+import { Dimensions, ScrollView } from "react-native";
 import { StackActions } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
-import * as AuthSession from "expo-auth-session";
 import axios from "axios";
-
 import {
   ImageBackground,
   TouchableOpacity,
   StyleSheet,
   Image,
   TextInput,
+  Keyboard,
   Alert,
 } from "react-native";
 import { View, Text } from "../components/Themed";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { baseUrl } from "../utils";
+import { useStateContext } from "./Context/ContextProvider";
 
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 
-async function save(key: string, value: any) {
+const save = async (key: string, value: string) => {
   await SecureStore.setItemAsync(key, value);
-}
+};
 export default function SignInPage(props: any) {
+  const { setAccess_token } = useStateContext();
   const navigation = useNavigation();
   const [userMailId, setUserMailId] = useState("");
   const [userPassword, setUserPassword] = useState("");
   const rememberClient = false;
   const [data1, setData] = useState("");
+  const [isTyping, setisTyping] = useState(false);
   const [focused, setFocused] = useState(false);
   useEffect(() => {
     setUserMailId("");
@@ -50,7 +47,7 @@ export default function SignInPage(props: any) {
 
     var config = {
       method: "post",
-      url: "http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/TokenAuth/Authenticate",
+      url: `${baseUrl}/api/TokenAuth/Authenticate`,
       headers: {
         "Content-Type": "application/json",
         "Abp-TenantId": "1",
@@ -65,8 +62,10 @@ export default function SignInPage(props: any) {
           "userId1",
           JSON.stringify(res.data.result.userId)
         );
+        console.log("signInSucecesFull", res);
         if (data1 != null) {
-          save("userId", res.data.result.userId);
+          setAccess_token(res.data.result.accessToken);
+          save("user_id", JSON.stringify(res.data.result.user_id));
           save("access_token", res.data.result.accessToken);
           navigation.dispatch(StackActions.replace("Root"));
         } else {
@@ -79,14 +78,29 @@ export default function SignInPage(props: any) {
       })
       .catch((error: any) => {
         console.log(error);
-        Alert.alert("Invalid credentials", "Incorrect Email or Password", [
+        Alert.alert(error.response.data.error.details, "Login Failed", [
           { text: "Okay" },
         ]);
+        setUserMailId("");
+        setUserPassword("");
       });
   };
   const toggleFocus = () => {
     setFocused((prev: any) => !prev);
   };
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener("keyboardDidShow", () => {
+      setisTyping(true);
+    });
+    const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
+      setisTyping(false);
+    });
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
   return (
     <ScrollView style={styles.container}>
       <ImageBackground
@@ -109,7 +123,7 @@ export default function SignInPage(props: any) {
           <Image
             source={require("../assets/images/sampleImage.png")}
             style={{
-              marginTop: high / 20,
+              marginTop: isTyping == true ? -high / 20 : high / 20,
 
               alignSelf: "center",
               borderRadius: 18,
@@ -196,6 +210,7 @@ export default function SignInPage(props: any) {
                   left: wid / 76.8,
                   textAlignVertical: "center",
                 }}
+                value={userMailId}
                 autoCapitalize="none"
                 placeholder="Enter Your Email"
                 onChangeText={(e) => setUserMailId(e)}
@@ -258,6 +273,7 @@ export default function SignInPage(props: any) {
                   width: "80%",
                   textAlignVertical: "center",
                 }}
+                value={userPassword}
                 secureTextEntry={!focused}
                 autoCapitalize="none"
                 placeholder="Enter Your Password"
@@ -280,9 +296,12 @@ export default function SignInPage(props: any) {
               backgroundColor: "transparent",
             }}
           >
-            <TouchableOpacity onPress={() => navigation.navigate("reset")}>
+            <TouchableOpacity
+              style={{}}
+              onPress={() => navigation.navigate("reset")}
+            >
               <Text allowFontScaling={false} style={{ color: "#309EAF" }}>
-                Recovery Password
+                Forget Password
               </Text>
             </TouchableOpacity>
           </View>
@@ -290,7 +309,7 @@ export default function SignInPage(props: any) {
             style={{
               width: "80%",
               alignSelf: "center",
-              flexDirection: "row",
+              flexDirection: "column",
               marginTop: high / 50,
               height: high / 21.35,
               justifyContent: "center",
@@ -323,6 +342,15 @@ export default function SignInPage(props: any) {
                 style={{ alignSelf: "center", left: wid / 38.4 }}
               ></FontAwesome>
             </TouchableOpacity>
+            <TouchableOpacity
+              style={{ marginTop: high / 80, flexDirection: "row" }}
+              onPress={() => navigation.navigate("SignUp")}
+            >
+              <Text>Don’t have an account yet ? </Text>
+              <Text allowFontScaling={false} style={{ color: "#309EAF" }}>
+                Sign Up
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
@@ -343,6 +371,7 @@ const styles = StyleSheet.create({
     height: "100%",
     backgroundColor: "#FFFFFF",
   },
+
   image: {},
   BottomText: {
     fontFamily: "Poppins-Regular",

@@ -1,84 +1,140 @@
 import React, { useEffect, useState } from "react";
 import { BackHandler, ScrollView, Text, View, StyleSheet } from "react-native";
 import { TouchableOpacity, Image, Dimensions } from "react-native";
+import { useNavigation } from "@react-navigation/native";
+import RazorpayCheckout from "react-native-razorpay";
+import { useStateContext } from "./Context/ContextProvider";
+import { baseUrl } from "../utils";
 import axios from "axios";
-import * as SecureStore from "expo-secure-store";
-import { ActivityIndicator } from "react-native-paper";
+import { calcValidity } from "../utils/Logics";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function CourseDetails(props: any) {
-  const [courseData, setCourseData] = useState<any>([]);
-  const [dataTrue, setDataTrue] = useState(false);
-  const Courseid = props.route.params.id;
-  const [isTrue, setIsTrue] = useState(false);
-  const calcValidity = (num: any) => {
-    var str = `${num}`;
-    var sliced = str.slice(0, 10);
+  const { userDetail, setRefresh, access_token } = useStateContext();
 
-    return sliced;
+  const navigation = useNavigation();
+  const { data } = props.route.params;
+  console.log(data);
+  const headers = {
+    Authorization: `Bearer ${access_token}`,
+    "Content-Type": "application/json",
+    "Abp-TenantId": "1",
   };
 
-  function checkNull($value: any) {
-    if ($value == null) {
-      return "";
-    } else {
-      return $value;
-    }
-  }
-
-  const calculate = (num1: number, num2: number) => {
-    return (num1 * num2) / 100;
-  };
-  const calcTotal = (num1: number, num2: number) => {
-    return num1 + (num1 * num2) / 100;
-  };
   useEffect(() => {
     const backbuttonHander = () => {
-      props.navigation.goBack();
+      navigation.navigate("TabTwo");
       return true;
     };
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
   });
-  useEffect(() => {
-    SecureStore.getItemAsync("access_token").then((value: any) => {
-      if (value != null) {
-        getCourseDetails(value, Courseid);
-      }
-    });
-  });
-  useEffect(() => {
-    setTimeout(() => {
-      setDataTrue(true);
-    }, 1000);
-  }, []);
-  const getCourseDetails = async (token: any, id: any) => {
-    var data = "";
-    var config = {
-      method: "get",
-      url: `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/CourseManagementAppServices/GetCourseContent?courseId=${Courseid}`,
-      headers: {
-        Authorization: `Bearer ${token}`,
+
+  const [buttonValue, setButtonValue] = useState(
+    data.isBuy == false ? "Buy" : "False"
+  );
+  // useEffect(() => {
+  //   SecureStore.getItemAsync("access_token").then((value: any) => {
+  //     if (value != null) {
+  //       getCourseDetails(value, Courseid);
+  //     }
+  //   });
+  // }, []);
+
+  // const getCourseDetails = async (token: any, id: any) => {
+  //   var data = "";
+  //   var config = {
+  //     method: "get",
+  //     url: `${baseUrl}/api/services/app/CourseManagementAppServices/GetCourseContent?courseId=${Courseid}`,
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //     },
+  //     data: data,
+  //   };
+
+  //   axios(config)
+  //     .then(function (response: any) {
+  //       console.log(response);
+  //       setCourseData(response.data.result[0]);
+  //       setisLoading(false);
+  //     })
+  //     .catch(function (error: any) {
+  //       console.log(error);
+  //     });
+  // };
+
+  const BuyCourse = () => {
+    var options = {
+      description: "Credits towards Coures",
+      image: "https://i.imgur.com/3g7nmJC.jpg",
+      currency: "INR",
+      key: "rzp_test_zChmfgG09ShLe2",
+      amount: data.price * 100,
+      name: "Teacher's Vision",
+      prefill: {
+        email: userDetail.emailAddress,
+        contact: "",
+        name: userDetail.name,
       },
+      theme: { color: "#319EAE" },
+    };
+    RazorpayCheckout.open(options as any)
+      .then((data: any) => {
+        setRefresh(new Date().getTime());
+        createPayment();
+        createEnrollementCoures();
+      })
+      .catch((error: any) => {
+        createPayment();
+        alert(
+          `Payment Failed if Money deducted from your account.Please Contact Admin`
+        );
+      });
+  };
+  const createEnrollementCoures = async () => {
+    let payload = JSON.stringify({
+      studentId: userDetail.id,
+      courseManagementId: data.id,
+    });
+    var config = {
+      method: "post",
+      url: `${baseUrl}/api/services/app/EnrollCourses/CreateEnrollCourse`,
+      headers,
+      data: payload,
+    };
+
+    axios(config)
+      .then(function (response: any) {
+        setButtonValue("View");
+        console.log(response, "Create Enroll Success");
+      })
+      .catch(function (error: any) {
+        console.log("Create Enroll Failed", error);
+      });
+  };
+
+  const createPayment = async () => {
+    var data = JSON.stringify({});
+    var config = {
+      method: "post",
+      url: `${baseUrl}/api/services/app/Payment/CreatePayment`,
+      headers,
       data: data,
     };
 
     axios(config)
       .then(function (response: any) {
-        setCourseData(response.data.result[0]);
-        if (courseData.courseManagement.name == null) {
-          setIsTrue(false);
-        } else {
-          // console.log(courseData);
-          setIsTrue(true);
-        }
-        // console.log(response.data.result);
+        console.log("Create payment Api Sucess");
       })
       .catch(function (error: any) {
-        console.log(error);
+        console.log("create payment APi", error);
       });
   };
-
-  return isTrue ? (
+  const goToPurchasePage = () => {
+    props.navigation.navigate("Purchased", {
+      id: data.id,
+    });
+  };
+  return (
     <View
       style={{
         backgroundColor: "#F5F5F5",
@@ -96,10 +152,11 @@ export default function CourseDetails(props: any) {
             backgroundColor: "#F5F5F5",
           }}
         >
-          {courseData.courseManagement.imagePath == null ? (
+          {data.imagePath || data.imagePath == null ? (
             <Image
               source={require("../assets/images/bigEnglish.png")}
               style={{
+                marginTop: high / 10,
                 width: "90%",
                 height: high / 3.17,
                 borderRadius: 10,
@@ -110,8 +167,9 @@ export default function CourseDetails(props: any) {
             ></Image>
           ) : (
             <Image
-              source={{ uri: `${courseData.courseManagement.imagePath}` }}
+              source={{ uri: data.imagePath }}
               style={{
+                marginTop: high / 10,
                 width: "90%",
                 height: high / 3.17,
                 borderRadius: 10,
@@ -121,6 +179,7 @@ export default function CourseDetails(props: any) {
               }}
             ></Image>
           )}
+
           <Text
             allowFontScaling={false}
             style={{
@@ -131,7 +190,7 @@ export default function CourseDetails(props: any) {
               top: high / 28.46,
             }}
           >
-            {courseData.courseManagement.name}
+            {data.name}
           </Text>
           <Text
             allowFontScaling={false}
@@ -141,13 +200,9 @@ export default function CourseDetails(props: any) {
               left: wid / 12.7,
               height: "auto",
               width: "88%",
-              // marginBottom: high / 15,
             }}
           >
-            {/* Lorem Ipsum is simply dummy text of the printing and typesetting
-            industry. Lorem Ipsum has been the industry's standard dummy text
-            ever since the 1500s,Lorem Ipsum is simply dummy text of */}
-            {courseData.courseManagement.detail}
+            {data.detail}
           </Text>
         </View>
         <View
@@ -216,19 +271,7 @@ export default function CourseDetails(props: any) {
             >
               Valid Year
             </Text>
-            <Text
-              allowFontScaling={false}
-              style={{
-                color: "#A9A9A9",
-                alignSelf: "flex-start",
-                left: wid / 12.8,
-                fontFamily: "Poppins-Regular",
-                fontSize: 20,
-                top: high / 5.33,
-              }}
-            >
-              TAX (8.25 %)
-            </Text>
+
             <Text
               allowFontScaling={false}
               style={{
@@ -237,7 +280,7 @@ export default function CourseDetails(props: any) {
                 left: wid / 12.8,
                 fontFamily: "Poppins-Regular",
                 fontSize: 20,
-                top: 160,
+                top: 135,
               }}
             >
               Total
@@ -263,7 +306,7 @@ export default function CourseDetails(props: any) {
                 top: high / 21.35,
               }}
             >
-              $ {courseData.courseManagement.price}
+              {data.price}
             </Text>
             <Text
               allowFontScaling={false}
@@ -289,8 +332,9 @@ export default function CourseDetails(props: any) {
                 top: high / 7.11,
               }}
             >
-              {calcValidity(courseData.courseManagement.creationTime)}
+              {calcValidity(data.creationTime)}
             </Text>
+
             <Text
               allowFontScaling={false}
               style={{
@@ -299,23 +343,10 @@ export default function CourseDetails(props: any) {
                 right: 20,
                 fontFamily: "Poppins-Regular",
                 fontSize: 20,
-                top: high / 5.33,
+                top: high / 5.57,
               }}
             >
-              $ {calculate(courseData.courseManagement.price, 8.25)}
-            </Text>
-            <Text
-              allowFontScaling={false}
-              style={{
-                color: "black",
-                alignSelf: "flex-end",
-                right: 20,
-                fontFamily: "Poppins-Regular",
-                fontSize: 20,
-                top: high / 4.27,
-              }}
-            >
-              ${calcTotal(courseData.courseManagement.price, 8.25)}
+              {data.price}
             </Text>
           </View>
         </View>
@@ -331,6 +362,9 @@ export default function CourseDetails(props: any) {
             alignItems: "center",
             bottom: high / 3.84,
           }}
+          onPress={() => {
+            buttonValue == "Buy" ? BuyCourse() : goToPurchasePage();
+          }}
         >
           <Text
             allowFontScaling={false}
@@ -340,11 +374,11 @@ export default function CourseDetails(props: any) {
               color: "white",
             }}
           >
-            Buy $ {calcTotal(courseData.courseManagement.price, 8.25)}
+            {buttonValue == "Buy" ? `Buy ${data.price}` : "View"}
           </Text>
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => props.navigation.goBack()}
+          onPress={() => navigation.goBack()}
           style={{
             backgroundColor: "#FAFAFB",
             width: wid / 1.371,
@@ -371,14 +405,6 @@ export default function CourseDetails(props: any) {
           </Text>
         </TouchableOpacity>
       </ScrollView>
-    </View>
-  ) : !dataTrue ? (
-    <ActivityIndicator color={"grey"} size={"large"} style={styles.loader} />
-  ) : (
-    <View style={{ justifyContent: "center", flex: 1, alignItems: "center" }}>
-      <Text style={{ fontFamily: "Poppins-Medium", fontSize: 16 }}>
-        No Data Available
-      </Text>
     </View>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   TouchableOpacity,
   StyleSheet,
@@ -9,16 +9,20 @@ import { Dimensions } from "react-native";
 import HeaderNav from "../components/HeaderNav";
 import axios from "axios";
 import { View, Text } from "../components/Themed";
-import * as SecureStore from "expo-secure-store";
 import MockTestCard from "../components/MockTestCard";
 import { ActivityIndicator } from "react-native-paper";
 import { useStateContext } from "./Context/ContextProvider";
+import { baseUrl } from "../utils";
+import { checkArrayIsEmpty } from "../utils/Logics";
 export default function MockTest(props: any) {
-  const [studentId, setStutendId] = useState("");
   const [mockData, setMockData] = useState<any>([]);
   const [myMockData, setMyMockData] = useState<any>([]);
   const { access_token, userDetail } = useStateContext();
   const [isLoading, setisLoading] = useState<boolean>(false);
+  const [isThereAnyPurchasedMocktest, setisThereAnyPurchasedMocktest] =
+    useState<boolean>(true);
+  const [isAllBuy, setisAllBuy] = useState<boolean>(true);
+
   useEffect(() => {
     const backbuttonHander = () => {
       props.navigation.navigate("Home");
@@ -26,6 +30,7 @@ export default function MockTest(props: any) {
     };
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
   }, []);
+
   const wid = Dimensions.get("window").width;
   const high = Dimensions.get("window").height;
   const [res, setRes] = useState("Upcoming");
@@ -33,9 +38,6 @@ export default function MockTest(props: any) {
   const [color, setColor] = useState(true);
   const [color1, setColor1] = useState(false);
   useEffect(() => {
-    SecureStore.getItemAsync("userId1").then((userId: any) => {
-      setStutendId(userId);
-    });
     upComingData();
   }, []);
 
@@ -50,13 +52,14 @@ export default function MockTest(props: any) {
         },
       };
       const { data } = await axios.get(
-        "http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/CourseManagementAppServices/GetAllDataBasedOnCategory?categoryId=-1&courseType=Mock",
+        `${baseUrl}/api/services/app/CourseManagementAppServices/GetAllDataBasedOnCategory?categoryId=-1&courseType=Mock`,
         config
       );
       console.log(data, "upcomingDataResonse");
       setMockData(data.result);
       setisLoading(false);
     } catch (error) {
+      console.log(error, "upcomingDataResonse");
       setisLoading(false);
     }
   };
@@ -72,11 +75,17 @@ export default function MockTest(props: any) {
         },
       };
       const res = await axios.get(
-        `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/EnrollCourses/GetAllEnrollCourses?studentId=${userDetail.id}`,
+        `${baseUrl}/api/services/app/EnrollCourses/GetAllEnrollCourses?studentId=${userDetail.id}`,
         config
       );
       setMyMockData(res.data.result);
       console.log(res.data.result, "My MockTab buy repsonse");
+      res.data.result.forEach((item: any) => {
+        if (item.courseManagement.type == "Mock") {
+          setisThereAnyPurchasedMocktest(true);
+        }
+      });
+
       setisLoading(false);
     } catch (error) {
       console.log(error);
@@ -98,7 +107,6 @@ export default function MockTest(props: any) {
       setColor1(true);
     }
   };
-
   return (
     <>
       <View style={{ flex: 1 }}>
@@ -186,17 +194,20 @@ export default function MockTest(props: any) {
               <ScrollView style={{ height: high / 1.33 }}>
                 {mockData.map((item: any) => {
                   return (
-                    <MockTestCard
-                      key={Math.random() * 100}
-                      id={item.id}
-                      name={item.name}
-                      details={
-                        item.detail ? item.detail : "No Details Available"
-                      }
-                      price={item.price}
-                      date={item.creationTime}
-                      isBuy={item.isBuy == false ? "Buy" : "View"}
-                    />
+                    item.isBuy == false && (
+                      <MockTestCard
+                        key={Math.random() * 100}
+                        id={item.id}
+                        name={item.name}
+                        details={
+                          item.detail ? item.detail : "No Details Available"
+                        }
+                        upComingData={upComingData}
+                        price={item.price}
+                        date={item.creationTime}
+                        isBuy={item.isBuy == false ? "Buy" : "View"}
+                      />
+                    )
                   );
                 })}
               </ScrollView>
@@ -206,9 +217,6 @@ export default function MockTest(props: any) {
                 {React.Children.toArray(
                   myMockData?.map((item: any) => {
                     if (item.courseManagement.type == "Mock") {
-                      console.log(item.courseManagement.isBuy, "isBuy");
-
-                      item.courseManagement.type;
                       return (
                         <MockTestCard
                           id={item.courseManagement.id}
@@ -220,12 +228,26 @@ export default function MockTest(props: any) {
                           }
                           date={item.courseManagement.creationTime}
                           price={item.courseManagement.price}
-                          // endTime={item.endTime}
                           isBuy={"View"}
                         />
                       );
                     }
                   })
+                )}
+                {!isThereAnyPurchasedMocktest && (
+                  <View
+                    style={{
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: high / 2.33,
+
+                      width: wid,
+                    }}
+                  >
+                    <Text style={{ fontFamily: "Poppins-Bold", fontSize: 20 }}>
+                      No Mock Tests
+                    </Text>
+                  </View>
                 )}
               </ScrollView>
             )}

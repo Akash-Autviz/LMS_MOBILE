@@ -1,270 +1,397 @@
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  StyleSheet,
-  Image,
   ScrollView,
   TouchableOpacity,
+  Alert,
   BackHandler,
-  FlatList,
   View,
 } from "react-native";
+import moment from "moment";
 import { ActivityIndicator } from "react-native-paper";
-import AnswerOption from "../components/AnswerOption";
 import HeaderNav from "../components/HeaderNav";
 import TestCountDownTimer from "../components/TestCountDownTimer";
 import { Text } from "../components/Themed";
 import { Dimensions } from "react-native";
 import axios from "axios";
-import * as SecureStore from "expo-secure-store";
-
 import { useStateContext } from "./Context/ContextProvider";
+import CurrentSubject from "../components/CurrentSubject";
+import { baseUrl } from "../utils";
+import { StackActions, useNavigation } from "@react-navigation/native";
+
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 export default function MockTestSubjectTest(props: any) {
-  const { index, setIndex } = useStateContext();
-  const [length, setLength] = useState<number>(0);
-  const [studentId, setStutendId] = useState<number>(0);
+  const {
+    id,
+    courseManagementId,
+    isReattempt,
+    isResulted,
+    isSubmitted,
+    isView,
+    isDeleted,
+    mockTestId,
+    studentId,
+  } = props.route.params.data;
+  const navigation = useNavigation();
+  const [quesIndexArray, setquesIndexArray] = useState<any>();
+  const [mockTestSectionData, setmockTestSectionData] = useState<any>();
+  const [duration, setDuration] = useState<any>();
+  const { index, setIndex, access_token, userDetail, questionLength } =
+    useStateContext();
   const [loading, setLoading] = useState(true);
-  const [isSkip, setIsSkip] = useState(false);
   const [currentSection, setCurrentSection] = useState("");
-  const [currentQuestionId, setCurrentQuestionsId] = useState("");
-
-  const [quesId, setQuesId] = useState(0);
-  const [correctAnswer, setCorrectAnswer] = useState("");
+  const [CurrentSectionId, setCurrentSectionId] = useState("");
   const [testSections, setTestSections] = useState<any>([]);
   const [quesData, setQuestionData] = useState<any>([]);
   const [isSection, setSectionsTrue] = useState(false);
-  const [answer, setAnswer] = useState("");
-  const [isValue, setValue] = useState("");
-  const [user, setUser] = useState("");
-  const [valueButton, setValueButton] = useState("Next");
-  const mockid = props.route.params.id;
-  // console.log(props.route.params.id);
+  const [currrentCourseData, SetCurrrentCourseData] = useState<any>({});
+  const [sectionLength, setSectionLength] = useState<number>();
+  const [currentSectionTypeQuestoion, SetCurrentSectionTypeQuestoion] =
+    useState<any>([]);
+  console.log("Parenet Renderd");
+  const config: any = {
+    headers: {
+      Authorization: `Bearer ${access_token}`,
+    },
+  };
+
+  const [sectionIdx, setSectionIdx] = useState<any>(0);
+  const getEnrollMockTestByUserIdAndCouresId = async () => {
+    try {
+      const res = await axios.get(
+        `${baseUrl}/api/services/app/EnrollMockTest/GetEnrolledMockTestByUserIdAndMockTestId?userId=${userDetail.id}&mockTestId=${id} `,
+        headers
+      );
+      if (res.data.result != null) {
+        SetCurrrentCourseData(res.data.result);
+        console.log("User MOCKFDLSFJSLJFlTEST SECTION", res.data.result);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.log("GetEnrolledMockTestByUserIdAndMockTestId", error);
+    }
+  };
 
   useEffect(() => {
-    SecureStore.getItemAsync("userId1").then((userId) => {
-      if (userId != null) {
-        setUser(userId);
-      }
-    });
+    getTestSections();
   }, []);
+
+  const filterQuestion = (currArrr: any) => {
+    SetCurrentSectionTypeQuestoion(
+      currArrr.filter((e: any) => e.question.subjectId == CurrentSectionId)
+    );
+  };
+
+  useEffect(() => {
+    filterQuestion(quesData);
+  }, [CurrentSectionId, sectionIdx]);
+
   useEffect(() => {
     const backbuttonHander = () => {
-      props.navigation.navigate("MockTestScreen");
+      navigation.goBack();
       return true;
     };
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
-  });
-  useEffect(() => {
-    checkButton(index);
-  }, [index]);
-  var token = "";
-  useEffect(() => {
-    SecureStore.getItemAsync("access_token").then((value: any) => {
-      if (value != null) {
-        token = value;
-      }
-    });
   }, []);
-  const updateUserAnswer = (token: any) => {
-    var axios = require("axios");
-    var data = JSON.stringify({
-      // id: 1,
-      mockTestId: mockid,
-      isDeleted: false,
-      questionId: quesId,
-      userAnswer: answer,
-      skip: false,
-      isMarkUp: false,
-      tenantId: 1,
-    });
 
-    var config = {
-      method: "put",
-      url: "http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/MockTestUserAns/UpdateMockUserAns",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      data: data,
-    };
-    axios(config)
-      .then(function (response: any) {})
-      .catch(function (error: any) {
-        console.log(config.data);
-      });
-  };
-  const checkButton = (index: number) => {
-    if (index == length - 1) {
-      setValueButton("Submit");
-    } else {
-      setValueButton("Next");
-    }
-  };
-  const getResult = () => {
-    var data = JSON.stringify([
-      {
-        mockTestId: mockid,
-        questionId: quesId,
-        question: {
-          answer: correctAnswer,
-        },
-        userAnswer: answer,
-        tenantId: 1,
-        skip: false,
-        isMarkUp: false,
-      },
-    ]);
-    console.log(token);
-
-    var config = {
-      method: "post",
-      url: "http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/MockTestUserAns/SaveResult",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      data: data,
-    };
-
-    axios(config)
-      .then(function (response: any) {})
-      .catch(function (error: any) {
-        console.log("Sorry", config);
-      });
+  const headers: any = {
+    Authorization: `Bearer ${access_token}`,
+    "Content-Type": "application/json",
+    "Abp-TenantId": "1",
   };
 
-  const checkIndex = (value: string, id: string) => {
-    if (value == "increment") {
-      // if(id == currentQuestionId){
-
-      // }
-      var str = quesData.result[index].answer;
-      var sliced = str.slice(1, 2);
-      setCorrectAnswer(sliced);
-      updateUserAnswer(token);
-      setQuesId(quesData.result[index].id);
-      setIsSkip(false);
-      setAnswer("");
-      if (index < length - 1) {
-        setIndex(index + 1);
-      } else if (valueButton == "Submit") {
-        getResult();
-      }
-    } else if (value == "skip") {
-      // updateUserAnswer(token);
-      if (index < length - 1) {
-        setIndex(index + 1);
-        setIsSkip(true);
-      } else if (valueButton == "Submit") {
-      }
-    } else {
-      if (index > 0) setIndex(index - 1);
-    }
-  };
-  const getQuestions = async () => {
+  const getQuestions = async (sectionId: any) => {
     setLoading(true);
     try {
-      const data: any = await axios.get(
-        `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/MockTest/getMockTestQuestions?mockTestId=${props.route.params.id}`
-      );
-      if (data.data.result != null) {
-        setQuestionData(data.data);
-        console.log(
-          "-----------------------------------------------",
-          data.data.result,
-          "----------------------------------------------"
-        );
-        setLength(data.data.result.length);
-        setLoading(false);
-        setIndex(0);
-      }
-    } catch (error: any) {}
-  };
-
-  const getSections = async () => {
-    try {
-      const config = {
+      let config = {
         headers: {
-          Authorization: `Bearer ${token}`,
-          // "Abp-TenantId": "1",
-          // "Access-Control-Allow-Origin": `http://192.168.18.95:19000`,
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": " application/json",
+          "Abp-TenantId": "1",
         },
       };
-      const res = await axios.get(
-        // `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/MockTestUserAns/GetUserMockTestSection?mocktestId=${mockid}&userId=${studentId}`,
-        `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/MockTest/GetMockTestSection?mockTestId=8`,
+      let url = `${baseUrl}/api/services/app/MockTestUserAns/GetMockTestById?Id=${mockTestId}`;
+      if (isReattempt == "changedTheValue") {
+        url = `${baseUrl}/api/services/app/MockTestUserAns/GetMockTestById?Id=${mockTestId}&isReattempt=true`;
+      } else if (isDeleted == "changedTheValue") {
+        url = `${baseUrl}/api/services/app/MockTestUserAns/GetMockTestById?Id=${mockTestId}&isResume=true`;
+      }
+      const res = await axios.get(url, config);
+
+      console.log("QuetionApi", res);
+      SetCurrentSectionTypeQuestoion(
+        res.data.result.filter((e: any) => e.question.subjectId == sectionId)
+      );
+
+      if (res.data.result) {
+        await setQuestionData(res.data.result);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.log("Quetion Api", error);
+    }
+  };
+
+  const GetUserMockTestSection = async () => {
+    try {
+      const { data } = await axios.get(
+        `${baseUrl}/api/services/app/MockTestUserAns/GetUserMockTestSection?mocktestId=${mockTestId}&userId=${studentId}`,
         config
       );
-      if (res.data.result != null) {
+
+      // setmockTestSectionData(mockTestSectionData);
+    } catch (error) {
+      console.log(error, "GetUserMockTestSection");
+    }
+  };
+
+  const getTestSections = async () => {
+    try {
+      const res = await axios.get(
+        `${baseUrl}/api/services/app/MockTest/GetMockTestSection?mockTestId=${mockTestId}`,
+        config
+      );
+      console.log("Called", res);
+      if (res.data.result != null && testSections.length < 1) {
         setTestSections(res.data.result);
-        setCurrentSection(res.data.result[0].subject.subjectName);
-        setCurrentQuestionsId(res.data.result[0].subjectId);
+        setSectionLength(res.data.result.length);
+        setCurrentSection(res.data.result[sectionIdx].subject.subjectName);
+        setCurrentSectionId(res.data.result[sectionIdx].subjectId);
         setSectionsTrue(true);
-      } else {
-        setLoading(true);
+        setIndex(0);
+        setDuration(res.data.result[sectionIdx]?.duration * 60000);
+        getQuestions(res.data.result[sectionIdx].subjectId);
       }
     } catch (error) {
+      setLoading(true);
       console.log(error);
     }
   };
-
-  const setSection: any = async (name: any, id: any) => {
-    setValue(name);
-    setCurrentSection(name);
-    setCurrentQuestionsId(id);
-    console.log(currentQuestionId);
+  const SumbitTest = () => {
+    GetResultById();
+    Alert.alert("", "Your Test is Submitted", [
+      {
+        text: "Ok",
+        onPress: () => {
+          navigation.dispatch(StackActions.replace("Root"));
+        },
+      },
+    ]);
   };
-  useEffect(() => {
-    getSections();
-  }, [quesData]);
-  useEffect(() => {
-    getQuestions();
-  }, []);
+  const GetResultById = async () => {
+    try {
+      let config = {
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": " application/json",
+          "Abp-TenantId": "1",
+        },
+      };
+      const res = await axios.get(
+        `${baseUrl}/api/services/app/MockTestResultService/GetResultById?id=${mockTestId}`,
+        config
+      );
+      console.log("GoTResult", res.data.result);
+      let payload: any = [];
+      res.data.result.forEach((e: any, idx: number) => {
+        let payloadObject: any = {
+          id: e.id,
+          mockTestId: e.mockTestId,
+          mockTest: e.mockTest,
+          questionId: quesData[idx].questionId,
+          question: quesData[idx].question,
+          userAnswer: e.userAnswer ? `${e.userAnswer}` : null,
+          tenantId: 1,
+          skip: e.skip,
+          isMarkUp: e.isMarkUp,
+        };
+        payload.push(payloadObject);
+      });
 
+      if (payload) SaveResult(payload);
+    } catch (error) {
+      console.log("GetResultById API Hit Failed", error);
+    }
+  };
+  const SaveResult = (payload: any) => {
+    console.log("payload", payload);
+    var data = JSON.stringify(payload);
+    var config = {
+      method: "post",
+      url: `${baseUrl}/api/services/app/MockTestUserAns/SaveResult`,
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": "application/json",
+        "Abp-TenantId": "1",
+      },
+      data: data,
+    };
+
+    axios(config)
+      .then(function (response: any) {
+        console.log(response, "getResult");
+        MarkIsSubmitted(id);
+      })
+      .catch(function (error: any) {
+        console.log("grtResultApi Failed", error);
+      });
+  };
+  const MarkIsSubmitted = async (id: any) => {
+    let config: any = {
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        "Content-Type": " application/json",
+        "Abp-TenantId": "1",
+      },
+    };
+    try {
+      const res = await axios.post(
+        `${baseUrl}/api/services/app/EnrollMockTest/MarkIsSubmitted?id=${id}`,
+        config
+      );
+      console.log("MarkIsSubmitted Api Hit Sucees");
+    } catch (error) {
+      console.log("MarkIsSubmitted", error);
+    }
+  };
   return (
     <>
-      {loading == false ? (
-        <>
-          {quesData && isSection ? (
-            <>
-              <View
+      {loading ? (
+        <View style={{ alignSelf: "center", top: high / 4.5 }}>
+          <ActivityIndicator size="large" color="#319EAE" />
+        </View>
+      ) : currentSectionTypeQuestoion && isSection ? (
+        <View
+          style={{
+            backgroundColor: "#FAFAFB",
+            height: "100%",
+            marginBottom: 50,
+          }}
+        >
+          <>
+            <View style={{ backgroundColor: "#F7F7F7" }}>
+              <HeaderNav name="Test" navigation={props.navigation} />
+            </View>
+            <View style={{ backgroundColor: "#FAFAFB" }}>
+              <TestCountDownTimer
+                SumbitTest={SumbitTest}
+                quesIndexArray={currentSectionTypeQuestoion}
+                duration={
+                  duration ? duration : quesData[0].mockTest.duration * 60000
+                }
+                setquesIndexArray={setquesIndexArray}
+                currentSection={currentSection}
+                CurrentSectionId={CurrentSectionId}
+                setCurrentSectionId={setCurrentSectionId}
+              />
+              <ScrollView
+                horizontal
                 style={{
+                  width: wid,
+                  height: high / 20,
+                  left: 10,
                   backgroundColor: "#FAFAFB",
-                  height: "100%",
-                  marginBottom: 50,
+                }}
+                contentContainerStyle={{
+                  alignContent: "flex-start",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                <>
-                  <View style={{ backgroundColor: "#F7F7F7" }}>
-                    <HeaderNav name="Test" navigation={props.navigation} />
-                  </View>
-                  <View style={{ backgroundColor: "#FAFAFB" }}>
-                    <TestCountDownTimer questions={length} />
-                  </View>
-                  {/* <FlatList
-                    key={Math.random() * 100}
-                    showsHorizontalScrollIndicator={false}
-                    data={testSections}
-                    style={{
-                      width: wid,
-                      height: high / 10,
-                      backgroundColor: "pink",
-                    }}
-                    renderItem={(item: any) => (
-                      <TouchableOpacity>
-                        <Text>{item.subject.subjectName}</Text>
+                {testSections?.map((data: any, idx: number) => {
+                  return (
+                    <View key={idx}>
+                      <TouchableOpacity
+                        // onPress={() => setSection(idx)}
+                        style={{
+                          marginHorizontal: 6,
+                          paddingHorizontal: 10,
+                          backgroundColor:
+                            currentSection === data.subject.subjectName
+                              ? "#498BEA"
+                              : "lightgrey",
+                          flexDirection: "row",
+                          height: "100%",
+                          borderRadius: 15,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          alignContent: "center",
+                        }}
+                      >
+                        <Text
+                          style={{
+                            color:
+                              currentSection === data.subject.subjectName
+                                ? "white"
+                                : "black",
+                            alignSelf: "center",
+                            height: "100%",
+                            fontFamily: "Poppins-Medium",
+                            fontSize: 12,
+                            textAlignVertical: "center",
+                          }}
+                        >
+                          {data.subject.subjectName}
+                        </Text>
                       </TouchableOpacity>
-                    )}
-                  /> */}
+                    </View>
+                  );
+                })}
+              </ScrollView>
+            </View>
+
+            <CurrentSubject
+              setCurrentSection={setCurrentSection}
+              setCurrentSectionId={setCurrentSectionId}
+              setquesIndexArray={setquesIndexArray}
+              CurrentSectionId={CurrentSectionId}
+              quesData={quesData}
+              mockid={mockTestId}
+              SumbitTest={SumbitTest}
+              currentSectionTypeQuestoion={currentSectionTypeQuestoion}
+              testSections={testSections}
+              setSectionIdx={setSectionIdx}
+              sectionLength={sectionLength}
+              setDuration={setDuration}
+              sectionIdx={sectionIdx}
+              paramsData={props.route.params.data}
+            />
+          </>
+        </View>
+      ) : (
+        <View>
+          <Text>ierytuiertert</Text>
+        </View>
+      )}
+      {/* {loading == false ? (
+        <>
+          {quesData && isSection ? (
+            <View
+              style={{
+                backgroundColor: "#FAFAFB",
+                height: "100%",
+                marginBottom: 50,
+              }}
+            >
+              <>
+                <View style={{ backgroundColor: "#F7F7F7" }}>
+                  <HeaderNav name="Test" navigation={props.navigation} />
+                </View>
+                <View style={{ backgroundColor: "#FAFAFB" }}>
+                  <TestCountDownTimer
+                    quesIndexArray={currentSectionTypeQuestoion}
+                    duration={duration}
+                    setquesIndexArray={setquesIndexArray}
+                    currentSection={currentSection}
+                    CurrentSectionId={CurrentSectionId}
+                    setCurrentSectionId={setCurrentSectionId}
+                  />
                   <ScrollView
                     horizontal
                     style={{
                       width: wid,
-                      position: "absolute",
                       height: high / 20,
                       left: 10,
-                      marginTop: high / 4.5,
                       backgroundColor: "#FAFAFB",
                     }}
                     contentContainerStyle={{
@@ -273,23 +400,14 @@ export default function MockTestSubjectTest(props: any) {
                       justifyContent: "center",
                     }}
                   >
-                    {testSections?.map((data: any) => {
-                      // console.log(
-                      //   data.subjectId,
-                      //   "---------------------------+++++++++++++++"
-                      // );
+                    {testSections?.map((data: any, idx: number) => {
                       return (
-                        <>
+                        <View key={idx}>
                           <TouchableOpacity
-                            onPress={() =>
-                              setSection(
-                                data.subject.subjectName,
-                                data.subjectId
-                              )
-                            }
+                            // onPress={() => setSection(idx)}
                             style={{
-                              width: wid / 3.5,
-                              marginHorizontal: 10,
+                              marginHorizontal: 6,
+                              paddingHorizontal: 10,
                               backgroundColor:
                                 currentSection === data.subject.subjectName
                                   ? "#498BEA"
@@ -311,285 +429,35 @@ export default function MockTestSubjectTest(props: any) {
                                 alignSelf: "center",
                                 height: "100%",
                                 fontFamily: "Poppins-Medium",
-                                fontSize: 14,
+                                fontSize: 12,
                                 textAlignVertical: "center",
-                                // width: wid,
                               }}
                             >
                               {data.subject.subjectName}
                             </Text>
                           </TouchableOpacity>
-                        </>
+                        </View>
                       );
                     })}
                   </ScrollView>
-                  {quesData.result[index].subjectId === currentQuestionId && (
-                    <ScrollView
-                      style={{
-                        backgroundColor: "#FAFAFB",
-                        marginBottom: 20,
-                        position: "absolute",
-                        marginTop: high / 3.5,
-                      }}
-                    >
-                      <View
-                        style={{
-                          marginVertical: high / 29,
-                          paddingHorizontal: wid / 19.2,
-                          backgroundColor: "#FAFAFB",
-                        }}
-                      >
-                        <Text
-                          allowFontScaling={false}
-                          style={{ fontSize: 13, fontFamily: "Poppins-Bold" }}
-                        >
-                          {index + 1}. {quesData.result[index].questions}
-                        </Text>
-                      </View>
-                      <View style={{ backgroundColor: "#FAFAFB" }}>
-                        <View
-                          style={{
-                            marginVertical: high / 71.166,
-                            backgroundColor: "#FAFAFB",
-                          }}
-                        >
-                          <TouchableOpacity onPress={() => setAnswer("a")}>
-                            {answer == "a" ? (
-                              <AnswerOption
-                                key={1}
-                                title={"A"}
-                                text={quesData.result[index].option1}
-                                isSelected={"isSelected"}
-                              />
-                            ) : (
-                              <AnswerOption
-                                key={1}
-                                title={"A"}
-                                text={quesData.result[index].option1}
-                              />
-                            )}
-                          </TouchableOpacity>
-                          <TouchableOpacity onPress={() => setAnswer("b")}>
-                            {answer == "b" ? (
-                              <AnswerOption
-                                key={2}
-                                title={"B"}
-                                text={quesData.result[index].option2}
-                                isSelected={"isSelected"}
-                              />
-                            ) : (
-                              <AnswerOption
-                                key={2}
-                                title={"B"}
-                                text={quesData.result[index].option2}
-                              />
-                            )}
-                          </TouchableOpacity>
-                          <TouchableOpacity onPress={() => setAnswer("c")}>
-                            {answer == "c" ? (
-                              <AnswerOption
-                                key={3}
-                                title={"C"}
-                                text={quesData.result[index].option3}
-                                isSelected={"isSelected"}
-                              />
-                            ) : (
-                              <AnswerOption
-                                key={3}
-                                title={"C"}
-                                text={quesData.result[index].option3}
-                              />
-                            )}
-                          </TouchableOpacity>
-                          <TouchableOpacity onPress={() => setAnswer("d")}>
-                            {answer == "d" ? (
-                              <AnswerOption
-                                key={4}
-                                title={"D"}
-                                text={quesData.result[index].option4}
-                                isSelected={"isSelected"}
-                              />
-                            ) : (
-                              <AnswerOption
-                                key={4}
-                                title={"D"}
-                                text={quesData.result[index].option4}
-                              />
-                            )}
-                          </TouchableOpacity>
-                          {quesData.result[index].option5 && (
-                            <TouchableOpacity onPress={() => setAnswer("e")}>
-                              {/* {option5= quesData.result[index].option5 ? (  */}
-                              {answer == "e" ? (
-                                <AnswerOption
-                                  key={5}
-                                  title={"E"}
-                                  text={quesData.result[index].option5}
-                                  isSelected={"isSelected"}
-                                />
-                              ) : (
-                                <AnswerOption
-                                  key={5}
-                                  title={"E"}
-                                  text={quesData.result[index].option5}
-                                />
-                              )}
-                            </TouchableOpacity>
-                          )}
-                        </View>
-                      </View>
+                </View>
 
-                      <View
-                        style={{
-                          width: wid,
-                          height: high / 7.16,
-                          // display: "flex",
-                          backgroundColor: "#FAFAFB",
-                          flexDirection: "row",
-                          justifyContent: "center",
-                          alignContent: "center",
-                          alignItems: "flex-start",
-                          paddingHorizontal: wid / 19.2,
-                          // marginTop: "10%",
-                        }}
-                      >
-                        <View
-                          style={{
-                            top: "5%",
-                            width: "18%",
-                            height: high / 21.35,
-                            margin: 7,
-                            marginRight: "2%",
-                          }}
-                        >
-                          <TouchableOpacity
-                            style={{
-                              alignItems: "center",
-                              justifyContent: "center",
-                              width: "100%",
-                              height: "110%",
-                              backgroundColor: "white",
-                              borderStyle: "solid",
-                              borderColor: "lightgrey",
-                              borderWidth: 1,
-                              borderRadius: 6,
-                            }}
-                            onPress={() => checkIndex("decrement", index)}
-                          >
-                            <Text
-                              style={{
-                                color: "grey",
-                              }}
-                            >
-                              Previous
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                        <View
-                          style={{
-                            top: "5%",
-                            width: "18%",
-                            height: high / 21.35,
-                            margin: 7,
-                            marginRight: "10%",
-                            alignSelf: "flex-start",
-                          }}
-                        >
-                          <TouchableOpacity
-                            style={{
-                              alignItems: "center",
-                              justifyContent: "center",
-                              width: "100%",
-                              height: "110%",
-                              backgroundColor: "white",
-                              borderStyle: "solid",
-                              borderColor: "lightgrey",
-                              borderWidth: 1,
-                              borderRadius: 6,
-                            }}
-                            onPress={() => checkIndex("skip", index)}
-                          >
-                            <Text
-                              style={{
-                                color: "grey",
-                              }}
-                            >
-                              Skip
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                        <View
-                          style={{
-                            top: "5%",
-                            width: "18%",
-                            height: high / 21.35,
-                            margin: 7,
-                            // marginRight: "28%",
-                          }}
-                        >
-                          <TouchableOpacity
-                            style={{
-                              alignItems: "center",
-                              justifyContent: "center",
-                              width: "100%",
-                              height: "110%",
-                              backgroundColor: "#319EAE",
-                              borderStyle: "solid",
-                              borderColor: "#E9E9E9",
-                              borderRadius: 6,
-                            }}
-                          >
-                            <Text
-                              style={{
-                                color: "white",
-                              }}
-                            >
-                              Markup
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                        <View
-                          style={{
-                            top: "5%",
-                            width: "18%",
-                            height: high / 21.35,
-                            margin: 7,
-                            // marginRight: "28%",
-                          }}
-                        >
-                          <TouchableOpacity
-                            style={{
-                              alignItems: "center",
-                              justifyContent: "center",
-                              width: "100%",
-                              height: "110%",
-                              backgroundColor: "#319EAE",
-                              borderStyle: "solid",
-                              borderColor: "#E9E9E9",
-                              borderRadius: 6,
-                            }}
-                            onPress={() => {
-                              checkIndex(
-                                "increment",
-                                quesData.result[index].subjectId
-                              );
-                            }}
-                          >
-                            <Text
-                              style={{
-                                color: "white",
-                              }}
-                            >
-                              {valueButton}
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-                    </ScrollView>
-                  )}
-                </>
-              </View>
-            </>
+                <CurrentSubject
+                  setCurrentSection={setCurrentSection}
+                  setCurrentSectionId={setCurrentSectionId}
+                  setquesIndexArray={setquesIndexArray}
+                  CurrentSectionId={CurrentSectionId}
+                  quesData={quesData}
+                  mockid={mockTestId}
+                  currentSectionTypeQuestoion={currentSectionTypeQuestoion}
+                  testSections={testSections}
+                  setSectionIdx={setSectionIdx}
+                  sectionLength={sectionLength}
+                  sectionIdx={sectionIdx}
+                  paramsData={props.route.params.data}
+                />
+              </>
+            </View>
           ) : (
             <>
               <View
@@ -604,7 +472,7 @@ export default function MockTestSubjectTest(props: any) {
         <View style={{ alignSelf: "center", top: high / 4.5 }}>
           <ActivityIndicator size="large" color="#319EAE" />
         </View>
-      )}
+      )} */}
     </>
   );
 }

@@ -1,33 +1,13 @@
 import { FontAwesome } from "@expo/vector-icons";
 import React from "react";
 import { StyleSheet, TouchableOpacity, Image } from "react-native";
-import HeaderNav from "../components/HeaderNav";
 import { Dimensions } from "react-native";
 import navigation from "../navigation";
 import { Text, View } from "../components/Themed";
-import { RootStackScreenProps } from "../types";
-
+import { enrollTrimText, enrollTrimTextName } from "../utils/Logics";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function EnrolledCourse(props: any) {
-  const trimText = (desc: string) => {
-    let newDesc = desc.split(" ");
-    let res = "";
-    for (let i = 0; i <= 9 && i < newDesc.length; i++) {
-      res += newDesc[i] + " ";
-    }
-    if (newDesc.length <= 10) return res;
-    return res + "...";
-  };
-  const trimTextName = (desc: string) => {
-    let newDesc = desc.split(" ");
-    if (newDesc.length < 3) return desc;
-    let res = "";
-    for (let i = 0; i <= 3 && i < newDesc.length; i++) {
-      res += newDesc[i] + " ";
-    }
-    return res + "...";
-  };
   return (
     <TouchableOpacity
       onPress={() =>
@@ -104,7 +84,7 @@ export default function EnrolledCourse(props: any) {
           <Text
             style={{ fontFamily: "Poppins-Bold", fontSize: 15, width: "60%" }}
           >
-            {trimTextName(props.item.courseManagement.name)}
+            {enrollTrimTextName(props.item.courseManagement.name)}
           </Text>
           <Text style={{ fontFamily: "Poppins-Regular" }}>Valid : 1Year</Text>
         </View>
@@ -117,7 +97,7 @@ export default function EnrolledCourse(props: any) {
         >
           <Text style={{ fontFamily: "Poppins-Regular" }}>
             {props.item.courseManagement.detail
-              ? trimText(props.item.courseManagement.detail)
+              ? enrollTrimText(props.item.courseManagement.detail)
               : "No Details available"}
           </Text>
         </View>

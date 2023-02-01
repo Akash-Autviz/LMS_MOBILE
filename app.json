@@ -2,7 +2,7 @@
   "expo": {
     "name": "Teacher's Vision",
     "slug": "vidappnew",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "myapp",
@@ -10,15 +10,19 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "buildNumber": "1"
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
       },
-      "package": "com.test.autviz"
+      "package": "com.test.autviz",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/images/favicon.png"

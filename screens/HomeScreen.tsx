@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   ImageBackground,
   TouchableOpacity,
-  Image,
   Dimensions,
   FlatList,
   ScrollView,
@@ -18,18 +17,45 @@ import EnrolledCourse from "../components/EnrolledCourse";
 import axios from "axios";
 import VideoCard from "../components/VideoCard";
 import { useStateContext } from "./Context/ContextProvider";
+import { getVideoId } from "../utils/Logics";
+import { baseUrl } from "../utils";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function HomeScreen({ route, navigation }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [enrData, SetEnrData] = useState<any>([]);
   const [freeVideoData, SetFreeVideoData] = useState<any>([]);
-  const { userDetail, setUserDetail, setAccess_token } = useStateContext();
+  const {
+    setAccess_token,
+    access_token,
+    setUserDetail,
+    userDetail,
+    setuserImage,
+    refresh,
+  } = useStateContext();
+  const getUserImage = async (access_token: string, userId: string) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer  ${access_token}`,
+        "Abp-TenantId": "1",
+      },
+    };
+    try {
+      const { data } = await axios.get(
+        `${baseUrl}/api/services/app/User/Get?Id=${userId}`,
+        config
+      );
+
+      setuserImage(data.result.pofileImage);
+    } catch (error) {
+      console.log("headerNave", error);
+    }
+  };
   const getUserData = async (token: any) => {
     let data = "";
     const config = {
       method: "GET",
-      url: `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/Session/GetCurrentLoginInformations`,
+      url: `${baseUrl}/api/services/app/Session/GetCurrentLoginInformations`,
       headers: {
         Authorization: `Bearer ${token}`,
         "Abp-TenantId": "1",
@@ -46,43 +72,27 @@ export default function HomeScreen({ route, navigation }: any) {
         console.log(error);
       });
   };
-  const getVideoId = (url: any) => {
-    var id = "";
-    if (url != undefined) {
-      if (url) {
-        id = url.split("v=")[1];
-        if (id != null) {
-          if (id.includes("&")) {
-            return id.split("&")[0];
-          } else {
-            return id;
-          }
-        }
-      }
-    }
-  };
   useEffect(() => {
-    try {
-      SecureStore.getItemAsync("access_token").then((value: any) => {
-        if (value != null) {
-          setAccess_token(value);
-          getUserData(value);
-          GetEnrolledCourseInformation(value, userDetail.id);
-          getVideoContent(value);
-        }
+    SecureStore.getItemAsync("access_token").then((value: any) => {
+      SecureStore.getItemAsync("userId1").then((userId: any) => {
+        getUserData(value);
+        setAccess_token(value);
+        getUserImage(value, userId);
+        getVideoContent(value);
+        GetEnrolledCourseInformation(value, userId);
       });
-    } catch (error) {}
-  }, []);
+    });
+  }, [refresh]);
+
   useEffect(() => {
     const backbuttonHander = () => {
-      navigation.navigate("Home");
-      return true;
+      navigation.navigate("TabTwo");
+      return false;
     };
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
-  });
+  }, []);
 
   const getVideoContent = async (access_token: any) => {
-    setIsLoading(true);
     try {
       const config = {
         headers: {
@@ -90,9 +100,10 @@ export default function HomeScreen({ route, navigation }: any) {
         },
       };
       const res = await axios.get(
-        "http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/ContentManagementService/getAllContentVideos",
+        `${baseUrl}/api/services/app/ContentManagementService/getAllContentVideos`,
         config
       );
+
       SetFreeVideoData(res.data.result);
     } catch (error) {
       console.log(error);
@@ -102,7 +113,7 @@ export default function HomeScreen({ route, navigation }: any) {
 
   const GetEnrolledCourseInformation = async (
     access_token: any,
-    userId: any
+    user_id: any
   ) => {
     setIsLoading(true);
     try {
@@ -112,9 +123,11 @@ export default function HomeScreen({ route, navigation }: any) {
         },
       };
       const res = await axios.get(
-        `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/EnrollCourses/GetAllEnrollCourses?studentId=${userId}`,
+        `${baseUrl}/api/services/app/EnrollCourses/GetAllEnrollCourses?studentId=${user_id}`,
         config
       );
+      console.log("Enroolled Api Called");
+
       SetEnrData(res.data.result);
     } catch (error) {
       console.log(error);
@@ -123,16 +136,23 @@ export default function HomeScreen({ route, navigation }: any) {
   };
 
   return (
-    <View
+    <ScrollView
       style={{ width: wid, flex: 1, height: high, backgroundColor: "#F7F7F7" }}
     >
       {isLoading === true ? (
-        <View style={{ alignSelf: "center", top: high / 4.5 }}>
+        <View
+          style={{
+            alignSelf: "center",
+            justifyContent: "center",
+            height: high,
+            backgroundColor: "transparent",
+          }}
+        >
           <ActivityIndicator size="large" color="#319EAE" />
         </View>
       ) : (
         <>
-          <HeaderNav name={"DashBoard"} />
+          <HeaderNav setIsLoading={setIsLoading} name={"DashBoard"} />
           <ScrollView style={{ backgroundColor: "#FAFAFB" }}>
             <View
               style={{
@@ -187,7 +207,7 @@ export default function HomeScreen({ route, navigation }: any) {
                         <View
                           style={{
                             flexDirection: "row",
-                            top: high / 9,
+                            top: high / 9.5,
                             backgroundColor: "transparent",
                           }}
                         >
@@ -229,6 +249,7 @@ export default function HomeScreen({ route, navigation }: any) {
                 )}
               />
             </View>
+
             <View
               style={{
                 backgroundColor: "#FAFAFB",
@@ -277,7 +298,7 @@ export default function HomeScreen({ route, navigation }: any) {
                     alignItems: "center",
                     justifyContent: "center",
                     alignSelf: "center",
-                    height: high / 5.3,
+                    height: high / 14.3,
                   }}
                 >
                   <Text
@@ -294,7 +315,6 @@ export default function HomeScreen({ route, navigation }: any) {
                 </View>
               )}
             </View>
-
             <TouchableOpacity
               style={{
                 backgroundColor: "#FAFAFB",
@@ -314,67 +334,71 @@ export default function HomeScreen({ route, navigation }: any) {
                 Free Videos
               </Text>
               <View style={{ backgroundColor: "#FAFAFB" }}>
-                <ScrollView
-                  showsHorizontalScrollIndicator={false}
-                  horizontal
-                  contentContainerStyle={{ justifyContent: "space-evenly" }}
-                  style={{
-                    backgroundColor: "#FAFAFB",
-                    marginTop: high / 65,
-                    width: wid,
-                    marginRight: 30,
-                    height: high / 5.4,
-                    paddingLeft: wid / 12.8,
-                  }}
-                >
-                  {freeVideoData?.map((video: any) => {
-                    return (
-                      <VideoCard
-                        horizontal={true}
-                        key={video.id}
-                        startTime={video.startTime}
-                        videoUrl={video.videoUrl}
-                        title={video.title}
-                        videoId={getVideoId(video.videoUrl)}
-                        navigation={navigation}
-                      />
-                    );
-                  })}
-                </ScrollView>
-              </View>
-              {!freeVideoData && (
-                <View
-                  style={{
-                    backgroundColor: "#FAFAFB",
-                    width: wid,
-                    alignItems: "flex-start",
-                    justifyContent: "center",
-                    alignSelf: "flex-start",
-                    alignContent: "center",
-                    marginTop: 20,
-                    height: high / 5.3,
-                  }}
-                >
-                  <Text
+                {freeVideoData.length > 0 ? (
+                  <ScrollView
+                    showsHorizontalScrollIndicator={false}
+                    horizontal
+                    contentContainerStyle={{ justifyContent: "space-evenly" }}
                     style={{
-                      fontFamily: "Poppins-Medium",
-                      width: "100%",
-                      alignContent: "center",
-                      fontSize: 13,
-                      left: wid / 3.5,
-                      alignSelf: "center",
                       backgroundColor: "#FAFAFB",
+                      marginTop: high / 65,
+                      width: wid,
+                      marginRight: 30,
+                      height: high / 5.4,
+                      paddingLeft: wid / 12.8,
                     }}
                   >
-                    No Free Videos Available
-                  </Text>
-                </View>
-              )}
+                    {freeVideoData?.map((video: any) => {
+                      return (
+                        <VideoCard
+                          horizontal={true}
+                          key={video.id}
+                          startTime={video.startTime}
+                          videoUrl={video.videoUrl}
+                          title={video.title}
+                          videoId={getVideoId(video.videoUrl)}
+                          navigation={navigation}
+                        />
+                      );
+                    })}
+                  </ScrollView>
+                ) : (
+                  <View
+                    style={{
+                      backgroundColor: "#FAFAFB",
+                      width: wid,
+                      alignItems: "flex-start",
+                      justifyContent: "center",
+                      alignSelf: "flex-start",
+                      alignContent: "center",
+                      marginTop: 20,
+                      height: high / 14.3,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: "Poppins-Medium",
+                        width: "100%",
+                        alignContent: "center",
+                        fontSize: 13,
+                        left: wid / 3.5,
+                        alignSelf: "center",
+                        backgroundColor: "#FAFAFB",
+                      }}
+                    >
+                      No Free Videos Available Right Now
+                    </Text>
+                  </View>
+                )}
+              </View>
+              {/* {!freeVideoData && (
+                
+              )} */}
             </TouchableOpacity>
           </ScrollView>
         </>
       )}
-    </View>
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({

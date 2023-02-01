@@ -3,7 +3,7 @@
  * https://reactnavigation.org/docs/getting-started
  *
  */
-import { useEffect, useState } from "react";
+import { useEffect, useState, useLayoutEffect } from "react";
 import { FontAwesome } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import * as SecureStore from "expo-secure-store";
@@ -15,21 +15,17 @@ import {
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import * as React from "react";
 import { ColorSchemeName, Pressable, Image } from "react-native";
-import { StackActions, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import Colors from "../constants/Colors";
 import useColorScheme from "../hooks/useColorScheme";
 import TabTwoScreen from "../screens/TabTwoScreen";
-import {
-  RootStackParamList,
-  RootTabParamList,
-  RootTabScreenProps,
-} from "../types";
+import { RootStackParamList, RootTabParamList } from "../types";
 import LinkingConfiguration from "./LinkingConfiguration";
 import HomeScreen from "../screens/HomeScreen";
 import FeedScreen from "../screens/FeedScreen";
 import Fullscreen from "../screens/FullScreen";
 import MockTestScreen from "../screens/MockTestScreen";
-// import Play from "../assets/images/Play.svg";
+
 import PlayScreen from "../screens/PlayScreen";
 import VideosScreen from "../screens/VideosScreen";
 import CourseDetails from "../screens/CourseDetails";
@@ -41,15 +37,14 @@ import Purchased from "../screens/Purchased";
 import TestInfoScreen from "../screens/TestInfoScreen";
 import AffairsView from "../screens/AffairsView";
 import TestResultScreen from "../screens/TestResultScreen";
-import SplashScreen from "../screens/SplashScreen";
-import Icon from "../components/Icon";
+
 import JobNotification from "../screens/JobNotification";
 import Password from "../screens/Password";
 import Webview from "../screens/Webview";
 import { useStateContext } from "../screens/Context/ContextProvider";
 import MockTestTypeTest from "../screens/MockTestTypeTest";
 import ResetPassword from "../screens/ResetPassword";
-
+import SignUpScreen from "../screens/SignUpScreen";
 export default function Navigation({
   colorScheme,
 }: {
@@ -67,18 +62,7 @@ export default function Navigation({
       linking={LinkingConfiguration}
       theme={colorScheme === "dark" ? DarkTheme : DefaultTheme}
     >
-      {/* <Stack.Screen
-        name="Splash"
-        component={SplashScreen}
-        options={{ headerShown: false }}
-      /> */}
-      {hideSplashScreen ? (
-        <>
-          <RootNavigator />
-        </>
-      ) : (
-        <></>
-      )}
+      <RootNavigator />
     </NavigationContainer>
   );
 }
@@ -88,11 +72,19 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 function RootNavigator() {
   const navigation = useNavigation();
   const [isLogIn, setisLogIn] = useState(false);
+  const { userDetail, setUserDetail } = useStateContext();
+
   async function getValueFor() {
-    let accesToken = await SecureStore.getItemAsync("userId1");
-    let User = await SecureStore.getItemAsync("access_token");
-    if (accesToken || User) {
-      setisLogIn(true);
+    try {
+      let accesToken = await SecureStore.getItemAsync("userId1");
+
+      let User = await SecureStore.getItemAsync("access_token");
+
+      if (accesToken && User) {
+        setisLogIn(true);
+      }
+    } catch (error) {
+      alert("Session END");
     }
   }
   useEffect(() => {
@@ -117,6 +109,11 @@ function RootNavigator() {
       <Stack.Screen
         name="SignIn"
         component={SignInPage}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="SignUp"
+        component={SignUpScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen
@@ -157,6 +154,11 @@ function RootNavigator() {
         component={MockTestTypeTest}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="TestResult"
+        component={TestResultScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
@@ -178,6 +180,12 @@ function Home() {
           headerTitle: "Course Details",
         }}
       />
+      <Stack.Screen
+        name="TabTwo"
+        component={TabTwoScreen}
+        options={{ headerShown: false }}
+      />
+
       <Stack.Screen
         name="ProfilePage"
         component={ProfilePage}
@@ -209,6 +217,11 @@ function Home() {
         component={VideosScreen}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="TestResult"
+        component={TestResultScreen}
+        options={{ headerShown: false }}
+      />
     </Stack.Navigator>
   );
 }
@@ -229,6 +242,11 @@ function TabTwo() {
           headerTitleAlign: "center",
           headerTitle: "Course Details",
         }}
+      />
+      <Stack.Screen
+        name="TabTwo"
+        component={TabTwoScreen}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
@@ -253,15 +271,20 @@ function Mock() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="MockTest"
-        component={MockTestScreen}
-        options={{ headerShown: false }}
+        name="Purchased"
+        component={Purchased}
+        options={{
+          headerShown: true,
+          headerBackButtonMenuEnabled: true,
+          headerTitleAlign: "center",
+          headerTitle: "My Course",
+        }}
       />
-      {/* <Stack.Screen
+      <Stack.Screen
         name="Test"
         component={MockTestSubjectTest}
         options={{ headerShown: false, navigationBarHidden: false }}
-      /> */}
+      />
       <Stack.Screen
         name="TestResult"
         component={TestResultScreen}
@@ -283,6 +306,7 @@ function Feed() {
         component={FeedScreen}
         options={{ headerShown: false }}
       />
+
       <Stack.Screen
         name="Affairs"
         component={AffairsView}
@@ -292,6 +316,11 @@ function Feed() {
           headerTitleAlign: "center",
           headerTitle: "My Feed",
         }}
+      />
+      <Stack.Screen
+        name="TestResult"
+        component={TestResultScreen}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
@@ -322,7 +351,6 @@ function BottomTabNavigator({ navigation }: any) {
           listeners={({ navigation }) => ({
             tabPress: (event: { preventDefault: () => void }) => {
               event.preventDefault();
-              // setShowBottom(true);
               navigation.navigate("Home");
             },
           })}

@@ -14,44 +14,19 @@ import {
 } from "react-native";
 import { View, Text } from "../components/Themed";
 import { useStateContext } from "./Context/ContextProvider";
-import axios from "axios";
-import { tokens } from "react-native-paper/lib/typescript/styles/themes/v3/tokens";
+
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function ProfilePage(props: any) {
   const navigation = useNavigation();
-  const [accesstoken, setAccess] = useState<any>();
-  const [userId, setUserId] = useState("");
-  const [fullData, setFullData] = useState<any>();
-  const { userDetail } = useStateContext();
-  var token = "";
-  const getToken = async () => {
-    await SecureStore.getItemAsync("access_token").then((value) => {
-      if (value != null) {
-        console.log("new AccessTken", value);
-
-        token = value;
-      }
-    });
-  };
-  useEffect(() => {
-    getToken;
-  }, []);
-  console.log(userDetail);
+  const { userDetail, userImage, setAccess_token } = useStateContext();
+  console.log(userDetail, "userSDeaawfkjkl");
 
   const logoutButtonHandler = async () => {
     try {
-      // const headers = {
-      //   Authorization: `Bearer ${token}`,
-      //   "Content-Type": "application/json",
-      //   "Abp-TenantId": "1",
-      // };
-      // const data = await axios.post(
-      //   `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/User/logoutUser?id=${userDetail.id}`,
-      //   headers
-      // );
-      // console.log(data);
-      await SecureStore.deleteItemAsync("userId");
+      setAccess_token(null);
+      await SecureStore.deleteItemAsync("userId1");
+      await SecureStore.deleteItemAsync("user_id");
       await SecureStore.deleteItemAsync("access_token");
       navigation.dispatch(StackActions.replace("SignIn"));
     } catch (error) {
@@ -67,12 +42,9 @@ export default function ProfilePage(props: any) {
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
-          // shared with activity type of result.activityType
         } else {
-          // shared
         }
       } else if (result.action === Share.dismissedAction) {
-        // dismissed
       }
     } catch (error: any) {
       alert(error.message);
@@ -86,10 +58,11 @@ export default function ProfilePage(props: any) {
     };
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
   });
-  console.log(userDetail, "userdeatauihgdfjklasghjk");
+
   return (
     <ScrollView style={{ backgroundColor: "#FAFAFB", width: wid }}>
       {/* <ScrollView style={{marginBottom: 20}}> */}
+
       <ImageBackground
         imageStyle={{
           height: high / 1.9,
@@ -141,15 +114,28 @@ export default function ProfilePage(props: any) {
             top: high / 28.46,
           }}
         >
-          <Image
-            source={require("../assets/images/profile.png")}
-            style={{
-              alignSelf: "center",
-              borderRadius: 18,
-              width: wid / 4.5,
-              height: wid / 4.5,
-            }}
-          />
+          {userImage ? (
+            <Image
+              source={{ uri: userImage }}
+              style={{
+                alignSelf: "center",
+                borderRadius: 18,
+                width: wid / 4.5,
+                height: wid / 4.5,
+              }}
+            />
+          ) : (
+            <Image
+              source={require("../assets/images/profile.png")}
+              style={{
+                alignSelf: "center",
+                borderRadius: 18,
+                width: wid / 4.5,
+                height: wid / 4.5,
+              }}
+            />
+          )}
+
           <Text
             allowFontScaling={false}
             style={{
@@ -237,36 +223,6 @@ export default function ProfilePage(props: any) {
             My Note
           </Text>
         </TouchableOpacity>
-        {/* <TouchableOpacity
-          style={{
-            backgroundColor: "white",
-            width: wid / 3,
-            height: high / 15,
-            borderRadius: 10,
-            justifyContent: "center",
-            flexDirection: "row",
-          }}
-        >
-          <TouchableOpacity
-            style={{
-              height: 30,
-              width: 30,
-              borderRadius: 11,
-              justifyContent: "center",
-              alignSelf: "center",
-              marginRight: 10,
-              backgroundColor: "#FCEAEA",
-            }}
-          >
-            <Image
-              style={{ alignSelf: "center" }}
-              source={require("../assets/images/wallet.png")}
-            />
-          </TouchableOpacity>
-          <Text allowFontScaling={false} style={{ alignSelf: "center" }}>
-            My Wallet
-          </Text>
-        </TouchableOpacity> */}
       </View>
       <View
         style={{
@@ -277,33 +233,6 @@ export default function ProfilePage(props: any) {
           alignContent: "flex-start",
         }}
       >
-        {/* <TouchableOpacity style={styles.cardCntnr}>
-          <Image
-            source={require("../assets/images/notes.png")}
-            style={{ alignSelf: "center", left: 10, tintColor: "#111111" }}
-          />
-          <Text allowFontScaling={false} style={styles.cardtext}>
-            My Exam Selection
-          </Text>
-          <Image
-            style={styles.cardImage}
-            source={require("../assets/images/arow.png")}
-          />
-        </TouchableOpacity> */}
-        {/* <TouchableOpacity style={styles.cardCntnr}>
-          <FontAwesome
-            name="question-circle-o"
-            size={20}
-            style={styles.cardFont}
-          ></FontAwesome>
-          <Text allowFontScaling={false} style={styles.cardtext}>
-            Help
-          </Text>
-          <Image
-            style={styles.cardImage}
-            source={require("../assets/images/arow.png")}
-          />
-        </TouchableOpacity> */}
         <TouchableOpacity style={styles.cardCntnr} onPress={() => shareApp()}>
           <FontAwesome
             name="share-alt"
@@ -328,30 +257,14 @@ export default function ProfilePage(props: any) {
           />
 
           <Text allowFontScaling={false} style={styles.cardtext}>
-            Change Password
+            Update Password
           </Text>
           <Image
             style={styles.cardImage}
             source={require("../assets/images/arow.png")}
           />
         </TouchableOpacity>
-        {/* <TouchableOpacity style={styles.cardCntnr}>
-          <Image
-            source={require("../assets/images/chat.png")}
-            style={{
-              backgroundColor: "#FAFAFB",
-              alignSelf: "center",
-              left: 10,
-            }}
-          />
-          <Text allowFontScaling={false} style={styles.cardtext}>
-            Chat
-          </Text>
-          <Image
-            style={styles.cardImage}
-            source={require("../assets/images/arow.png")}
-          />
-        </TouchableOpacity> */}
+
         <TouchableOpacity
           onPress={() => logoutButtonHandler()}
           style={{

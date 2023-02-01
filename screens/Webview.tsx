@@ -1,14 +1,39 @@
 import React, { useEffect } from "react";
 import { WebView } from "react-native-webview";
-import { ActivityIndicator, Dimensions, View, StyleSheet } from "react-native";
+import {
+  ActivityIndicator,
+  Dimensions,
+  View,
+  Linking,
+  StyleSheet,
+} from "react-native";
 import { BackHandler, Text } from "react-native";
+import axios from "axios";
+import { useStateContext } from "./Context/ContextProvider";
 
 const { width, height } = Dimensions.get("window");
 
 export default function Webview(props: any) {
-  console.log(props.route.params.url);
-
-  const url = props.route.params.url;
+  const { access_token } = useStateContext();
+  const header: any = {
+    Authorization: `Bearer ${access_token}`,
+    "Abp-TenantId": 1,
+  };
+  const getPdfLink = async () => {
+    try {
+      const res = await axios.get(
+        `http://13.126.218.96/api/services/app/ContentManagementService/getContentNotesData?id=${props.route.params.id}`,
+        header
+      );
+      Linking.openURL(res.data.result.notesUrl);
+      console.log(res, "pdf Viewer");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getPdfLink();
+  }, []);
   useEffect(() => {
     const backbuttonHander = () => {
       props.navigation.goBack();
@@ -22,57 +47,20 @@ export default function Webview(props: any) {
     }, 2000);
   });
   return (
-    <WebView
-      style={{ marginTop: 40 }}
-      source={{ uri: url }}
-      startInLoadingState={true}
-      renderError={(errorDomain, errorCode, errorDesc) => {
-        return (
-          <View style={styles.loadingOrErrorView}>
-            <ActivityIndicator
-              color={"black"}
-              size={"small"}
-              style={styles.loader}
-            />
-            <Text
-              style={{
-                alignSelf: "center",
-                color: "black",
-              }}
-            >
-              Downloading.....
-            </Text>
-          </View>
-        );
-      }}
-      //   renderLoading={() =>
-      //     name != "Feedback form" ? (
-      //       <ActivityIndicator
-      //         color={"red"}
-      //         size={"large"}
-      //         style={styles.loader}
-      //       />
-      //     ) : (
-      //       <></>
-      //     )
-      //   }
-    />
+    <View style={styles.loadingOrErrorView}>
+      <Text>Veiw PDF</Text>
+    </View>
   );
 }
 const styles = StyleSheet.create({
   loadingOrErrorView: {
-    position: "absolute",
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
-    height: "100%",
-    width: "100%",
     backgroundColor: "white",
   },
   loader: {
-    // position: "absolute",
-    // top: height / 2,
     left: width / 3.1,
   },
 });

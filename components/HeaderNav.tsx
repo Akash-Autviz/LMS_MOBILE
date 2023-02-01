@@ -1,12 +1,17 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { TouchableOpacity, StyleSheet, Image } from "react-native";
 import { Dimensions } from "react-native";
 import { View, Text } from "../components/Themed";
 import { useNavigation } from "@react-navigation/native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { useStateContext } from "../screens/Context/ContextProvider";
+
 const wid = Dimensions.get("screen").width;
 const high = Dimensions.get("screen").height;
 function HeaderNav(props: any) {
+  const { userImage, setuserImage, userDetail, access_token } =
+    useStateContext();
+
   const navigation = useNavigation();
   return (
     <View style={styles.container}>
@@ -40,7 +45,7 @@ function HeaderNav(props: any) {
           ></Image>
         </View>
       </TouchableOpacity>
-      <View>
+      <View style={{ alignItems: "center", justifyContent: "center" }}>
         <Text
           allowFontScaling={false}
           style={{
@@ -56,7 +61,7 @@ function HeaderNav(props: any) {
       <View style={styles.profileConatiner}>
         <TouchableOpacity
           onPress={() => navigation.navigate("Job")}
-          style={{ paddingRight: wid / 30.4, backgroundColor: "#F7F7F7" }}
+          style={{ paddingRight: wid / 36.4, backgroundColor: "#F7F7F7" }}
         >
           <MaterialCommunityIcons
             name="bell-badge-outline"
@@ -64,15 +69,35 @@ function HeaderNav(props: any) {
             color="black"
           />
         </TouchableOpacity>
-        <View style={{ backgroundColor: "#F7F7F7" }}>
-          <TouchableOpacity onPress={() => navigation.navigate("ProfilePage")}>
-            <Image
-              resizeMode="cover"
-              style={{ borderRadius: 10, backgroundColor: "#F7F7F7" }}
-              source={require("../assets/images/profilePic.png")}
-            ></Image>
-          </TouchableOpacity>
-        </View>
+        {!userImage ? (
+          <View style={{ backgroundColor: "#F7F7F7" }}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("ProfilePage")}
+            >
+              <Image
+                resizeMode="cover"
+                style={{ borderRadius: 10, backgroundColor: "#F7F7F7" }}
+                source={require("../assets/images/profilePic.png")}
+              ></Image>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <View style={{ backgroundColor: "#F7F7F7" }}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("ProfilePage")}
+            >
+              <Image
+                source={{ uri: userImage }}
+                style={{
+                  height: high / 22,
+                  width: wid / 10.3,
+                  borderRadius: 10,
+                  backgroundColor: "#F7F7F7",
+                }}
+              />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </View>
   );

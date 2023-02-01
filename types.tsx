@@ -46,6 +46,7 @@ export type RootStackParamList = {
   Videos: undefined;
   NotFound: undefined;
   TestTypeScreen: undefined;
+  SignUp: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

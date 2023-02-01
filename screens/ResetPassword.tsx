@@ -6,126 +6,95 @@ import {
   TextInput,
   Alert,
 } from "react-native";
-import * as SecureStore from "expo-secure-store";
-
 import { Text, View } from "../components/Themed";
 import axios from "axios";
 import React from "react";
+import { baseUrl } from "../utils";
+import { useNavigation } from "@react-navigation/native";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function ResetPassword() {
-  //   var token: any = "";
-  //   SecureStore.getItemAsync("access_token").then((value) => {
-  //     token = value;
-  //   });
-  const [number, setNumber] = useState("");
-  const changePassword = async (num: any) => {
-    try {
-      const config = {
-        headers: {
-          // "Abp-TenantId": "1",
-        },
-      };
-      const res = await axios.get(
-        `http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/Account/ForgotPassword?usernameOrEmail=${num}`
-      );
-    } catch (error) {
-      console.log(error);
-    }
+  const navigation = useNavigation();
+  const [emailOrNO, setEmailOrNO] = useState("");
+  const config: any = {
+    "Abp-TenantId": "1",
+  };
+  let options_: any = {
+    observe: "response",
+    responseType: "blob",
+    headers: {
+      Accept: "text/plain",
+      "Abp-TenantId": "1",
+    },
   };
 
+  const changePassword = async (num: any) => {
+    try {
+      const res = await axios.post(
+        `http://13.126.218.96/api/services/app/Account/ForgotPassword?usernameOrEmail=${emailOrNO}`,
+        null,
+        options_
+      );
+      Alert.alert("Email sent Successfully", "Please Check you Email", [
+        { text: "Ok", onPress: () => navigation.navigate("SignIn") },
+      ]);
+      console.log(res);
+    } catch (error) {
+      alert("No Account Found...!!!");
+    }
+  };
   return (
     <View style={styles.container}>
-      <Text
-        style={{
-          fontFamily: "Poppins-Medium",
-          fontSize: 16,
-          alignSelf: "center",
-        }}
-      >
-        New Password
-      </Text>
-      <View
-        style={{
-          borderWidth: 1,
-          borderColor: "#DBDBDB",
-          top: high / 8.55,
-          alignContent: "flex-start",
-          width: "80%",
-          borderRadius: 5,
-          alignSelf: "center",
-          justifyContent: "center",
-          // left: wid/12.8,
-          // backgroundColor: "pink",
-          flexDirection: "column",
-          height: high / 16.35,
-        }}
-      >
-        <TextInput
-          style={{
-            fontFamily: "Poppins-Regular",
-            fontSize: 18,
-            left: wid / 76.8,
-            textAlignVertical: "center",
-          }}
-          autoCapitalize="none"
-          placeholder="Enter Mobile Number"
-          onChangeText={(e) => setNumber(e)}
-        />
-      </View>
-      {/* <View
-        style={{
-          borderWidth: 1,
-          borderColor: "#DBDBDB",
-          top: high / 6.55,
-          alignContent: "flex-start",
-          width: "80%",
-          borderRadius: 5,
-          alignSelf: "center",
-          justifyContent: "center",
-          // left: wid/12.8,
-          // backgroundColor: "pink",
-          flexDirection: "column",
-          height: high / 16.35,
-        }}
-      >
-        <TextInput
-          style={{
-            fontFamily: "Poppins-Regular",
-            fontSize: 18,
-            // top: high / 4,
-            // height: 40,
-            left: wid / 76.8,
-            textAlignVertical: "center",
-          }}
-          autoCapitalize="none"
-          placeholder="New Password"
-          onChangeText={(e) => setNewPassword(e)}
-        />
-      </View> */}
-      <TouchableOpacity
-        onPress={() => changePassword(number)}
-        style={{
-          width: "80%",
-          alignSelf: "center",
-          height: 40,
-          borderRadius: 10,
-          alignItems: "center",
-          top: high / 4,
-          justifyContent: "center",
-          backgroundColor: "#1E2E46",
-        }}
-      >
+      <View style={{ width: wid, alignItems: "center" }}>
         <Text
           style={{
             fontFamily: "Poppins-Regular",
-            fontSize: 16,
-            color: "white",
+            fontSize: 22,
           }}
         >
-          Send Email
+          Enter your Email
         </Text>
-      </TouchableOpacity>
+        <TextInput
+          style={{
+            marginTop: high / 40,
+            width: "80%",
+            borderWidth: 1,
+            borderColor: "#DBDBDB",
+            fontFamily: "Poppins-Regular",
+            fontSize: 18,
+            height: 40,
+            borderRadius: 5,
+            paddingHorizontal: 15,
+          }}
+          autoCapitalize="none"
+          placeholder="User name or email"
+          onChangeText={(e) => setEmailOrNO(e)}
+        />
+        <TouchableOpacity
+          onPress={() => changePassword(emailOrNO)}
+          style={{
+            width: "80%",
+            alignSelf: "center",
+            marginTop: high / 40,
+
+            height: 40,
+            borderRadius: 10,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "#1E2E46",
+          }}
+        >
+          <Text
+            style={{
+              fontFamily: "Poppins-Regular",
+              fontSize: 16,
+              color: "white",
+            }}
+          >
+            Send Email
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -133,20 +102,11 @@ export default function ResetPassword() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingTop: high / 4,
     alignItems: "center",
-    justifyContent: "flex-start",
-    padding: 20,
   },
   title: {
     fontSize: 20,
     fontWeight: "bold",
-  },
-  link: {
-    marginTop: 15,
-    paddingVertical: 15,
-  },
-  linkText: {
-    fontSize: 14,
-    color: "#2e78b7",
   },
 });

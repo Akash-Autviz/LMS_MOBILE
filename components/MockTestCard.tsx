@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useLayoutEffect, useState } from "react";
+import React from "react";
 import {
   StyleSheet,
   Image,
@@ -10,15 +10,16 @@ import {
 import { View, Text } from "./Themed";
 import { useNavigation } from "@react-navigation/native";
 import { useStateContext } from "../screens/Context/ContextProvider";
-import { AntDesign, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { AntDesign, FontAwesome } from "@expo/vector-icons";
 import RazorpayCheckout from "react-native-razorpay";
 import axios from "axios";
+import { trimDate, trimName, trimText } from "../utils/Logics";
+import { baseUrl } from "../utils";
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 export default function MockTestCard(props: any) {
   const navigation = useNavigation();
-  const { mockTestId, setMockTestId, userDetail, access_token } =
-    useStateContext();
+  const { userDetail, access_token, setRefresh } = useStateContext();
   const {
     name,
     details,
@@ -27,34 +28,36 @@ export default function MockTestCard(props: any) {
     endTime,
     id,
     price,
+
     isBuy,
     isMockTest,
+    upComingData,
   } = props;
-  let buy = isBuy;
+  var buy = isBuy;
   const headers = {
     Authorization: `Bearer ${access_token}`,
     "Content-Type": "application/json",
     "Abp-TenantId": "1",
   };
-  setMockTestId(props.id);
-
-  const trimDate = (num: any) => {
-    var str = `${num}`;
-    var sliced = str.slice(0, 10);
-    return sliced;
-  };
-
   const createPayment = async () => {
-    var data = JSON.stringify({});
+    var data = JSON.stringify({
+      courseManagementId: id,
+      name: userDetail.name,
+      paymentType: "Course",
+      purchaseTitle: name,
+      price: price,
+    });
     var config = {
       method: "post",
-      url: "http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/Payment/CreatePayment",
+      url: `${baseUrl}/api/services/app/Payment/CreatePayment`,
       headers,
       data: data,
     };
 
     axios(config)
-      .then(function (response: any) {})
+      .then(function (response: any) {
+        console.log("Create payment Api Sucess");
+      })
       .catch(function (error: any) {
         console.log("create payment APi", error);
       });
@@ -67,7 +70,7 @@ export default function MockTestCard(props: any) {
     });
     var config = {
       method: "post",
-      url: "http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/EnrollMockTest/CreateCourseMockTest",
+      url: `${baseUrl}/api/services/app/EnrollMockTest/CreateCourseMockTest`,
       headers,
       data: data,
     };
@@ -88,14 +91,15 @@ export default function MockTestCard(props: any) {
     });
     var config = {
       method: "post",
-      url: "http://lmsapi-dev.ap-south-1.elasticbeanstalk.com/api/services/app/EnrollCourses/CreateEnrollCourse",
+      url: `${baseUrl}/api/services/app/EnrollCourses/CreateEnrollCourse`,
       headers,
       data: data,
     };
 
     axios(config)
       .then(function (response: any) {
-        buy = true;
+        upComingData();
+        createPayment();
         console.log(response, "Create Enroll Success");
       })
       .catch(function (error: any) {
@@ -121,34 +125,14 @@ export default function MockTestCard(props: any) {
     RazorpayCheckout.open(options as any)
       .then((data: any) => {
         createCourseMockTest();
-        createPayment();
+        setRefresh(new Date().getTime());
         createEnrollementCoures();
       })
       .catch((error: any) => {
-        createPayment();
         alert(
           `Payment Failed if Money deducted from your account.Please Contact Admin`
         );
       });
-  };
-  const trimName = (desc: string) => {
-    let newDesc = desc.split(" ");
-    if (newDesc.length <= 2) return desc;
-    let res = "";
-    for (let i = 0; i <= 2; i++) {
-      res += newDesc[i] + " ";
-    }
-    return res + "...";
-  };
-  const trimText = (desc: string) => {
-    if (desc == null) return "Details Not Available";
-    let newDesc = desc.split(" ");
-    if (newDesc.length < 8) return desc;
-    let res = "";
-    for (let i = 0; i <= 12 && i < newDesc.length; i++) {
-      res += newDesc[i] + " ";
-    }
-    return res + "...";
   };
 
   return (
@@ -257,33 +241,61 @@ export default function MockTestCard(props: any) {
             )}
           </View>
           <View style={{}}>
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#319EAE",
-                width: wid / 4,
-                justifyContent: "center",
-                alignContent: "center",
-                height: high / 25.5,
-                borderRadius: 4,
-              }}
-              onPress={() => {
-                isBuy === "View"
-                  ? navigation.navigate("Purchased", { id: id } as never)
-                  : BuyCourse();
-              }}
-            >
-              <Text
-                allowFontScaling={false}
+            {isMockTest == true ? (
+              <TouchableOpacity
                 style={{
-                  color: "white",
-                  fontFamily: "Poppins-Regular",
-                  fontSize: 12,
-                  alignSelf: "center",
+                  backgroundColor: "#319EAE",
+                  width: wid / 4,
+                  justifyContent: "center",
+                  alignContent: "center",
+                  height: high / 25.5,
+                  borderRadius: 4,
+                }}
+                onPress={() => {
+                  navigation.navigate("Test", { id: id } as never);
                 }}
               >
-                {buy}
-              </Text>
-            </TouchableOpacity>
+                <Text
+                  allowFontScaling={false}
+                  style={{
+                    color: "white",
+                    fontFamily: "Poppins-Regular",
+                    fontSize: 12,
+                    alignSelf: "center",
+                  }}
+                >
+                  Start
+                </Text>
+              </TouchableOpacity>
+            ) : (
+              <TouchableOpacity
+                style={{
+                  backgroundColor: "#319EAE",
+                  width: wid / 4,
+                  justifyContent: "center",
+                  alignContent: "center",
+                  height: high / 25.5,
+                  borderRadius: 4,
+                }}
+                onPress={() => {
+                  isBuy === "View"
+                    ? navigation.navigate("Purchased", { id: id } as never)
+                    : BuyCourse();
+                }}
+              >
+                <Text
+                  allowFontScaling={false}
+                  style={{
+                    color: "white",
+                    fontFamily: "Poppins-Regular",
+                    fontSize: 12,
+                    alignSelf: "center",
+                  }}
+                >
+                  {buy}
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       </View>
