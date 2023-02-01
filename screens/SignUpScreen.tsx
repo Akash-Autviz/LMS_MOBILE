@@ -33,9 +33,9 @@ const SignUpScreen = () => {
   };
   const checkValidation = () => {
     let PhoneNoRegex = new RegExp(/(0|91)?[6-9][0-9]{9}/);
-    let EmailRegex = new RegExp(
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
-    );
+    // let EmailRegex = new RegExp(
+    //   /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
+    // );
 
     if (name.trim() == "") {
       alert("Enter Name");
@@ -49,7 +49,7 @@ const SignUpScreen = () => {
       if (!PhoneNoRegex.test(phoneNumber)) {
         alert("Enter Correct PhoneNo");
       } else alert("Enter 10 digit PhoneNo");
-    } else if (email == "" || EmailRegex.test(email)) {
+    } else if (email == "" || !email.includes("@")) {
       alert("Enter Correct Email");
     } else if (password.trim() == "" || password.trim().length < 5) {
       alert("Weak Password");

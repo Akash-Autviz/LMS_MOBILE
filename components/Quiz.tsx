@@ -17,7 +17,7 @@ export default function Quiz(props: any) {
   const [like, setLike] = useState<boolean>(false);
   const [answer, setAnswer] = useState("");
   const { data, index } = props;
-  console.log(data, index);
+
   // const shareQuiz = async () => {
   //   try {
   //     const result = await Share.share({

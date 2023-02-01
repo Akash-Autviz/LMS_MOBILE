@@ -67,7 +67,6 @@ export default function SignInPage(props: any) {
           setAccess_token(res.data.result.accessToken);
           save("user_id", JSON.stringify(res.data.result.user_id));
           save("access_token", res.data.result.accessToken);
-
           navigation.dispatch(StackActions.replace("Root"));
         } else {
           Alert.alert("Invalid credentials", "Incorrect Email or Password", [

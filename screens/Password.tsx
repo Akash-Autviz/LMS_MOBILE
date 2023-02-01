@@ -26,10 +26,13 @@ export default function Password() {
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const checkPasswordValidation = (password: any, newPassword: any) => {
-    if (newPassword.trim() == "" || newPassword.trim().length < 7) {
-      alert("Weak Password");
+    if (password == "" || password.trim() == "") {
+      alert("Enter Old Password");
+    } else if (newPassword.trim() == "" || newPassword.trim().length < 7) {
+      if (newPassword.trim() == "") alert("Enter New Password");
+      else alert("Weak Password");
     } else {
-      changePassword(password, newPassword);
+      // changePassword(password, newPassword);
     }
   };
   const SignUpAgainUpdatePassWord = async () => {
@@ -105,15 +108,6 @@ export default function Password() {
 
   return (
     <View style={styles.container}>
-      <Text
-        style={{
-          fontFamily: "Poppins-Medium",
-          fontSize: 19,
-          alignSelf: "center",
-        }}
-      >
-        Update Password
-      </Text>
       <View
         style={{
           borderWidth: 1,

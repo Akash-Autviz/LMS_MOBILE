@@ -181,6 +181,12 @@ function Home() {
         }}
       />
       <Stack.Screen
+        name="TabTwo"
+        component={TabTwoScreen}
+        options={{ headerShown: false }}
+      />
+
+      <Stack.Screen
         name="ProfilePage"
         component={ProfilePage}
         options={{ headerShown: false }}
@@ -236,6 +242,11 @@ function TabTwo() {
           headerTitleAlign: "center",
           headerTitle: "Course Details",
         }}
+      />
+      <Stack.Screen
+        name="TabTwo"
+        component={TabTwoScreen}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );

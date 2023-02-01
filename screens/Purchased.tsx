@@ -6,27 +6,227 @@ import axios from "axios";
 import { TouchableOpacity, Image, Dimensions } from "react-native";
 import { View, Text } from "../components/Themed";
 import VideoCard from "../components/VideoCard";
-import { getVideoId } from "../utils/Logics";
+import { checkArrayIsEmpty, getVideoId } from "../utils/Logics";
 import { useStateContext } from "./Context/ContextProvider";
 import { baseUrl } from "../utils";
 import TestCardCoponent from "../components/TestCardCoponent";
-
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
-
 export default function Purchased(props: any) {
-  let token = "";
   const [courseData, setCourseData] = useState<any>([]);
+  const [courseType, setCourseType] = useState<any>();
   const { access_token, userDetail } = useStateContext();
   const Courseid = props.route.params.id;
   const [currrentCourseData, SetCurrrentCourseData] = useState<any>([]);
-  const [res, setRes] = useState("Mock Tests");
-
+  const [res, setRes] = useState("Notes");
+  var Video = (
+    <View
+      style={{
+        flexDirection: "row",
+        width: wid / 1.2,
+        height: high / 17,
+        alignSelf: "center",
+        alignItems: "center",
+        borderRadius: 116,
+        borderWidth: 0.5,
+        borderColor: "#EEEEEE",
+        backgroundColor: "#FAFAFB",
+      }}
+    >
+      <TouchableOpacity
+        onPress={() => setRes("Notes")}
+        style={{
+          backgroundColor: res == "Notes" ? "#319EAE" : "#FAFAFB",
+          borderRadius: 116,
+          height: "100%",
+          width: wid / 2.42,
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          allowFontScaling={false}
+          style={{
+            color: res == "Notes" ? "white" : "black",
+            alignSelf: "center",
+            fontFamily: "Poppins-Regular",
+            fontSize: 15,
+          }}
+        >
+          Notes
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => setRes("Videos")}
+        style={{
+          backgroundColor: res == "Videos" ? "#319EAE" : "#FAFAFB",
+          borderRadius: 116,
+          height: "100%",
+          width: wid / 2.42,
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          allowFontScaling={false}
+          style={{
+            color: res == "Videos" ? "white" : "black",
+            alignSelf: "center",
+            fontFamily: "Poppins-Regular",
+            fontSize: 15,
+          }}
+        >
+          Videos
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+  var Mock = (
+    <View
+      style={{
+        flexDirection: "row",
+        width: wid / 1.2,
+        height: high / 17,
+        alignSelf: "center",
+        alignItems: "center",
+        borderRadius: 116,
+        borderWidth: 0.5,
+        borderColor: "#EEEEEE",
+        backgroundColor: "#FAFAFB",
+      }}
+    >
+      <TouchableOpacity
+        onPress={() => setRes("Notes")}
+        style={{
+          backgroundColor: res == "Notes" ? "#319EAE" : "#FAFAFB",
+          borderRadius: 116,
+          height: "100%",
+          width: wid / 2.42,
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          allowFontScaling={false}
+          style={{
+            color: res == "Notes" ? "white" : "black",
+            alignSelf: "center",
+            fontFamily: "Poppins-Regular",
+            fontSize: 15,
+          }}
+        >
+          Notes
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => setRes("Mock Tests")}
+        style={{
+          backgroundColor: res == "Mock Tests" ? "#319EAE" : "#FAFAFB",
+          borderRadius: 116,
+          height: "100%",
+          width: wid / 2.42,
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          allowFontScaling={false}
+          style={{
+            color: res == "Mock Tests" ? "white" : "black",
+            alignSelf: "center",
+            fontFamily: "Poppins-Regular",
+            fontSize: 15,
+          }}
+        >
+          Mock Tests
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+  var hrbrid = (
+    <View
+      style={{
+        flexDirection: "row",
+        width: "90%",
+        height: high / 17,
+        alignSelf: "center",
+        alignItems: "center",
+        borderRadius: 116,
+        borderWidth: 0.5,
+        borderColor: "#EEEEEE",
+        backgroundColor: "#FAFAFB",
+      }}
+    >
+      <TouchableOpacity
+        onPress={() => setRes("Notes")}
+        style={{
+          backgroundColor: res == "Notes" ? "#319EAE" : "#FAFAFB",
+          borderRadius: 116,
+          height: "100%",
+          width: "33.4%",
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          allowFontScaling={false}
+          style={{
+            color: res == "Notes" ? "white" : "black",
+            alignSelf: "center",
+            fontFamily: "Poppins-Regular",
+            fontSize: 15,
+          }}
+        >
+          Notes
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => setRes("Videos")}
+        style={{
+          backgroundColor: res == "Videos" ? "#319EAE" : "#FAFAFB",
+          borderRadius: 116,
+          height: "100%",
+          width: "33.4%",
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          allowFontScaling={false}
+          style={{
+            color: res == "Videos" ? "white" : "black",
+            alignSelf: "center",
+            fontFamily: "Poppins-Regular",
+            fontSize: 15,
+          }}
+        >
+          Videos
+        </Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => setRes("Mock Tests")}
+        style={{
+          backgroundColor: res == "Mock Tests" ? "#319EAE" : "#FAFAFB",
+          borderRadius: 116,
+          height: "100%",
+          width: "33.4%",
+          justifyContent: "center",
+        }}
+      >
+        <Text
+          allowFontScaling={false}
+          style={{
+            color: res == "Mock Tests" ? "white" : "black",
+            alignSelf: "center",
+            fontFamily: "Poppins-Regular",
+            fontSize: 15,
+          }}
+        >
+          Mock Tests
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
   useEffect(() => {
     getEnrollMockTestByUserIdAndCouresId();
     getCourseDetails(access_token, Courseid);
   }, [props]);
   const [isTrue, setIsTrue] = useState(true);
+
   const getCourseDetails = async (token: any, id: any) => {
     let data = "";
     var config = {
@@ -40,7 +240,7 @@ export default function Purchased(props: any) {
     axios(config)
       .then(function (response: any) {
         console.log(response);
-
+        setCourseType(response.data.result.type);
         setCourseData(response.data.result);
       })
       .catch(function (error: any) {
@@ -67,32 +267,6 @@ export default function Purchased(props: any) {
     }
     setIsTrue(false);
   };
-
-  const [color, setColor] = useState(true);
-  const [color1, setColor1] = useState(false);
-  const [color2, setColor2] = useState(false);
-  const [color3, setColor3] = useState(false);
-
-  const onPress = (text: string) => {
-    setRes(text);
-    if (text == "Mock Tests") {
-      setColor(true);
-      setColor1(false);
-      setColor2(false);
-      setColor3(false);
-    } else if (text == "Notes") {
-      setColor(false);
-      setColor1(true);
-      setColor2(false);
-      setColor3(false);
-    } else if (text == "Videos") {
-      setColor(false);
-      setColor1(false);
-      setColor2(true);
-      setColor3(false);
-    }
-  };
-  console.log("Purchased Rendered");
 
   return !isTrue ? (
     <ScrollView style={{ backgroundColor: "#FAFAFB", flex: 1, height: high }}>
@@ -171,85 +345,14 @@ export default function Purchased(props: any) {
             marginTop: 30,
           }}
         >
-          <View
-            style={{
-              flexDirection: "row",
-              width: "90%",
-              height: high / 17,
-              alignSelf: "center",
-              alignItems: "center",
-              borderRadius: 116,
-              borderWidth: 0.5,
-              borderColor: "#EEEEEE",
-              backgroundColor: "#FAFAFB",
-            }}
-          >
-            <TouchableOpacity
-              onPress={() => onPress("Mock Tests")}
-              style={{
-                backgroundColor: color ? "#319EAE" : "#FAFAFB",
-                height: "100%",
-                width: "33.4%",
-                justifyContent: "center",
-                borderRadius: 116,
-              }}
-            >
-              <Text
-                allowFontScaling={false}
-                style={{
-                  color: color ? "white" : "black",
-                  alignSelf: "center",
-                  fontFamily: "Poppins-Regular",
-                  fontSize: 15,
-                }}
-              >
-                Mock Tests
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => onPress("Notes")}
-              style={{
-                backgroundColor: color1 ? "#319EAE" : "#FAFAFB",
-                borderRadius: 116,
-                height: "100%",
-                width: "33.4%",
-                justifyContent: "center",
-              }}
-            >
-              <Text
-                allowFontScaling={false}
-                style={{
-                  color: color1 ? "white" : "black",
-                  alignSelf: "center",
-                  fontFamily: "Poppins-Regular",
-                  fontSize: 15,
-                }}
-              >
-                Notes
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => onPress("Videos")}
-              style={{
-                backgroundColor: color2 ? "#319EAE" : "#FAFAFB",
-                height: "100%",
-                borderRadius: 116,
-                width: "33.4%",
-                justifyContent: "center",
-              }}
-            >
-              <Text
-                allowFontScaling={false}
-                style={{
-                  color: color2 ? "white" : "black",
-                  alignSelf: "center",
-                  fontFamily: "Poppins-Regular",
-                  fontSize: 15,
-                }}
-              >
-                Videos
-              </Text>
-            </TouchableOpacity>
+          <View>
+            {/* select-Option Container */}
+            {/* {hrbrid} */}
+            {courseType == "Mock"
+              ? Mock
+              : courseType == "Hybrid"
+              ? hrbrid
+              : Video}
           </View>
 
           {res == "Mock Tests" ? (
@@ -261,10 +364,13 @@ export default function Purchased(props: any) {
                     key={idx}
                     title={item.mockTest.title}
                     data={item}
+                    getEnrollMockTestByUserIdAndCouresId={
+                      getEnrollMockTestByUserIdAndCouresId
+                    }
                   />
                 );
               })}
-              {currrentCourseData.length < 1 && (
+              {!currrentCourseData && (
                 <Text
                   style={{
                     textAlign: "center",
@@ -299,7 +405,7 @@ export default function Purchased(props: any) {
                   </TouchableOpacity>
                 );
               })}
-              {courseData.notes.length < 1 && (
+              {checkArrayIsEmpty(courseData.notes) && (
                 <Text
                   style={{
                     textAlign: "center",
@@ -340,7 +446,7 @@ export default function Purchased(props: any) {
                   />
                 );
               })}
-              {courseData.videos.length < 1 && (
+              {checkArrayIsEmpty(courseData.videos) && (
                 <Text
                   style={{
                     textAlign: "center",

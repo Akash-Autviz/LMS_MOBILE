@@ -20,7 +20,7 @@ const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 
 const TestCardCoponent = (props: any) => {
-  const { data, title } = props;
+  const { data, title, getEnrollMockTestByUserIdAndCouresId } = props;
   const {
     id,
     isBuy,
@@ -60,6 +60,7 @@ const TestCardCoponent = (props: any) => {
 
   const start = async (data: any) => {
     const { id, isView } = data;
+    getEnrollMockTestByUserIdAndCouresId();
     GetUserMockTestSection();
     if (isView) {
       Alert.alert(

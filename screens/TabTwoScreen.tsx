@@ -47,12 +47,10 @@ export default function TabTwoScreen({ routes, navigation }: any) {
     SecureStore.getItemAsync("access_token").then((value) => {
       if (value != null) {
         GetEnrolledCourseInformation(value, userDetail.id);
+        GetCourseInformation();
       }
     });
   }, [refresh]);
-  useEffect(() => {
-    GetCourseInformation();
-  }, []);
 
   const GetEnrolledCourseInformation = async (
     access_token: any,
@@ -87,9 +85,10 @@ export default function TabTwoScreen({ routes, navigation }: any) {
         `${baseUrl}/api/services/app/CourseManagementAppServices/GetAllDataBasedOnCategory?courseType=Hybrid`,
         config
       );
-      console.log(res);
+
       SetResData(res.data.result);
       setNameData(res.data.result);
+      setIsLoading(false);
     } catch (error) {
       console.log(error);
     }
@@ -153,61 +152,51 @@ export default function TabTwoScreen({ routes, navigation }: any) {
   return (
     <View style={{ backgroundColor: "#F7F7F7", flex: 1 }}>
       <HeaderNav name="My Courses" navigation={navigation} />
-      <View style={styles.searchBarContainer}>
-        <TextInput
-          allowFontScaling={false}
-          value={searchQuery}
-          onChangeText={handleChangeText}
-          style={[styles.searchBar, styles.placeholder1]}
-          placeholder="Try out a course.."
-          placeholderTextColor={colorScheme === "dark" ? "#D1D0D0" : "black"}
-        />
-        {searchQuery ? (
-          <AntDesign
-            name="close"
-            size={20}
-            color={colorScheme === "dark" ? "white" : "black"}
-            onPress={onClear}
-            style={styles.clearIcon2}
-          />
-        ) : (
-          <FontAwesome name="search" size={20} style={styles.clearIcon2} />
-        )}
-        <View
-          style={{
-            alignSelf: "center",
-            left: wid / 15,
-            marginTop: -4,
-            backgroundColor: "#ECECEC",
-            width: high / 21.35,
-            height: high / 20.35,
-            justifyContent: "center",
-            alignContent: "center",
-            borderRadius: 12,
-          }}
-        >
-          <Image
-            style={{ alignSelf: "center", width: 15, height: 15 }}
-            source={require("../assets/images/filter.png")}
-          />
-        </View>
-      </View>
-      {isLoading === true ? (
-        <View
-          style={{
-            height: high / 1.5,
-            alignSelf: "center",
-            justifyContent: "center",
-            alignItems: "center",
-
-            backgroundColor: "transparent",
-          }}
-        >
-          <ActivityIndicator size="large" color="#319EAE" />
-        </View>
-      ) : (
+      {isLoading == false ? (
         <View>
-          {searchedData.length > 0 ? (
+          <View style={styles.searchBarContainer}>
+            <TextInput
+              allowFontScaling={false}
+              value={searchQuery}
+              onChangeText={handleChangeText}
+              style={[styles.searchBar, styles.placeholder1]}
+              placeholder="Try out a course.."
+              placeholderTextColor={
+                colorScheme === "dark" ? "#D1D0D0" : "black"
+              }
+            />
+
+            {searchQuery ? (
+              <AntDesign
+                name="close"
+                size={20}
+                color={colorScheme === "dark" ? "white" : "black"}
+                onPress={onClear}
+                style={styles.clearIcon2}
+              />
+            ) : (
+              <FontAwesome name="search" size={20} style={styles.clearIcon2} />
+            )}
+            <View
+              style={{
+                alignSelf: "center",
+                // left: wid / 15,
+                marginTop: -4,
+                backgroundColor: "#ECECEC",
+                width: high / 21.35,
+                height: high / 20.35,
+                justifyContent: "center",
+                alignContent: "center",
+                borderRadius: 12,
+              }}
+            >
+              <Image
+                style={{ alignSelf: "center", width: 15, height: 15 }}
+                source={require("../assets/images/filter.png")}
+              />
+            </View>
+          </View>
+          {searchQuery && searchedData.length > 0 && (
             <FlatList
               key={Math.random() * 100}
               showsHorizontalScrollIndicator={false}
@@ -286,7 +275,29 @@ export default function TabTwoScreen({ routes, navigation }: any) {
                 </TouchableOpacity>
               )}
             />
-          ) : (
+          )}
+          {searchQuery && !searchedData.length && (
+            <View
+              style={{
+                backgroundColor: "transparent",
+                justifyContent: "center",
+                alignItems: "center",
+                height: high,
+              }}
+            >
+              <Text
+                style={{
+                  marginBottom: high / 1.2,
+                  textAlign: "center",
+                  fontFamily: "Poppins-Medium",
+                  fontSize: 16,
+                }}
+              >
+                No Result Found
+              </Text>
+            </View>
+          )}
+          {!searchQuery && (
             <View>
               <ScrollView
                 horizontal
@@ -399,16 +410,32 @@ export default function TabTwoScreen({ routes, navigation }: any) {
             </View>
           )}
         </View>
+      ) : (
+        <View
+          style={{
+            height: high / 1.5,
+            alignSelf: "center",
+            justifyContent: "center",
+            alignItems: "center",
+
+            backgroundColor: "transparent",
+          }}
+        >
+          <ActivityIndicator size="large" color="#319EAE" />
+        </View>
       )}
     </View>
   );
 }
 const styles = StyleSheet.create({
   searchBarContainer: {
+    marginHorizontal: wid / 14,
+    // width: wid,
     marginTop: 15,
     padding: 2,
-    backgroundColor: "#FAFBFA",
+    backgroundColor: "#fff",
     flexDirection: "row",
+    justifyContent: "space-between",
   },
 
   number: {
@@ -437,16 +464,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#FAFAFB",
   },
   searchBar: {
-    width: "70%",
+    width: wid / 1.45,
     height: high / 20.35,
-    alignSelf: "flex-start",
-    marginLeft: wid / 15,
-    paddingLeft: wid / 42.66,
-    paddingBottom: high / 106.75,
-    paddingTop: high / 122,
+    // alignSelf: "flex-start",
+    // marginLeft: wid / 15,/
+    paddingLeft: wid / 32.66,
+    // paddingBottom: high / 106.75,
+    // paddingTop: high / 122,
     backgroundColor: "#ECECEC",
     flexDirection: "row",
-    borderRadius: 10,
+    borderRadius: 8,
     marginBottom: high / 142.33,
   },
   placeholder1: {
@@ -456,7 +483,7 @@ const styles = StyleSheet.create({
   },
 
   clearIcon: {
-    right: "28%",
+    // right: "28%",
     bottom: 13,
     color: "#8A8A8A",
     justifyContent: "center",
@@ -468,7 +495,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 17,
     color: "#8A8A8A",
-    right: "27%",
+    right: wid / 5,
     justifyContent: "center",
     alignSelf: "center",
     alignItems: "center",

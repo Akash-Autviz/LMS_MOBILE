@@ -29,13 +29,6 @@ export default function CourseDetails(props: any) {
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
   });
 
-  useEffect(() => {
-    const backbuttonHander = () => {
-      props.navigation.goBack();
-      return true;
-    };
-    BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
-  });
   const [buttonValue, setButtonValue] = useState(
     data.isBuy == false ? "Buy" : "False"
   );

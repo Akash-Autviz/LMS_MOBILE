@@ -98,7 +98,6 @@ export default function MockTestCard(props: any) {
 
     axios(config)
       .then(function (response: any) {
-        buy = "View";
         upComingData();
         createPayment();
         console.log(response, "Create Enroll Success");
