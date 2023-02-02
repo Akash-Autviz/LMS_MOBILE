@@ -50,6 +50,7 @@ export default function ProfilePage(props: any) {
       alert(error.message);
     }
   };
+  console.log(userImage);
 
   useEffect(() => {
     const backbuttonHander = () => {
@@ -161,6 +162,7 @@ export default function ProfilePage(props: any) {
             Do not disturb, doing a study right now.
           </Text>
           <TouchableOpacity
+            onPress={() => props.navigation.navigate("EditProfile")}
             style={{
               top: high / 13.77,
               justifyContent: "center",
@@ -258,6 +260,23 @@ export default function ProfilePage(props: any) {
 
           <Text allowFontScaling={false} style={styles.cardtext}>
             Update Password
+          </Text>
+          <Image
+            style={styles.cardImage}
+            source={require("../assets/images/arow.png")}
+          />
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.cardCntnr}
+          onPress={() => props.navigation.navigate("WebViewInMobile")}
+        >
+          <Image
+            source={require("../assets/images/key.png")}
+            style={{ backgroundColor: "pink", alignSelf: "center", left: 10 }}
+          />
+
+          <Text allowFontScaling={false} style={styles.cardtext}>
+            Open Web View
           </Text>
           <Image
             style={styles.cardImage}

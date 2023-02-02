@@ -45,6 +45,8 @@ import { useStateContext } from "../screens/Context/ContextProvider";
 import MockTestTypeTest from "../screens/MockTestTypeTest";
 import ResetPassword from "../screens/ResetPassword";
 import SignUpScreen from "../screens/SignUpScreen";
+import WebViewInMobile from "../screens/WebViewInMobile";
+import EditProfile from "../screens/EditProfile";
 export default function Navigation({
   colorScheme,
 }: {
@@ -154,9 +156,21 @@ function RootNavigator() {
         component={MockTestTypeTest}
         options={{ headerShown: false }}
       />
+
+      <Stack.Screen
+        name="WebViewInMobile"
+        component={WebViewInMobile}
+        options={{ headerShown: false }}
+      />
+
       <Stack.Screen
         name="TestResult"
         component={TestResultScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfile}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>

@@ -70,6 +70,14 @@ const checkArrayIsEmpty = (arr: []) => {
   }
   return count > 0 ? false : true;
 };
+let options_: any = {
+  observe: "response",
+  responseType: "blob",
+  headers: {
+    Accept: "text/plain",
+    "Abp-TenantId": "1",
+  },
+};
 const timerStart = (duration: any) => {
   var startTime = moment().subtract("5", "hours").subtract("30", "minutes");
   var endTime = userMockTestSection?.creationTime;
@@ -87,4 +95,5 @@ export {
   enrollTrimText,
   enrollTrimTextName,
   checkArrayIsEmpty,
+  options_,
 };

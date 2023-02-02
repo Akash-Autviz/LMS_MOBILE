@@ -5,7 +5,6 @@ import {
   Dimensions,
   FlatList,
   ScrollView,
-  BackHandler,
   StyleSheet,
 } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
@@ -19,7 +18,6 @@ import VideoCard from "../components/VideoCard";
 import { useStateContext } from "./Context/ContextProvider";
 import { getVideoId } from "../utils/Logics";
 import { baseUrl } from "../utils";
-import { tokens } from "react-native-paper/lib/typescript/styles/themes/v3/tokens";
 import OnGoinVideoCard from "../components/OnGoinVideoCard";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
@@ -36,6 +34,7 @@ export default function HomeScreen({ route, navigation }: any) {
     setuserImage,
     refresh,
   } = useStateContext();
+  console.log(access_token);
   const getUserImage = async (access_token: string, userId: string) => {
     const config = {
       headers: {
@@ -78,6 +77,7 @@ export default function HomeScreen({ route, navigation }: any) {
   useEffect(() => {
     SecureStore.getItemAsync("access_token").then((value: any) => {
       SecureStore.getItemAsync("userId1").then((userId: any) => {
+        console.log("access_token-from-local,", value);
         getUserData(value);
         setAccess_token(value);
         getUserImage(value, userId);
@@ -330,7 +330,7 @@ export default function HomeScreen({ route, navigation }: any) {
                 </View>
               )}
             </View>
-            <View
+            {/* <View
               style={{
                 backgroundColor: "#FAFAFB",
                 width: wid,
@@ -394,7 +394,7 @@ export default function HomeScreen({ route, navigation }: any) {
                   </Text>
                 </View>
               )}
-            </View>
+            </View> */}
             <TouchableOpacity
               style={{
                 backgroundColor: "#FAFAFB",
@@ -402,7 +402,7 @@ export default function HomeScreen({ route, navigation }: any) {
                 width: wid / 0.45,
               }}
             >
-              {/* <Text
+              <Text
                 allowFontScaling={false}
                 style={{
                   fontFamily: "Poppins-Medium",
@@ -412,8 +412,8 @@ export default function HomeScreen({ route, navigation }: any) {
                 }}
               >
                 Free Videos
-              </Text> */}
-              {/* <View style={{ backgroundColor: "#FAFAFB" }}>
+              </Text>
+              <View style={{ backgroundColor: "#FAFAFB" }}>
                 {freeVideoData.length > 0 ? (
                   <ScrollView
                     showsHorizontalScrollIndicator={false}
@@ -470,7 +470,7 @@ export default function HomeScreen({ route, navigation }: any) {
                     </Text>
                   </View>
                 )}
-              </View> */}
+              </View>
               {/* {!freeVideoData && (
                 
               )} */}

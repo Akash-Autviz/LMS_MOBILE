@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   StyleSheet,
   TouchableOpacity,
@@ -25,6 +25,7 @@ export default function Password() {
     useStateContext();
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
+  console.log(password, newPassword);
   const checkPasswordValidation = (password: any, newPassword: any) => {
     if (password == "" || password.trim() == "") {
       alert("Enter Old Password");
@@ -32,7 +33,7 @@ export default function Password() {
       if (newPassword.trim() == "") alert("Enter New Password");
       else alert("Weak Password");
     } else {
-      // changePassword(password, newPassword);
+      changePassword(password, newPassword);
     }
   };
   const SignUpAgainUpdatePassWord = async () => {
@@ -59,10 +60,15 @@ export default function Password() {
           JSON.stringify(res.data.result.userId)
         );
         console.log("signInSucecesFull", res);
-        setRefresh(new Date().getTime());
+
         setAccess_token(res.data.result.accessToken);
+        console.log(
+          "brefore ResetttingtheDataBAse",
+          res.data.result.accessToken
+        );
         save("user_id", JSON.stringify(res.data.result.user_id));
         save("access_token", res.data.result.accessToken);
+        setRefresh(new Date().getTime());
       })
       .catch((error: any) => {});
   };
