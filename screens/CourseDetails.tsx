@@ -22,6 +22,10 @@ export default function CourseDetails(props: any) {
     navigation.navigate("TabTwo");
     return true;
   };
+  console.log(data.id);
+  useEffect(() => {
+    getCourseDetails(access_token);
+  });
   useEffect(() => {
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
   }, [backbuttonHander]);
@@ -77,6 +81,48 @@ export default function CourseDetails(props: any) {
         console.log("Create Enroll Failed", error);
       });
   };
+  const getCourseDetails = async (token: any) => {
+    let payload = "";
+    var config = {
+      method: "get",
+      url: `${baseUrl}/api/services/app/CourseManagementAppServices/GetStudentCourse?id=${data.id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: payload,
+    };
+    axios(config)
+      .then(function (response: any) {
+        console.log(response);
+        response.data?.result?.mockTests?.forEach((element: any) => {
+          createCourseMockTest(element.id);
+        });
+      })
+      .catch(function (error: any) {
+        console.log(error);
+      });
+  };
+  const createCourseMockTest = async (mockTestId: any) => {
+    let payload: any = JSON.stringify({
+      courseManagementId: data.id,
+      studentId: userDetail.id,
+      mockTestId: mockTestId,
+    });
+    var config = {
+      method: "post",
+      url: `${baseUrl}/api/services/app/EnrollMockTest/CreateCourseMockTest`,
+      headers,
+      data: payload,
+    };
+
+    axios(config)
+      .then(function (response: any) {
+        console.log("CreateCourseMockTest", response);
+      })
+      .catch(function (error: any) {
+        console.log("Create MockTest Failed", error);
+      });
+  };
 
   const createPayment = async () => {
     var payload = JSON.stringify({
@@ -94,6 +140,7 @@ export default function CourseDetails(props: any) {
     };
     axios(config)
       .then(function (response: any) {
+        getCourseDetails(access_token);
         console.log("Create payment Api Sucess");
       })
       .catch(function (error: any) {
@@ -106,7 +153,7 @@ export default function CourseDetails(props: any) {
     });
   };
   return (
-    <ScrollView style={{ flex: 1, marginBottom: 100 }}>
+    <ScrollView style={{ flex: 1, marginBottom: 50 }}>
       <View
         style={{
           alignItems: "center",

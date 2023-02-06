@@ -123,8 +123,7 @@ export default function SignInPage(props: any) {
           <Image
             source={require("../assets/images/sampleImage.png")}
             style={{
-              marginTop: isTyping == true ? -high / 20 : high / 20,
-
+              marginTop: isTyping == true ? -high / 18 : high / 20,
               alignSelf: "center",
               borderRadius: 18,
             }}
