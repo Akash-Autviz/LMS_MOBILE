@@ -23,6 +23,7 @@ import axios from "axios";
 import { baseUrl } from "../utils";
 import { options_ } from "../utils/Logics";
 import moment from "moment";
+import * as ImagePicker from "expo-image-picker";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function EditProfile(props: any) {
@@ -34,32 +35,33 @@ export default function EditProfile(props: any) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [hasGalleryPermission, setHasGalleryPermission] =
+    useState<boolean>(false);
+  const [iamge, setImgae] = useState<String>("");
   let config: any = {
     "Content-Type": "application/json",
     "Abp-TenantId": "1",
   };
-  //   const [surName, setSurName] = useState(userDetail.surname);
-  //   const [name, setName] = useState(userDetail.name);
-  //   const [email, setEmail] = useState(userDetail.emailAddress);
-  //   const [phoneNumber, setPhoneNumber] = useState(userDetail.userName);
-  // {
-  //     "id": 22,
-  //     "userName": "9912341234",
-  //     "name": "chamanautviz",
-  //     "gender": "Male",
-  //     "phoneNumber": "9912341234",
-  //     "pofileImage": "",
-  //     "surname": "kumar",
-  //     "emailAddress": "Chaman@yopmail.com",
-  //     "isActive": true,
-  //     "fullName": "chaman kumar",
-  //     "normalPassword": "Chaman@123",
-  //     "creationTime": "2023-02-01T07:37:42.066Z",
-  //     "roleNames": [
-  //         "STUDENT"
-  //     ]
-  // }
-  //13.126.218.96/api/services/app/User/Get?Id=12
+  useEffect(() => {
+    (async () => {
+      const galleryStatus =
+        await ImagePicker.requestMediaLibraryPermissionsAsync();
+      setHasGalleryPermission(galleryStatus.status == "granted");
+    })();
+  }, []);
+  const pickImage = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+    console.log(result);
+    if (!result.cancelled) {
+      setImgae(result.uri);
+    }
+  };
+
   const save = async () => {
     let data = JSON.stringify({
       id: 29,
@@ -177,6 +179,7 @@ export default function EditProfile(props: any) {
             Do not disturb, doing a study right now.
           </Text>
           <TouchableOpacity
+            onPress={() => pickImage()}
             style={{
               justifyContent: "center",
               backgroundColor: "#2C384C",

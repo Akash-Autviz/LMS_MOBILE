@@ -12,18 +12,8 @@ function TestCountDownTimer({
   CurrentSectionId,
   SumbitTest,
 }) {
-  const [time, setTime] = useState();
-  useEffect(() => {
-    setTime(duration);
-  }, [duration]);
-  // const changeColor = () => {
-  //   let newArr = JSON.parse(JSON.stringify(arr));
-  //   const foundEl = newArr.find((_arr, idx) => idx == index);
-  //   if (foundEl) {
-  //     newArr[idx].color = "Green";
-  //   }
-  //   setArr(newArr);
-  // };
+  const [time, setTime] = useState(duration);
+
   useEffect(() => {
     setTimeout(() => {
       setTime((prevtime) => prevtime - 1000);

@@ -34,7 +34,7 @@ export default function HomeScreen({ route, navigation }: any) {
     setuserImage,
     refresh,
   } = useStateContext();
-  console.log(access_token);
+
   const getUserImage = async (access_token: string, userId: string) => {
     const config = {
       headers: {
@@ -77,7 +77,6 @@ export default function HomeScreen({ route, navigation }: any) {
   useEffect(() => {
     SecureStore.getItemAsync("access_token").then((value: any) => {
       SecureStore.getItemAsync("userId1").then((userId: any) => {
-        console.log("access_token-from-local,", value);
         getUserData(value);
         setAccess_token(value);
         getUserImage(value, userId);

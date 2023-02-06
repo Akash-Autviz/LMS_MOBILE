@@ -48,7 +48,7 @@ export default function MockTestSubjectTest(props: any) {
   const [sectionLength, setSectionLength] = useState<number>();
   const [currentSectionTypeQuestoion, SetCurrentSectionTypeQuestoion] =
     useState<any>([]);
-  console.log("Parenet Renderd");
+
   const config: any = {
     headers: {
       Authorization: `Bearer ${access_token}`,

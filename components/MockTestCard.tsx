@@ -33,9 +33,6 @@ export default function MockTestCard(props: any) {
     upComingData,
   } = props;
   var buy = isBuy;
-  useEffect(() => {
-    getCourseDetails(access_token, id);
-  }, []);
 
   const headers = {
     Authorization: `Bearer ${access_token}`,
@@ -80,6 +77,7 @@ export default function MockTestCard(props: any) {
 
     axios(config)
       .then(function (response: any) {
+        getCourseDetails(access_token, id);
         console.log("Create payment Api Sucess");
       })
       .catch(function (error: any) {

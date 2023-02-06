@@ -11,7 +11,7 @@ import { useStateContext } from "../screens/Context/ContextProvider";
 import AnswerOption from "./AnswerOption";
 import axios from "axios";
 import { baseUrl } from "../utils";
-import moment from "moment";          
+import moment from "moment";
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 export default function CurrentSubject(props: any) {
@@ -30,17 +30,15 @@ export default function CurrentSubject(props: any) {
     setDuration,
     SumbitTest,
   } = props;
-  console.log("child Renderd", quesData);
+
   const changeValue = (value: any) => {
-    if (value == "ans") {
-      currentSectionTypeQuestoion[index].userAnswer = answer;
-    } else if (value == "skip") {
-      currentSectionTypeQuestoion[index].skip = true;
-    } else if (value == "markup") {
-      currentSectionTypeQuestoion[index].isMarkUp = true;
-    }
+    currentSectionTypeQuestoion[index].userAnswer = value ? "" : answer;
+    currentSectionTypeQuestoion[index].skip = value == "skip" ? true : false;
+    currentSectionTypeQuestoion[index].isMarkUp =
+      value == "markup" ? true : false;
   };
   const updateUserAnswer = (token: any, trueType: string) => {
+    changeValue(trueType);
     let data = JSON.stringify({
       creationTime: moment(),
       id: currentSectionTypeQuestoion[index].id,
@@ -65,7 +63,7 @@ export default function CurrentSubject(props: any) {
     };
     axios(config)
       .then(function (response: any) {
-        console.log("answer Updatted", response);
+        // console.log("answer Updatted", response);
         setAnswer("");
       })
       .catch(function (error: any) {
@@ -110,7 +108,7 @@ export default function CurrentSubject(props: any) {
   }, [index, sectionIdx]);
   const checkIndex = (value: string, id: number) => {
     if (value == "increment") {
-      changeValue("ans");
+      // changeValue("ans");
       updateUserAnswer(access_token, "");
 
       if (buttonValue === "Next Section" && sectionIdx + 1 < sectionLength) {
@@ -123,7 +121,7 @@ export default function CurrentSubject(props: any) {
       setAnswer("");
       updateUserAnswer(access_token, "skip");
       if (index < currentSectionTypeQuestoion.length - 1) {
-        changeValue("skip");
+        // changeValue("skip");
         setIndex(index + 1);
       }
     } else {
@@ -148,7 +146,7 @@ export default function CurrentSubject(props: any) {
     setIndex(0);
   };
   const onMarkUpClick = () => {
-    changeValue("markup");
+    // changeValue("markup");
     updateUserAnswer(access_token, "markup");
     if (index < currentSectionTypeQuestoion.length - 1) {
       setIndex(index + 1);

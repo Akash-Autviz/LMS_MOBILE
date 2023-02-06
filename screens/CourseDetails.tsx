@@ -29,36 +29,6 @@ export default function CourseDetails(props: any) {
   const [buttonValue, setButtonValue] = useState(
     data.isBuy == false ? "Buy" : "False"
   );
-  // useEffect(() => {
-  //   SecureStore.getItemAsync("access_token").then((value: any) => {
-  //     if (value != null) {
-  //       getCourseDetails(value, Courseid);
-  //     }
-  //   });
-  // }, []);
-
-  // const getCourseDetails = async (token: any, id: any) => {
-  //   var data = "";
-  //   var config = {
-  //     method: "get",
-  //     url: `${baseUrl}/api/services/app/CourseManagementAppServices/GetCourseContent?courseId=${Courseid}`,
-  //     headers: {
-  //       Authorization: `Bearer ${token}`,
-  //     },
-  //     data: data,
-  //   };
-
-  //   axios(config)
-  //     .then(function (response: any) {
-  //       console.log(response);
-  //       setCourseData(response.data.result[0]);
-  //       setisLoading(false);
-  //     })
-  //     .catch(function (error: any) {
-  //       console.log(error);
-  //     });
-  // };
-
   const BuyCourse = () => {
     var options = {
       description: "Credits towards Coures",
@@ -98,7 +68,6 @@ export default function CourseDetails(props: any) {
       headers,
       data: payload,
     };
-
     axios(config)
       .then(function (response: any) {
         setButtonValue("View");
@@ -123,7 +92,6 @@ export default function CourseDetails(props: any) {
       headers,
       data: payload,
     };
-
     axios(config)
       .then(function (response: any) {
         console.log("Create payment Api Sucess");
@@ -138,283 +106,179 @@ export default function CourseDetails(props: any) {
     });
   };
   return (
-    <View
-      style={{
-        backgroundColor: "#F5F5F5",
-        flex: 1,
-        marginBottom: high / 14.23,
-      }}
-    >
-      <ScrollView>
-        <View
+    <ScrollView style={{ flex: 1, marginBottom: 100 }}>
+      <View
+        style={{
+          alignItems: "center",
+          marginTop: high / 30,
+        }}
+      >
+        {data.imagePath ? (
+          <Image
+            source={{ uri: data.imagePath }}
+            style={{
+              width: wid / 1.12,
+              height: high / 3,
+              borderRadius: 10,
+              resizeMode: "contain",
+              backgroundColor: "transparent",
+            }}
+          ></Image>
+        ) : (
+          <Image
+            source={require("../assets/images/bigEnglish.png")}
+            style={{
+              width: wid / 1.12,
+              height: high / 3,
+              borderRadius: 10,
+              resizeMode: "contain",
+              backgroundColor: "transparent",
+            }}
+          ></Image>
+        )}
+      </View>
+      <View style={{ marginTop: 10, paddingHorizontal: wid / 18 }}>
+        <Text
+          allowFontScaling={false}
           style={{
-            width: wid,
-            height: high / 2.2,
-            justifyContent: "center",
-            alignItems: "center",
-            backgroundColor: "#F5F5F5",
+            fontFamily: "Poppins-Bold",
+            fontSize: 22,
+            marginTop: high / 60,
           }}
         >
-          {data.imagePath ? (
-            <Image
-              source={{ uri: data.imagePath }}
-              style={{
-                marginTop: high / 10,
-                width: "90%",
-                height: high / 3.17,
-                borderRadius: 10,
-                resizeMode: "contain",
-                backgroundColor: "transparent",
-                alignSelf: "center",
-              }}
-            ></Image>
-          ) : (
-            <Image
-              source={require("../assets/images/bigEnglish.png")}
-              style={{
-                marginTop: high / 10,
-                width: "90%",
-                height: high / 3.17,
-                borderRadius: 10,
-                resizeMode: "contain",
-                backgroundColor: "transparent",
-                alignSelf: "center",
-              }}
-            ></Image>
-          )}
-
-          <Text
-            allowFontScaling={false}
-            style={{
-              fontFamily: "Poppins-Bold",
-              fontSize: 22,
-              alignSelf: "flex-start",
-              left: wid / 12.8,
-              top: high / 28.46,
-            }}
-          >
-            {data.name}
+          {data.name}
+        </Text>
+        <Text
+          allowFontScaling={false}
+          style={{
+            fontFamily: "Poppins-Regular",
+          }}
+        >
+          {data.detail}
+        </Text>
+      </View>
+      <View
+        style={{
+          borderWidth: 2,
+          borderStyle: "dashed",
+          borderColor: "#D1CB97",
+          borderRadius: 8,
+          width: wid / 1.1,
+          marginTop: high / 60,
+          paddingHorizontal: wid / 20,
+          paddingVertical: high / 60,
+          alignSelf: "center",
+          justifyContent: "center",
+          backgroundColor: "#F5F5F5",
+          marginBottom: 20,
+        }}
+      >
+        <View style={styles.courseDetail}>
+          <Text allowFontScaling={false} style={styles.textstyle}>
+            Price
           </Text>
-          <Text
-            allowFontScaling={false}
-            style={{
-              top: high / 21.35,
-              alignSelf: "flex-start",
-              left: wid / 12.7,
-              height: "auto",
-              width: "88%",
-            }}
-          >
-            {data.detail}
+          <Text allowFontScaling={false} style={styles.textstyle}>
+            {data.price}
           </Text>
         </View>
-        <View
-          style={{
-            borderWidth: 2,
-            marginBottom: high / 10.675,
-            marginTop: high / 15,
-            borderStyle: "dashed",
-            borderColor: "#D1CB97",
-            height: high / 1.3,
-            borderRadius: 8,
-            top: high / 14.23,
-            width: "90%",
-            alignSelf: "center",
-            flexDirection: "row",
-            backgroundColor: "#F5F5F5",
-          }}
-        >
-          <View
+        <View style={styles.courseDetail}>
+          <Text allowFontScaling={false} style={styles.textstyle}>
+            Duration
+          </Text>
+          <Text allowFontScaling={false} style={styles.textstyle}>
+            1 Year
+          </Text>
+        </View>
+        <View style={styles.courseDetail}>
+          <Text allowFontScaling={false} style={styles.textstyle}>
+            Valid Year
+          </Text>
+          <Text allowFontScaling={false} style={styles.textstyle}>
+            {calcValidity(data.creationTime)}
+          </Text>
+        </View>
+        <View style={styles.courseDetail}>
+          <Text allowFontScaling={false} style={styles.textstyle}>
+            Total
+          </Text>
+          <Text allowFontScaling={false} style={styles.textstyle}>
+            {data.price}
+          </Text>
+        </View>
+        <View style={{}}>
+          <TouchableOpacity
             style={{
-              flexDirection: "column",
-              height: high / 2,
-              width: "50%",
-              justifyContent: "flex-start",
-              alignContent: "center",
+              backgroundColor: "#319EAE",
+              marginTop: high / 30,
+              width: wid / 1.371,
+              borderRadius: 6,
+              height: high / 17.08,
+
+              alignSelf: "center",
+              justifyContent: "center",
               alignItems: "center",
-              backgroundColor: "#F5F5F5",
+            }}
+            onPress={() => {
+              buttonValue == "Buy" ? BuyCourse() : goToPurchasePage();
             }}
           >
             <Text
               allowFontScaling={false}
               style={{
-                color: "#A9A9A9",
-                alignSelf: "flex-start",
-                left: wid / 12.8,
                 fontFamily: "Poppins-Regular",
-                fontSize: 20,
-                top: high / 21.35,
+                fontSize: 18,
+                color: "white",
               }}
             >
-              Price
+              {buttonValue == "Buy" ? `Buy ${data.price}` : "View"}
             </Text>
-            <Text
-              allowFontScaling={false}
-              style={{
-                color: "#A9A9A9",
-                alignSelf: "flex-start",
-                left: wid / 12.8,
-                fontFamily: "Poppins-Regular",
-                fontSize: 20,
-                top: high / 10.675,
-              }}
-            >
-              Duration
-            </Text>
-            <Text
-              allowFontScaling={false}
-              style={{
-                color: "#A9A9A9",
-                alignSelf: "flex-start",
-                left: wid / 12.8,
-                fontFamily: "Poppins-Regular",
-                fontSize: 20,
-                top: 100,
-              }}
-            >
-              Valid Year
-            </Text>
-
-            <Text
-              allowFontScaling={false}
-              style={{
-                color: "black",
-                alignSelf: "flex-start",
-                left: wid / 12.8,
-                fontFamily: "Poppins-Regular",
-                fontSize: 20,
-                top: 135,
-              }}
-            >
-              Total
-            </Text>
-          </View>
-          <View
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
             style={{
-              flexDirection: "column",
-              height: high / 2,
-              width: "50%",
-              backgroundColor: "#F5F5F5",
-              alignSelf: "flex-start",
+              backgroundColor: "#FAFAFB",
+              width: wid / 1.371,
+              borderRadius: 6,
+              borderWidth: 1,
+              marginTop: high / 60,
+              borderColor: "#F1F1F1",
+              height: high / 17.08,
+              alignSelf: "center",
+              alignContent: "center",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
             <Text
               allowFontScaling={false}
               style={{
-                color: "black",
-                alignSelf: "flex-end",
-                right: 20,
-                fontFamily: "Poppins-Regular",
-                fontSize: 20,
-                top: high / 21.35,
+                fontFamily: "Poppins-Medium",
+                fontSize: 18,
+                color: "grey",
               }}
             >
-              {data.price}
+              Back
             </Text>
-            <Text
-              allowFontScaling={false}
-              style={{
-                color: "black",
-                alignSelf: "flex-end",
-                right: 20,
-                fontFamily: "Poppins-Regular",
-                fontSize: 20,
-                top: high / 10.675,
-              }}
-            >
-              6 Months
-            </Text>
-            <Text
-              allowFontScaling={false}
-              style={{
-                color: "black",
-                alignSelf: "flex-end",
-                right: 20,
-                fontFamily: "Poppins-Regular",
-                fontSize: 20,
-                top: high / 7.11,
-              }}
-            >
-              {calcValidity(data.creationTime)}
-            </Text>
-
-            <Text
-              allowFontScaling={false}
-              style={{
-                color: "black",
-                alignSelf: "flex-end",
-                right: 20,
-                fontFamily: "Poppins-Regular",
-                fontSize: 20,
-                top: high / 5.57,
-              }}
-            >
-              {data.price}
-            </Text>
-          </View>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          style={{
-            backgroundColor: "#319EAE",
-            width: wid / 1.371,
-            borderRadius: 6,
-            height: high / 17.08,
-            alignSelf: "center",
-            alignContent: "center",
-            justifyContent: "center",
-            alignItems: "center",
-            bottom: high / 3.84,
-          }}
-          onPress={() => {
-            buttonValue == "Buy" ? BuyCourse() : goToPurchasePage();
-          }}
-        >
-          <Text
-            allowFontScaling={false}
-            style={{
-              fontFamily: "Poppins-Regular",
-              fontSize: 18,
-              color: "white",
-            }}
-          >
-            {buttonValue == "Buy" ? `Buy ${data.price}` : "View"}
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={{
-            backgroundColor: "#FAFAFB",
-            width: wid / 1.371,
-            borderRadius: 6,
-            borderWidth: 1,
-            borderColor: "#F1F1F1",
-            height: high / 17.08,
-            alignSelf: "center",
-            alignContent: "center",
-            justifyContent: "center",
-            alignItems: "center",
-            bottom: high / 4.54,
-          }}
-        >
-          <Text
-            allowFontScaling={false}
-            style={{
-              fontFamily: "Poppins-Medium",
-              fontSize: 18,
-              color: "grey",
-            }}
-          >
-            Back
-          </Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </View>
+      </View>
+    </ScrollView>
   );
 }
 const styles = StyleSheet.create({
   loader: {
-    position: "absolute",
-    top: high / 2,
-    left: wid / 2.1,
+    // top: high / 2,
+    // width: wid / 2,
+  },
+  courseDetail: {
+    marginVertical: high / 90,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  textstyle: {
+    color: "#A9A9A9",
+    fontFamily: "Poppins-Regular",
+    fontSize: 20,
   },
 });

@@ -387,7 +387,7 @@ export default function Purchased(props: any) {
           {res == "Mock Tests" ? (
             <ScrollView style={{ marginTop: 20, marginBottom: 60 }}>
               {currrentCourseData?.map((item: any, idx: any) => {
-                console.log(currrentCourseData);
+                
                 return (
                   <TestCardCoponent
                     key={idx}

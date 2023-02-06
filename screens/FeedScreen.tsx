@@ -38,12 +38,6 @@ export default function FeedScreen(props: any) {
       setColor1(true);
       setColor2(false);
       setColor3(false);
-    } else if (text == "Vocabulary") {
-      setColor(false);
-      setCurrentState("Vocabulary");
-      setColor1(false);
-      setColor2(true);
-      setColor3(false);
     } else {
       setColor(false);
       setCurrentState("Video");

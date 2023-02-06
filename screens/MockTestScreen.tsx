@@ -17,7 +17,7 @@ import { checkArrayIsEmpty } from "../utils/Logics";
 export default function MockTest(props: any) {
   const [mockData, setMockData] = useState<any>([]);
   const [myMockData, setMyMockData] = useState<any>([]);
-  const { access_token, userDetail } = useStateContext();
+const { access_token, userDetail } = useStateContext();
   const [isLoading, setisLoading] = useState<boolean>(false);
   const [isThereAnyPurchasedMocktest, setisThereAnyPurchasedMocktest] =
     useState<boolean>(true);

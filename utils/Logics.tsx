@@ -78,6 +78,15 @@ let options_: any = {
     "Abp-TenantId": "1",
   },
 };
+const trimTextName = (desc: string) => {
+  let newDesc = desc.split(" ");
+  if (desc.length < 10) return desc;
+  let res = "";
+  for (let i = 0; i <= 8 && i < newDesc.length; i++) {
+    res += newDesc[i] + " ";
+  }
+  return res + "...";
+};
 const timerStart = (duration: any) => {
   var startTime = moment().subtract("5", "hours").subtract("30", "minutes");
   var endTime = userMockTestSection?.creationTime;
@@ -95,5 +104,6 @@ export {
   enrollTrimText,
   enrollTrimTextName,
   checkArrayIsEmpty,
+  trimTextName,
   options_,
 };
