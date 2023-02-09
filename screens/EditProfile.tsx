@@ -15,6 +15,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  PermissionsAndroid,
   TouchableWithoutFeedback,
 } from "react-native";
 import { View, Text } from "../components/Themed";
@@ -23,9 +24,14 @@ import axios from "axios";
 import { baseUrl } from "../utils";
 import { options_ } from "../utils/Logics";
 import moment from "moment";
-import * as ImagePicker from "expo-image-picker";
+// import * as ImagePicker from "expo-image-picker";import { StyleSheet, Text, View, TouchableOpacity, Button, Image } from 'react-native';
+import { Button } from "react-native";
+
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
+
 export default function EditProfile(props: any) {
   const { userDetail, userImage, access_token, setAccess_token } =
     useStateContext();
@@ -35,6 +41,7 @@ export default function EditProfile(props: any) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [resourcePath, setresourcePath] = useState("");
   const [hasGalleryPermission, setHasGalleryPermission] =
     useState<boolean>(false);
   const [iamge, setImgae] = useState<String>("");
@@ -42,24 +49,27 @@ export default function EditProfile(props: any) {
     "Content-Type": "application/json",
     "Abp-TenantId": "1",
   };
-  useEffect(() => {
-    (async () => {
-      const galleryStatus =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-      setHasGalleryPermission(galleryStatus.status == "granted");
-    })();
-  }, []);
-  const pickImage = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    console.log(result);
-    if (!result.cancelled) {
-      setImgae(result.uri);
+  const [cameraPhoto, setCameraPhoto] = useState();
+  const [galleryPhoto, setGalleryPhoto] = useState();
+
+  let options: any = {
+    saveToPhotos: true,
+    mediaType: "photo",
+  };
+
+  const openCamera = async () => {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.CAMERA
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      const result: any = await launchCamera(options);
+      setCameraPhoto(result.assets[0].uri);
     }
+  };
+
+  const openGallery = async () => {
+    const result: any = await launchImageLibrary(options);
+    setGalleryPhoto(result.assets[0].uri);
   };
 
   const save = async () => {
@@ -179,7 +189,7 @@ export default function EditProfile(props: any) {
             Do not disturb, doing a study right now.
           </Text>
           <TouchableOpacity
-            onPress={() => pickImage()}
+            onPress={() => openGallery()}
             style={{
               justifyContent: "center",
               backgroundColor: "#2C384C",

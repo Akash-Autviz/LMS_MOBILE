@@ -99,7 +99,7 @@ export default function MockTestSubjectTest(props: any) {
     "Content-Type": "application/json",
     "Abp-TenantId": "1",
   };
-
+  console.log(mockTestId);
   const getQuestions = async (sectionId: any) => {
     setLoading(true);
     try {

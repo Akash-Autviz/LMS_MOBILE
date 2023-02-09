@@ -266,7 +266,7 @@ export default function ProfilePage(props: any) {
             source={require("../assets/images/arow.png")}
           />
         </TouchableOpacity>
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={styles.cardCntnr}
           onPress={() => props.navigation.navigate("WebViewInMobile")}
         >
@@ -282,7 +282,7 @@ export default function ProfilePage(props: any) {
             style={styles.cardImage}
             source={require("../assets/images/arow.png")}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity
           onPress={() => logoutButtonHandler()}

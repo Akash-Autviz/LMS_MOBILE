@@ -173,6 +173,16 @@ function RootNavigator() {
         component={EditProfile}
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="CourseDetails"
+        component={CourseDetails}
+        options={{
+          headerShown: true,
+          headerBackButtonMenuEnabled: true,
+          headerTitleAlign: "center",
+          headerTitle: "Course Details",
+        }}
+      />
     </Stack.Navigator>
   );
 }
@@ -239,79 +249,7 @@ function Home() {
     </Stack.Navigator>
   );
 }
-function TabTwo() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="TabTwo"
-        component={TabTwoScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="CourseDetails"
-        component={CourseDetails}
-        options={{
-          headerShown: true,
-          headerBackButtonMenuEnabled: true,
-          headerTitleAlign: "center",
-          headerTitle: "Course Details",
-        }}
-      />
-      <Stack.Screen
-        name="TabTwo"
-        component={TabTwoScreen}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
-  );
-}
-function Play() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Play"
-        component={PlayScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Videos"
-        component={VideosScreen}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
-  );
-}
-function Mock() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Purchased"
-        component={Purchased}
-        options={{
-          headerShown: true,
-          headerBackButtonMenuEnabled: true,
-          headerTitleAlign: "center",
-          headerTitle: "My Course",
-        }}
-      />
-      <Stack.Screen
-        name="Test"
-        component={MockTestSubjectTest}
-        options={{ headerShown: false, navigationBarHidden: false }}
-      />
-      <Stack.Screen
-        name="TestResult"
-        component={TestResultScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="TestInfo"
-        component={TestInfoScreen}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
-  );
-}
+
 function Feed() {
   return (
     <Stack.Navigator>

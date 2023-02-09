@@ -1,4 +1,3 @@
-// import { StatusBar } from 'expo-status-bar';
 import {
   SafeAreaView,
   StyleSheet,
@@ -116,9 +115,7 @@ export default function VideosScreen(props: any) {
       }}
     >
       <HeaderNav name="Videos List" navigation={props.navigation} />
-      {/* <View style={{height: high/3,position:'absolute',top:high/8.386,
-       width:wid/0.95, left: 1, alignSelf:"center", justifyContent:"center", backgroundColor:"#FAFAFB"
-}} >  */}
+
       <View
         style={{
           height: high / 2,

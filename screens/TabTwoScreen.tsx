@@ -127,27 +127,6 @@ export default function TabTwoScreen({ routes, navigation }: any) {
     }
     setResultFound(true);
   };
-  const handleClick = () => {
-    setIsActive((current: any) => !current);
-    if (color1 == true || color2 == true) {
-      setIsActive1(false);
-      setIsActive2(false);
-    }
-  };
-  const handleClick1 = () => {
-    if (color == true || color2 == true) {
-      setIsActive(false);
-      setIsActive2(false);
-    }
-    setIsActive1((current) => !current);
-  };
-  const handleClick2 = () => {
-    setIsActive2((current) => !current);
-    if (color == true || color1 == true) {
-      setIsActive(false);
-      setIsActive1(false);
-    }
-  };
 
   return (
     <View style={{ backgroundColor: "#F7F7F7", flex: 1 }}>
@@ -165,7 +144,6 @@ export default function TabTwoScreen({ routes, navigation }: any) {
                 colorScheme === "dark" ? "#D1D0D0" : "black"
               }
             />
-
             {searchQuery ? (
               <AntDesign
                 name="close"
@@ -292,11 +270,11 @@ export default function TabTwoScreen({ routes, navigation }: any) {
                   fontSize: 16,
                 }}
               >
-                No Result Found
+                No Course Found
               </Text>
             </View>
           )}
-          {!searchQuery && (
+          {!searchQuery && enrData && (
             <View>
               <ScrollView
                 horizontal

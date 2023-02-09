@@ -10,6 +10,7 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
@@ -35,7 +36,6 @@ const SignUpScreen = () => {
     let EmailRegex = new RegExp(
       /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
     );
-
     if (name.trim() == "") {
       alert("Enter Name");
     } else if (surName.trim() == "") {
@@ -79,48 +79,81 @@ const SignUpScreen = () => {
     axios(config)
       .then((res: any) => {
         console.log("signInSucecesFull", res);
-
-        setIsSignUp(true);
         setInputId(res.data.result.id);
+        Toast.show({
+          type: "success",
+          text1: "OTP Sent SucecesFully ",
+          position: "top",
+        });
+        setIsSignUp(true);
       })
       .catch((error: any) => {
-        alert("Something went Wrong");
+        Toast.show({
+          type: "error",
+          text1: "Something went wrong!!!",
+          position: "top",
+        });
         console.log(error);
       });
   };
-  let data = { tenantId: 1 };
-  let options_: any = {
-    observe: "response",
-    responseType: "blob",
-    headers: {
-      Accept: "text/plain",
-      "Abp-TenantId": "1",
-    },
-  };
+
   const checkOTP = async () => {
-    try {
-      const res = await axios.post(
-        `${baseUrl}/api/services/app/User/ConfirmEmail?input=${inputId}&otp=${otp}`,
-        data
-      );
-      console.log(res);
-      alert("SuccessFully Account created");
-      navigation.dispatch(StackActions.replace("SignIn"));
-    } catch (error) {
-      console.log(error);
-    }
+    var config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `http://13.126.218.96/api/services/app/User/ConfirmEmail?input=${inputId}&otp=${otp}`,
+      headers: {
+        "Abp-TenantId": "1",
+      },
+    };
+
+    await axios(config)
+      .then(function (response) {
+        Toast.show({
+          type: "success",
+          text1: "Register Successfull",
+          position: "top",
+        });
+        navigation.dispatch(StackActions.replace("SignIn"));
+      })
+      .catch(function (error) {
+        Toast.show({
+          type: "error",
+          text1: "Something went wrong !!!",
+          position: "top",
+        });
+        console.log(error);
+      });
   };
   const resendOtp = async () => {
-    try {
-      const res = await axios.post(
-        `http://13.126.218.96/api/services/app/Account/ResendOtp?id=29`,
-        data,
-        options_
-      );
-      console.log(res);
-    } catch (error) {
-      console.log(error);
-    }
+    var data = "";
+
+    var config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: `http://13.126.218.96/api/services/app/Account/ResendOtp?id=${inputId}`,
+      headers: {
+        "Abp-TenantId": "1",
+      },
+      data: data,
+    };
+
+    await axios(config)
+      .then(function (response) {
+        Toast.show({
+          type: "success",
+          text1: "Resent OTP Successfull",
+          position: "top",
+        });
+        console.log(JSON.stringify(response.data));
+      })
+      .catch(function (error) {
+        Toast.show({
+          type: "error",
+          text1: "Something went wrong!!!",
+          position: "top",
+        });
+      });
   };
   // ("http://13.126.218.96/api/services/app/Account/Register");
   return (
@@ -128,6 +161,7 @@ const SignUpScreen = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
+      <Toast position="top" topOffset={50} />
       {isSignup == false ? (
         <View>
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -185,8 +219,9 @@ const SignUpScreen = () => {
               {/* <View style={styles.btnContainer}></View> */}
             </View>
           </TouchableWithoutFeedback>
+
           <TouchableOpacity
-            onPress={checkValidation}
+            onPress={() => checkValidation()}
             style={{
               width: wid / 1.3,
               flexDirection: "row",
@@ -207,6 +242,7 @@ const SignUpScreen = () => {
               style={{ alignSelf: "center", left: wid / 38.4 }}
             ></FontAwesome>
           </TouchableOpacity>
+
           <TouchableOpacity
             style={{
               marginTop: high / 80,
@@ -219,9 +255,10 @@ const SignUpScreen = () => {
           >
             <Text>Already have an account ? </Text>
             <Text allowFontScaling={false} style={{ color: "#309EAF" }}>
-              Sign Up
+              Sign In
             </Text>
           </TouchableOpacity>
+          <Toast position="top" bottomOffset={20} />
         </View>
       ) : (
         <View style={{}}>

@@ -6,9 +6,6 @@ import {
   ScrollView,
 } from "react-native";
 
-import { SafeAreaView } from "react-native-safe-area-context";
-// import { uuid } from "uuidv4";
-import ButtonComponent from "../components/ButtonComponent";
 import FinishButtonTest from "../components/FinishTestButton";
 import QuestionNoContainer from "../components/QuestionNoContainer";
 import { View, Text } from "../components/Themed";
@@ -88,28 +85,19 @@ const TestInfoScreen = (props: any) => {
           paddingHorizontal: 15,
         }}
         style={{
-       
           display: "flex",
-    
+
           backgroundColor: "white",
-       
+
           marginBottom: high / 4.5,
-      
         }}
       >
         {Array.from(Array(length), (e: any, l: any) => {
-          return (
-            <QuestionNoContainer
-              key={l}
-              quesno={l + 1}
-
-            />
-          );
+          return <QuestionNoContainer key={l} quesno={l + 1} />;
         })}
 
         <FinishButtonTest key={Math.random() * 100} />
       </ScrollView>
-      
     </View>
   );
 };

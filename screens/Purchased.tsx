@@ -18,6 +18,7 @@ export default function Purchased(props: any) {
   const { access_token, userDetail } = useStateContext();
   const Courseid = props.route.params.id;
   const [currrentCourseData, SetCurrrentCourseData] = useState<any>([]);
+  const [TestRefresh, setTestRefresh] = useState<string>("");
   const [res, setRes] = useState("Notes");
   var Video = (
     <View
@@ -221,17 +222,13 @@ export default function Purchased(props: any) {
       </TouchableOpacity>
     </View>
   );
-  //   {
-  //     "studentId": 14,
-  //     "mockTestId": 22,
-  //     "courseManagementId": "10"
-  // }
 
   useEffect(() => {
-    //  CreateCourseMockTest(access_token);
     getCourseDetails(access_token, Courseid);
-    getEnrollMockTestByUserIdAndCouresId();
   }, [props]);
+  useEffect(() => {
+    getEnrollMockTestByUserIdAndCouresId();
+  }, [TestRefresh]);
   const [isTrue, setIsTrue] = useState(true);
   const CreateCourseMockTest = async (token: any) => {
     let data = JSON.stringify({
@@ -392,9 +389,7 @@ export default function Purchased(props: any) {
                     key={idx}
                     title={item.mockTest.title}
                     data={item}
-                    getEnrollMockTestByUserIdAndCouresId={
-                      getEnrollMockTestByUserIdAndCouresId
-                    }
+                    setTestRefresh={setTestRefresh}
                   />
                 );
               })}

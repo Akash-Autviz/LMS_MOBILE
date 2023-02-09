@@ -22,10 +22,7 @@ export default function CourseDetails(props: any) {
     navigation.navigate("TabTwo");
     return true;
   };
-  console.log(data.id);
-  useEffect(() => {
-    getCourseDetails(access_token);
-  });
+
   useEffect(() => {
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
   }, [backbuttonHander]);
