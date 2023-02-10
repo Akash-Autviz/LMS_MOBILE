@@ -47,6 +47,7 @@ import ResetPassword from "../screens/ResetPassword";
 import SignUpScreen from "../screens/SignUpScreen";
 import WebViewInMobile from "../screens/WebViewInMobile";
 import EditProfile from "../screens/EditProfile";
+import OtpScreen from "../screens/OtpScreen";
 export default function Navigation({
   colorScheme,
 }: {
@@ -183,6 +184,16 @@ function RootNavigator() {
           headerTitle: "Course Details",
         }}
       />
+      <Stack.Screen
+        name="Otp"
+        component={OtpScreen}
+        options={{
+          headerShown: true,
+          headerBackButtonMenuEnabled: true,
+          headerTitleAlign: "center",
+          headerTitle: "Course Details",
+        }}
+      />
     </Stack.Navigator>
   );
 }
@@ -231,11 +242,7 @@ function Home() {
           headerTitleAlign: "center",
         }}
       />
-      <Stack.Screen
-        name="Test"
-        component={MockTestSubjectTest}
-        options={{ headerShown: false, navigationBarHidden: false }}
-      />
+
       <Stack.Screen
         name="Videos"
         component={VideosScreen}

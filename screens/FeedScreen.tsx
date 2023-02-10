@@ -209,7 +209,7 @@ export default function FeedScreen(props: any) {
                     navigation={props.navigation}
                     key={Math.random() * 100}
                   />
-                );
+                )
               }
             })}
           </ScrollView>

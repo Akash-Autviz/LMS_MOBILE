@@ -46,6 +46,13 @@ const TestCardCoponent = (props: any) => {
     mockTestId: mockTestId,
   };
 
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      GetUserMockTestSection();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
   // const [currrentCourseData, SetCurrrentCourseData] = useState<any>();
   const [mockTestSectionData, setmockTestSectionData] = useState<any>([]);
   const { access_token } = useStateContext();
@@ -61,7 +68,6 @@ const TestCardCoponent = (props: any) => {
   const start = async (data: any) => {
     const { id, isView } = data;
     setTestRefresh(new Date().getTime());
-    GetUserMockTestSection();
     if (isView) {
       Alert.alert(
         "Do you want to Resume the  mocktest...!!",

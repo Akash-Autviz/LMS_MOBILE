@@ -49,6 +49,7 @@ export type RootStackParamList = {
   SignUp: undefined;
   WebViewInMobile: undefined;
   EditProfile: undefined;
+  Otp: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =

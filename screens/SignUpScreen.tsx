@@ -22,10 +22,7 @@ const high = Dimensions.get("window").height;
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
-  const [isSignup, setIsSignUp] = useState(false);
-  const [inputId, setInputId] = useState<number>();
   const [surName, setSurName] = useState("");
-  const [otp, setOtp] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -33,23 +30,42 @@ const SignUpScreen = () => {
 
   const checkValidation = () => {
     let PhoneNoRegex = new RegExp(/(0|91)?[6-9][0-9]{9}/);
-    let EmailRegex = new RegExp(
-      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
-    );
-    if (name.trim() == "") {
-      alert("Enter Name");
-    } else if (surName.trim() == "") {
-      alert("Enter surName");
+
+    if (name == "") {
+      Toast.show({
+        type: "info",
+        text1: "Please Enter Name",
+        position: "top",
+      });
+    } else if (surName == "") {
+      Toast.show({
+        type: "info",
+        text1: "Please Enter Surname",
+        position: "top",
+      });
     } else if (
       !PhoneNoRegex.test(phoneNumber) ||
       phoneNumber == "" ||
       phoneNumber.length != 10
     ) {
       if (!PhoneNoRegex.test(phoneNumber)) {
-        alert("Enter Correct PhoneNo");
-      } else alert("Enter 10 digit PhoneNo");
+        Toast.show({
+          type: "info",
+          text1: "Please Enter Correct PhoneNo",
+          position: "top",
+        });
+      } else
+        Toast.show({
+          type: "info",
+          text1: "Enter 10 digit PhoneNo",
+          position: "top",
+        });
     } else if (email == "" || !email.includes("@")) {
-      alert("Enter Correct Email");
+      Toast.show({
+        type: "info",
+        text1: "Please Enter Correct Email",
+        position: "top",
+      });
     } else if (password.trim() == "" || password.trim().length < 5) {
       alert("Weak Password");
     } else {
@@ -79,13 +95,14 @@ const SignUpScreen = () => {
     axios(config)
       .then((res: any) => {
         console.log("signInSucecesFull", res);
-        setInputId(res.data.result.id);
+
         Toast.show({
           type: "success",
           text1: "OTP Sent SucecesFully ",
           position: "top",
         });
-        setIsSignUp(true);
+
+        navigation.navigate("Otp", { userId: res.data.result.id } as never);
       })
       .catch((error: any) => {
         Toast.show({
@@ -96,231 +113,116 @@ const SignUpScreen = () => {
         console.log(error);
       });
   };
-
-  const checkOTP = async () => {
-    var config = {
-      method: "post",
-      maxBodyLength: Infinity,
-      url: `http://13.126.218.96/api/services/app/User/ConfirmEmail?input=${inputId}&otp=${otp}`,
-      headers: {
-        "Abp-TenantId": "1",
-      },
-    };
-
-    await axios(config)
-      .then(function (response) {
-        Toast.show({
-          type: "success",
-          text1: "Register Successfull",
-          position: "top",
-        });
-        navigation.dispatch(StackActions.replace("SignIn"));
-      })
-      .catch(function (error) {
-        Toast.show({
-          type: "error",
-          text1: "Something went wrong !!!",
-          position: "top",
-        });
-        console.log(error);
-      });
-  };
-  const resendOtp = async () => {
-    var data = "";
-
-    var config = {
-      method: "post",
-      maxBodyLength: Infinity,
-      url: `http://13.126.218.96/api/services/app/Account/ResendOtp?id=${inputId}`,
-      headers: {
-        "Abp-TenantId": "1",
-      },
-      data: data,
-    };
-
-    await axios(config)
-      .then(function (response) {
-        Toast.show({
-          type: "success",
-          text1: "Resent OTP Successfull",
-          position: "top",
-        });
-        console.log(JSON.stringify(response.data));
-      })
-      .catch(function (error) {
-        Toast.show({
-          type: "error",
-          text1: "Something went wrong!!!",
-          position: "top",
-        });
-      });
-  };
-  // ("http://13.126.218.96/api/services/app/Account/Register");
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <Toast position="top" topOffset={50} />
-      {isSignup == false ? (
-        <View>
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={styles.inner}>
-              <Text style={styles.header}>Create Account</Text>
-              <View>
-                <Text style={styles.textHeader}>Name</Text>
-                <TextInput
-                  value={name}
-                  placeholder="Enter Name"
-                  style={styles.textInput}
-                  onChangeText={(data: any) => setName(data)}
-                />
-              </View>
-              <View>
-                <Text style={styles.textHeader}>SurName</Text>
-                <TextInput
-                  placeholder="Enter SurName"
-                  value={surName}
-                  style={styles.textInput}
-                  onChangeText={(data: any) => setSurName(data)}
-                />
-              </View>
-              <View>
-                <Text style={styles.textHeader}>Phone Number</Text>
-                <TextInput
-                  placeholder="Enter Phone No"
-                  value={phoneNumber}
-                  textContentType="telephoneNumber"
-                  keyboardType="number-pad"
-                  style={styles.textInput}
-                  onChangeText={(data: any) => setPhoneNumber(data)}
-                />
-              </View>
-              <View>
-                <Text style={styles.textHeader}>Enter your email</Text>
-                <TextInput
-                  placeholder="Enter your email"
-                  keyboardType="email-address"
-                  value={email}
-                  style={styles.textInput}
-                  onChangeText={(data: any) => setEmail(data)}
-                />
-              </View>
-              <View>
-                <Text style={styles.textHeader}>Password</Text>
-                <TextInput
-                  placeholder="Enter Password"
-                  style={styles.textInput}
-                  value={password}
-                  onChangeText={(data: any) => setPassword(data)}
-                />
-              </View>
-
-              {/* <View style={styles.btnContainer}></View> */}
+      <View
+        style={{
+          marginTop: 10,
+          // backgroundColor: "pink",
+          // height: 40,
+          // width: 100,
+        }}
+      >
+        <Text style={styles.header}>Create Account</Text>
+      </View>
+      {/* <Toast position="top" topOffset={0} /> */}
+      <View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.inner}>
+            <View>
+              <Text style={styles.textHeader}>Name</Text>
+              <TextInput
+                value={name}
+                placeholder="Enter Name"
+                style={styles.textInput}
+                onChangeText={(data: any) => setName(data)}
+              />
             </View>
-          </TouchableWithoutFeedback>
-
-          <TouchableOpacity
-            onPress={() => checkValidation()}
-            style={{
-              width: wid / 1.3,
-              flexDirection: "row",
-              height: high / 17,
-              marginTop: high / 50,
-              backgroundColor: "#1E2E46",
-              alignSelf: "center",
-              borderRadius: 14,
-              justifyContent: "center",
-            }}
-          >
-            <Text allowFontScaling={false} style={styles.BottomText}>
-              Sign Up
-            </Text>
-            <FontAwesome
-              name="long-arrow-right"
-              color={"white"}
-              style={{ alignSelf: "center", left: wid / 38.4 }}
-            ></FontAwesome>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={{
-              marginTop: high / 80,
-              flexDirection: "row",
-              width: wid,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            onPress={() => navigation.navigate("SignIn")}
-          >
-            <Text>Already have an account ? </Text>
-            <Text allowFontScaling={false} style={{ color: "#309EAF" }}>
-              Sign In
-            </Text>
-          </TouchableOpacity>
-          <Toast position="top" bottomOffset={20} />
-        </View>
-      ) : (
-        <View style={{}}>
-          <View>
-            <Text style={[styles.header, { marginBottom: 10 }]}>
-              OTP Verification
-            </Text>
-            <Text style={[styles.header, { fontSize: 15, marginTop: 20 }]}>
-              Please enter the OTP sent to your E-mail Address
-            </Text>
-            <Text style={styles.textHeader}>Enter OTP </Text>
-            <TextInput
-              value={otp}
-              placeholder="Enter OTP"
-              keyboardType="number-pad"
-              style={styles.textInput}
-              onChangeText={(data: any) => setOtp(data)}
-            />
-            <TouchableOpacity
-              onPress={() => checkOTP()}
-              style={{
-                width: wid / 1.3,
-                flexDirection: "row",
-                height: high / 17,
-
-                marginTop: high / 60,
-                backgroundColor: "#1E2E46",
-                alignSelf: "center",
-                borderRadius: 14,
-                justifyContent: "center",
-              }}
-            >
-              <Text allowFontScaling={false} style={styles.BottomText}>
-                Verify & Proceed
-              </Text>
-              <FontAwesome
-                name="long-arrow-right"
-                color={"white"}
-                style={{ alignSelf: "center", left: wid / 38.4 }}
-              ></FontAwesome>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={{ marginTop: high / 80, flexDirection: "row", width: wid }}
-              onPress={() => resendOtp()}
-            >
-              <Text
-                style={[
-                  styles.textHeader,
-                  {
-                    color: "#309EAF",
-                    marginBottom: 10,
-                    textAlign: "center",
-                    width: wid,
-                  },
-                ]}
-              >
-                Resend OTP
-              </Text>
-            </TouchableOpacity>
+            <View>
+              <Text style={styles.textHeader}>SurName</Text>
+              <TextInput
+                placeholder="Enter SurName"
+                value={surName}
+                style={styles.textInput}
+                onChangeText={(data: any) => setSurName(data)}
+              />
+            </View>
+            <View>
+              <Text style={styles.textHeader}>Phone Number</Text>
+              <TextInput
+                placeholder="Enter Phone No"
+                value={phoneNumber}
+                textContentType="telephoneNumber"
+                keyboardType="number-pad"
+                style={styles.textInput}
+                onChangeText={(data: any) => setPhoneNumber(data)}
+              />
+            </View>
+            <View>
+              <Text style={styles.textHeader}>Enter your email</Text>
+              <TextInput
+                placeholder="Enter your email"
+                keyboardType="email-address"
+                value={email}
+                style={styles.textInput}
+                onChangeText={(data: any) => setEmail(data)}
+              />
+            </View>
+            <View>
+              <Text style={styles.textHeader}>Password</Text>
+              <TextInput
+                placeholder="Enter Password"
+                style={styles.textInput}
+                value={password}
+                onChangeText={(data: any) => setPassword(data)}
+              />
+            </View>
           </View>
-        </View>
-      )}
+        </TouchableWithoutFeedback>
+
+        <TouchableOpacity
+          onPress={() => checkValidation()}
+          style={{
+            width: wid / 1.3,
+            flexDirection: "row",
+            height: high / 17,
+            marginTop: high / 50,
+            backgroundColor: "#1E2E46",
+            alignSelf: "center",
+            borderRadius: 14,
+            justifyContent: "center",
+          }}
+        >
+          <Text allowFontScaling={false} style={styles.BottomText}>
+            Sign Up
+          </Text>
+          <FontAwesome
+            name="long-arrow-right"
+            color={"white"}
+            style={{ alignSelf: "center", left: wid / 38.4 }}
+          ></FontAwesome>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            marginTop: high / 80,
+            flexDirection: "row",
+            width: wid,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onPress={() => navigation.navigate("SignIn")}
+        >
+          <Text>Already have an account ? </Text>
+          <Text allowFontScaling={false} style={{ color: "#309EAF" }}>
+            Sign In
+          </Text>
+        </TouchableOpacity>
+        <Toast position="top" bottomOffset={20} />
+      </View>
     </KeyboardAvoidingView>
   );
 };
@@ -332,7 +234,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#FAFAFB",
     flex: 1,
     justifyContent: "center",
-    alignItems: "center",
   },
   inner: {
     marginTop: high / 18,

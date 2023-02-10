@@ -138,8 +138,6 @@ export default function MockTestSubjectTest(props: any) {
         `${baseUrl}/api/services/app/MockTestUserAns/GetUserMockTestSection?mocktestId=${mockTestId}&userId=${studentId}`,
         config
       );
-
-      // setmockTestSectionData(mockTestSectionData);
     } catch (error) {
       console.log(error, "GetUserMockTestSection");
     }
@@ -359,120 +357,8 @@ export default function MockTestSubjectTest(props: any) {
           </>
         </View>
       ) : (
-        <View>
-          <Text>ierytuiertert</Text>
-        </View>
+        <View></View>
       )}
-      {/* {loading == false ? (
-        <>
-          {quesData && isSection ? (
-            <View
-              style={{
-                backgroundColor: "#FAFAFB",
-                height: "100%",
-                marginBottom: 50,
-              }}
-            >
-              <>
-                <View style={{ backgroundColor: "#F7F7F7" }}>
-                  <HeaderNav name="Test" navigation={props.navigation} />
-                </View>
-                <View style={{ backgroundColor: "#FAFAFB" }}>
-                  <TestCountDownTimer
-                    quesIndexArray={currentSectionTypeQuestoion}
-                    duration={duration}
-                    setquesIndexArray={setquesIndexArray}
-                    currentSection={currentSection}
-                    CurrentSectionId={CurrentSectionId}
-                    setCurrentSectionId={setCurrentSectionId}
-                  />
-                  <ScrollView
-                    horizontal
-                    style={{
-                      width: wid,
-                      height: high / 20,
-                      left: 10,
-                      backgroundColor: "#FAFAFB",
-                    }}
-                    contentContainerStyle={{
-                      alignContent: "flex-start",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    {testSections?.map((data: any, idx: number) => {
-                      return (
-                        <View key={idx}>
-                          <TouchableOpacity
-                            // onPress={() => setSection(idx)}
-                            style={{
-                              marginHorizontal: 6,
-                              paddingHorizontal: 10,
-                              backgroundColor:
-                                currentSection === data.subject.subjectName
-                                  ? "#498BEA"
-                                  : "lightgrey",
-                              flexDirection: "row",
-                              height: "100%",
-                              borderRadius: 15,
-                              justifyContent: "center",
-                              alignItems: "center",
-                              alignContent: "center",
-                            }}
-                          >
-                            <Text
-                              style={{
-                                color:
-                                  currentSection === data.subject.subjectName
-                                    ? "white"
-                                    : "black",
-                                alignSelf: "center",
-                                height: "100%",
-                                fontFamily: "Poppins-Medium",
-                                fontSize: 12,
-                                textAlignVertical: "center",
-                              }}
-                            >
-                              {data.subject.subjectName}
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                      );
-                    })}
-                  </ScrollView>
-                </View>
-
-                <CurrentSubject
-                  setCurrentSection={setCurrentSection}
-                  setCurrentSectionId={setCurrentSectionId}
-                  setquesIndexArray={setquesIndexArray}
-                  CurrentSectionId={CurrentSectionId}
-                  quesData={quesData}
-                  mockid={mockTestId}
-                  currentSectionTypeQuestoion={currentSectionTypeQuestoion}
-                  testSections={testSections}
-                  setSectionIdx={setSectionIdx}
-                  sectionLength={sectionLength}
-                  sectionIdx={sectionIdx}
-                  paramsData={props.route.params.data}
-                />
-              </>
-            </View>
-          ) : (
-            <>
-              <View
-                style={{ width: wid, height: high, justifyContent: "center" }}
-              >
-                <Text>No Data</Text>
-              </View>
-            </>
-          )}
-        </>
-      ) : (
-        <View style={{ alignSelf: "center", top: high / 4.5 }}>
-          <ActivityIndicator size="large" color="#319EAE" />
-        </View>
-      )} */}
     </>
   );
 }

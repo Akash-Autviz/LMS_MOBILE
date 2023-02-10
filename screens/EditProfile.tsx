@@ -18,14 +18,13 @@ import {
   PermissionsAndroid,
   TouchableWithoutFeedback,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import { View, Text } from "../components/Themed";
 import { useStateContext } from "./Context/ContextProvider";
 import axios from "axios";
-import { baseUrl } from "../utils";
-import { options_ } from "../utils/Logics";
+import { baseUrl, header } from "../utils";
+
 import moment from "moment";
-// import * as ImagePicker from "expo-image-picker";import { StyleSheet, Text, View, TouchableOpacity, Button, Image } from 'react-native';
-import { Button } from "react-native";
 
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 
@@ -33,7 +32,7 @@ const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 
 export default function EditProfile(props: any) {
-  const { userDetail, userImage, access_token, setAccess_token } =
+  const { userDetail, userImage, setUserDetail, access_token } =
     useStateContext();
   const navigation = useNavigation();
   const [currUserDetail, setcurrUserDetail] = useState<any>();
@@ -48,6 +47,7 @@ export default function EditProfile(props: any) {
   let config: any = {
     "Content-Type": "application/json",
     "Abp-TenantId": "1",
+    Authorization: `Bearer ${access_token}`,
   };
   const [cameraPhoto, setCameraPhoto] = useState();
   const [galleryPhoto, setGalleryPhoto] = useState();
@@ -73,30 +73,56 @@ export default function EditProfile(props: any) {
   };
 
   const save = async () => {
-    let data = JSON.stringify({
-      id: 29,
-      userName: !phoneNumber ? userDetail.userName : phoneNumber,
+    Toast.show({
+      type: "success",
+      text1: "Saved",
+      position: "top",
+    });
+    let data: any = JSON.stringify({
+      id: currUserDetail.id,
+      userName: phoneNumber,
       name: name,
-      gender: null,
+      gender: currUserDetail.gender,
       phoneNumber: null,
-      pofileImage: "",
+      pofileImage: currUserDetail.pofileImage,
       surname: surName,
       emailAddress: email,
       isActive: true,
-      fullName: name + surName,
+      fullName: currUserDetail.fullName,
       //   normalPassword: "Sujata@123",
       creationTime: moment(),
       roleNames: ["STUDENT"],
     });
     try {
       const res = await axios.put(
-        "http://13.126.218.96/api/services/app/User/Update",
+        `${baseUrl}/api/services/app/User/Update`,
         data,
-        config
+        {
+          headers: config,
+        }
       );
+
+      Toast.show({
+        type: "success",
+        text1: "Saved",
+        position: "top",
+      });
+      setUserDetail({
+        name: name,
+        surname: surName,
+        userName: phoneNumber,
+        emailAddress: email,
+        id: userDetail.id,
+      });
       console.log(res);
+      navigation.goBack();
     } catch (error) {
-      console.log("User/Updata", error);
+      console.log(error);
+      Toast.show({
+        type: "error",
+        text1: "Please Enter Correct Details!!!",
+        position: "top",
+      });
     }
   };
   useEffect(() => {
@@ -106,21 +132,63 @@ export default function EditProfile(props: any) {
     };
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
   });
-  console.log(access_token);
+  const checkValidation = () => {
+    let PhoneNoRegex = new RegExp(/(0|91)?[6-9][0-9]{9}/);
+
+    if (name == "") {
+      Toast.show({
+        type: "info",
+        text1: "Please Enter Name",
+        position: "top",
+      });
+    } else if (surName == "") {
+      Toast.show({
+        type: "info",
+        text1: "Please Enter Surname",
+        position: "top",
+      });
+    } else if (
+      !PhoneNoRegex.test(phoneNumber) ||
+      phoneNumber == "" ||
+      phoneNumber.length != 10
+    ) {
+      if (!PhoneNoRegex.test(phoneNumber)) {
+        Toast.show({
+          type: "info",
+          text1: "Please Enter Correct PhoneNo",
+          position: "top",
+        });
+      } else
+        Toast.show({
+          type: "info",
+          text1: "Enter 10 digit PhoneNo",
+          position: "top",
+        });
+    } else if (email == "" || !email.includes("@")) {
+      Toast.show({
+        type: "info",
+        text1: "Please Enter Correct Email",
+        position: "top",
+      });
+    } else {
+      save();
+    }
+  };
 
   const getcurrUserDeatail = async () => {
-    const header: any = {
-      Authorization: `Bearer ${access_token}`,
-      "Abp-TenantId": "1",
-      tenantId: 1,
-    };
     try {
-      let data = { tenantId: 1 };
-      const res = await axios.get(
-        `http://13.126.218.96/api/services/app/User/Get?Id=22`,
-        header
+      const {
+        data: { result },
+      } = await axios.get(
+        `${baseUrl}/api/services/app/User/Get?Id=${userDetail.id}`,
+        { headers: header }
       );
-      console.log(res);
+      console.log(result);
+      setcurrUserDetail(result);
+      setPhoneNumber(result.userName);
+      setEmail(result.emailAddress);
+      setName(result.name);
+      setSurName(result.surname);
     } catch (error) {
       console.log(error);
     }
@@ -135,6 +203,7 @@ export default function EditProfile(props: any) {
         imageStyle={{}}
         source={require("../assets/images/bgBig.png")}
       >
+        <Toast position="top" topOffset={20} />
         <Text
           allowFontScaling={false}
           style={{
@@ -221,7 +290,7 @@ export default function EditProfile(props: any) {
             value={name}
             placeholder="Enter Name"
             style={styles.textInput}
-            onChangeText={(data: any) => setName(data.trim())}
+            onChangeText={(data: any) => setName(data)}
           />
           <TextInput
             placeholder="Enter SurName"
@@ -246,7 +315,7 @@ export default function EditProfile(props: any) {
           />
           <TouchableOpacity
             onPress={() => {
-              save();
+              checkValidation();
             }}
             style={{
               width: wid / 2.258,
