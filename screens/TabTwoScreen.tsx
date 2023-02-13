@@ -20,6 +20,7 @@ import HeaderNav from "../components/HeaderNav";
 import { ActivityIndicator } from "react-native-paper";
 import { useStateContext } from "./Context/ContextProvider";
 import { baseUrl } from "../utils";
+import { checkArrayIsEmpty } from "../utils/Logics";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function TabTwoScreen({ routes, navigation }: any) {
@@ -127,27 +128,6 @@ export default function TabTwoScreen({ routes, navigation }: any) {
     }
     setResultFound(true);
   };
-  const handleClick = () => {
-    setIsActive((current: any) => !current);
-    if (color1 == true || color2 == true) {
-      setIsActive1(false);
-      setIsActive2(false);
-    }
-  };
-  const handleClick1 = () => {
-    if (color == true || color2 == true) {
-      setIsActive(false);
-      setIsActive2(false);
-    }
-    setIsActive1((current) => !current);
-  };
-  const handleClick2 = () => {
-    setIsActive2((current) => !current);
-    if (color == true || color1 == true) {
-      setIsActive(false);
-      setIsActive1(false);
-    }
-  };
 
   return (
     <View style={{ backgroundColor: "#F7F7F7", flex: 1 }}>
@@ -165,7 +145,6 @@ export default function TabTwoScreen({ routes, navigation }: any) {
                 colorScheme === "dark" ? "#D1D0D0" : "black"
               }
             />
-
             {searchQuery ? (
               <AntDesign
                 name="close"
@@ -210,8 +189,7 @@ export default function TabTwoScreen({ routes, navigation }: any) {
                 <TouchableOpacity
                   onPress={() =>
                     navigation.navigate("CourseDetails", {
-                      id: item.id,
-                      navigation: { navigation },
+                      data: item,
                     })
                   }
                   style={styles.topicCntr}
@@ -293,11 +271,11 @@ export default function TabTwoScreen({ routes, navigation }: any) {
                   fontSize: 16,
                 }}
               >
-                No Result Found
+                No Course Found
               </Text>
             </View>
           )}
-          {!searchQuery && (
+          {!searchQuery && !checkArrayIsEmpty(enrData) ? (
             <View>
               <ScrollView
                 horizontal
@@ -337,6 +315,122 @@ export default function TabTwoScreen({ routes, navigation }: any) {
                 showsHorizontalScrollIndicator={false}
                 data={resData}
                 style={{ width: wid, height: high / 2.8 }}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate("CourseDetails", {
+                        data: item,
+                      })
+                    }
+                    style={styles.topicCntr}
+                  >
+                    <View style={{}}>
+                      {!item.imagePath ? (
+                        <Image
+                          source={require("../assets/images/bigEnglish.png")}
+                          accessibilityLabel={"Error in Image Loading"}
+                          style={{
+                            resizeMode: "center",
+                            width: wid / 5.4,
+                            height: wid / 5.4,
+                            borderRadius: 10,
+                          }}
+                        />
+                      ) : (
+                        <Image
+                          source={{ uri: `${item.imagePath}` }}
+                          accessibilityLabel={"Error in Image Loading"}
+                          style={{
+                            resizeMode: "center",
+                            width: wid / 5.4,
+                            height: wid / 5.4,
+                            borderRadius: 10,
+                          }}
+                        />
+                      )}
+                    </View>
+                    <View
+                      style={{
+                        paddingVertical: high / 180,
+                        alignSelf: "center",
+                        width: wid / 2,
+                        flexDirection: "column",
+                        backgroundColor: "transparent",
+                      }}
+                    >
+                      <Text allowFontScaling={false} style={styles.cardText}>
+                        {item.name}
+                      </Text>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          backgroundColor: "transparent",
+                        }}
+                      >
+                        <FontAwesome
+                          name="eye"
+                          size={10}
+                          style={{
+                            color: "#8A8A8A",
+                            backgroundColor: "transparent",
+                          }}
+                        />
+                        <Text allowFontScaling={false} style={styles.number}>
+                          6 Topic
+                        </Text>
+                      </View>
+                    </View>
+                    <AntDesign name="right" size={24} color="black" />
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+          ) : (
+            <View>
+              <ScrollView
+                horizontal
+                contentContainerStyle={{
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+                showsHorizontalScrollIndicator={false}
+                style={{
+                  width: wid,
+                  height: high / 6,
+                  paddingLeft: wid / 5,
+                }}
+              >
+                <Text
+                  allowFontScaling={false}
+                  style={{
+                    fontSize: 20,
+                    fontFamily: "Poppins-Bold",
+                    backgroundColor: "#FFFFFF",
+                  }}
+                >
+                  No Purchased Course
+                </Text>
+              </ScrollView>
+              <View>
+                <Text
+                  allowFontScaling={false}
+                  style={{
+                    fontSize: 20,
+                    fontFamily: "Poppins-Bold",
+                    backgroundColor: "#FFFFFF",
+                    paddingLeft: wid / 11.2,
+                    marginVertical: high / 60,
+                  }}
+                >
+                  Popular Courses
+                </Text>
+              </View>
+              <FlatList
+                key={Math.random() * 100}
+                showsHorizontalScrollIndicator={false}
+                data={resData}
+                style={{ width: wid, height: high / 1.8 }}
                 renderItem={({ item }) => (
                   <TouchableOpacity
                     onPress={() =>

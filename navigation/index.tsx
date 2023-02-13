@@ -45,6 +45,9 @@ import { useStateContext } from "../screens/Context/ContextProvider";
 import MockTestTypeTest from "../screens/MockTestTypeTest";
 import ResetPassword from "../screens/ResetPassword";
 import SignUpScreen from "../screens/SignUpScreen";
+import WebViewInMobile from "../screens/WebViewInMobile";
+import EditProfile from "../screens/EditProfile";
+import OtpScreen from "../screens/OtpScreen";
 export default function Navigation({
   colorScheme,
 }: {
@@ -154,10 +157,42 @@ function RootNavigator() {
         component={MockTestTypeTest}
         options={{ headerShown: false }}
       />
+
+      <Stack.Screen
+        name="WebViewInMobile"
+        component={WebViewInMobile}
+        options={{ headerShown: false }}
+      />
+
       <Stack.Screen
         name="TestResult"
         component={TestResultScreen}
         options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="EditProfile"
+        component={EditProfile}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="CourseDetails"
+        component={CourseDetails}
+        options={{
+          headerShown: true,
+          headerBackButtonMenuEnabled: true,
+          headerTitleAlign: "center",
+          headerTitle: "Course Details",
+        }}
+      />
+      <Stack.Screen
+        name="Otp"
+        component={OtpScreen}
+        options={{
+          headerShown: true,
+          headerBackButtonMenuEnabled: true,
+          headerTitleAlign: "center",
+          headerTitle: "",
+        }}
       />
     </Stack.Navigator>
   );
@@ -207,11 +242,7 @@ function Home() {
           headerTitleAlign: "center",
         }}
       />
-      <Stack.Screen
-        name="Test"
-        component={MockTestSubjectTest}
-        options={{ headerShown: false, navigationBarHidden: false }}
-      />
+
       <Stack.Screen
         name="Videos"
         component={VideosScreen}
@@ -225,79 +256,7 @@ function Home() {
     </Stack.Navigator>
   );
 }
-function TabTwo() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="TabTwo"
-        component={TabTwoScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="CourseDetails"
-        component={CourseDetails}
-        options={{
-          headerShown: true,
-          headerBackButtonMenuEnabled: true,
-          headerTitleAlign: "center",
-          headerTitle: "Course Details",
-        }}
-      />
-      <Stack.Screen
-        name="TabTwo"
-        component={TabTwoScreen}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
-  );
-}
-function Play() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Play"
-        component={PlayScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="Videos"
-        component={VideosScreen}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
-  );
-}
-function Mock() {
-  return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Purchased"
-        component={Purchased}
-        options={{
-          headerShown: true,
-          headerBackButtonMenuEnabled: true,
-          headerTitleAlign: "center",
-          headerTitle: "My Course",
-        }}
-      />
-      <Stack.Screen
-        name="Test"
-        component={MockTestSubjectTest}
-        options={{ headerShown: false, navigationBarHidden: false }}
-      />
-      <Stack.Screen
-        name="TestResult"
-        component={TestResultScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="TestInfo"
-        component={TestInfoScreen}
-        options={{ headerShown: false }}
-      />
-    </Stack.Navigator>
-  );
-}
+
 function Feed() {
   return (
     <Stack.Navigator>

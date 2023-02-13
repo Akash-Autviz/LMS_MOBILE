@@ -12,6 +12,7 @@ import {
   Keyboard,
   Alert,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import { View, Text } from "../components/Themed";
 import { FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -20,7 +21,6 @@ import { useStateContext } from "./Context/ContextProvider";
 
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
-
 const save = async (key: string, value: string) => {
   await SecureStore.setItemAsync(key, value);
 };
@@ -58,15 +58,12 @@ export default function SignInPage(props: any) {
     axios(config)
       .then((res: any) => {
         setData(res.data.result.accessToken);
-        SecureStore.setItemAsync(
-          "userId1",
-          JSON.stringify(res.data.result.userId)
-        );
+        SecureStore.setItemAsync("userId1", `${res.data.result.userId}`);
         console.log("signInSucecesFull", res);
         if (data1 != null) {
           setAccess_token(res.data.result.accessToken);
-          save("user_id", JSON.stringify(res.data.result.user_id));
-          save("access_token", res.data.result.accessToken);
+          save("user_id", `${res.data.result.userId}`);
+          save("access_token", `${res.data.result.accessToken}`);
           navigation.dispatch(StackActions.replace("Root"));
         } else {
           Alert.alert("Invalid credentials", "Incorrect Email or Password", [
@@ -78,12 +75,19 @@ export default function SignInPage(props: any) {
       })
       .catch((error: any) => {
         console.log(error);
-        Alert.alert(error.response.data.error.details, "Login Failed", [
+        // navigation.navigate();
+        Alert.alert("Login Failed", error.response.data.error.details, [
           { text: "Okay" },
         ]);
-        setUserMailId("");
-        setUserPassword("");
+        // if(error.response.data.)
+        // setUserMailId("");
+        // setUserPassword("");
       });
+    // Toast.show({
+    //   type: "info",
+    //   text1: "Please Enter Correct PhoneNo",
+    //   position: "bottom",
+    // });
   };
   const toggleFocus = () => {
     setFocused((prev: any) => !prev);
@@ -111,6 +115,7 @@ export default function SignInPage(props: any) {
         style={styles.ImageBackground}
         source={require("../assets/images/bgBig.png")}
       ></ImageBackground>
+
       <View
         style={{
           alignItems: "center",
@@ -120,11 +125,11 @@ export default function SignInPage(props: any) {
         }}
       >
         <View style={{ backgroundColor: "transparent" }}>
+          <Toast position="bottom" />
           <Image
             source={require("../assets/images/sampleImage.png")}
             style={{
-              marginTop: isTyping == true ? -high / 20 : high / 20,
-
+              marginTop: isTyping == true ? -high / 18 : high / 20,
               alignSelf: "center",
               borderRadius: 18,
             }}
@@ -135,7 +140,6 @@ export default function SignInPage(props: any) {
             width: wid,
             backgroundColor: "#FFFFFF",
             height: high / 1.4,
-
             justifyContent: "flex-start",
           }}
         >
@@ -158,20 +162,6 @@ export default function SignInPage(props: any) {
               Sign In
             </Text>
           </View>
-
-          {/* <Text
-            allowFontScaling={false}
-            style={{
-              fontFamily: "Poppins-Regular",
-              top: high / 10,
-              fontSize: 18,
-              alignSelf: "flex-start",
-              left: wid / 9.8,
-              color: "#929292",
-            }}
-          >
-            Email
-          </Text> */}
           <View
             style={{
               marginTop: -20,

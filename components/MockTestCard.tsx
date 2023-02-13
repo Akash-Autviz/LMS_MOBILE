@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   StyleSheet,
   Image,
@@ -28,16 +28,37 @@ export default function MockTestCard(props: any) {
     endTime,
     id,
     price,
-
     isBuy,
     isMockTest,
     upComingData,
   } = props;
   var buy = isBuy;
+
   const headers = {
     Authorization: `Bearer ${access_token}`,
     "Content-Type": "application/json",
     "Abp-TenantId": "1",
+  };
+
+  const getCourseDetails = async (token: any, id: any) => {
+    let data = "";
+    var config = {
+      method: "get",
+      url: `${baseUrl}/api/services/app/CourseManagementAppServices/GetStudentCourse?id=${id}`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      data: data,
+    };
+    axios(config)
+      .then(function (response: any) {
+        response.data?.result?.mockTests?.forEach((element: any) => {
+          createCourseMockTest(element.id);
+        });
+      })
+      .catch(function (error: any) {
+        console.log(error);
+      });
   };
   const createPayment = async () => {
     var data = JSON.stringify({
@@ -56,6 +77,7 @@ export default function MockTestCard(props: any) {
 
     axios(config)
       .then(function (response: any) {
+        getCourseDetails(access_token, id);
         console.log("Create payment Api Sucess");
       })
       .catch(function (error: any) {
@@ -63,10 +85,11 @@ export default function MockTestCard(props: any) {
       });
   };
 
-  const createCourseMockTest = async () => {
+  const createCourseMockTest = async (mockTestId: any) => {
     var data = JSON.stringify({
-      studentId: userDetail.id,
       courseManagementId: id,
+      studentId: userDetail.id,
+      mockTestId: mockTestId,
     });
     var config = {
       method: "post",
@@ -77,7 +100,7 @@ export default function MockTestCard(props: any) {
 
     axios(config)
       .then(function (response: any) {
-        alert(`Congratulations Transaction has been completed`);
+        console.log("CreateCourseMockTest", response);
       })
       .catch(function (error: any) {
         console.log("Create MockTest Failed", error);
@@ -100,6 +123,7 @@ export default function MockTestCard(props: any) {
       .then(function (response: any) {
         upComingData();
         createPayment();
+        getCourseDetails(access_token, id);
         console.log(response, "Create Enroll Success");
       })
       .catch(function (error: any) {
@@ -124,7 +148,6 @@ export default function MockTestCard(props: any) {
     };
     RazorpayCheckout.open(options as any)
       .then((data: any) => {
-        createCourseMockTest();
         setRefresh(new Date().getTime());
         createEnrollementCoures();
       })

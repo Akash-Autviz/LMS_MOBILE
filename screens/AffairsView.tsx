@@ -7,6 +7,7 @@ import { View, Text } from "../components/Themed";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 
+import WebView from "react-native-webview";
 export default function AffairsView(props: any) {
   const prop = props.route.params.item;
   useEffect(() => {
@@ -16,6 +17,7 @@ export default function AffairsView(props: any) {
     };
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
   });
+
   return (
     <ScrollView
       style={{
@@ -63,17 +65,35 @@ export default function AffairsView(props: any) {
           >
             {prop.title}
           </Text>
-          <Text
-            allowFontScaling={false}
-            style={{
-              marginTop: high / 22.7,
-              // alignSelf: "center",
-              width: "85%",
-              height: "auto",
-            }}
-          >
-            {prop.description}
-          </Text>
+          {prop.description.charAt(0) != "<" ? (
+            <Text
+              allowFontScaling={false}
+              style={{
+                marginTop: high / 22.7,
+                width: "85%",
+                height: "auto",
+              }}
+            >
+              {prop.description}
+            </Text>
+          ) : (
+            <WebView
+              style={{
+                backgroundColor: "transparent",
+                width: wid / 1.2,
+                height: high / 2,
+              }}
+              automaticallyAdjustContentInsets={true}
+              originWhitelist={["*"]}
+              source={{
+                html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"></head><style>
+    body { font-size: 100%; word-wrap: break-word; overflow-wrap: break-word; }
+</style><body>${prop.description}</body></html>`,
+              }}
+            />
+          )}
+
+          {/* <RenderHtml contentWidth={wid} source={source} /> */}
         </View>
         <View
           style={{

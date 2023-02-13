@@ -9,16 +9,52 @@ import VideoCard from "../components/VideoCard";
 import { checkArrayIsEmpty, getVideoId } from "../utils/Logics";
 import { useStateContext } from "./Context/ContextProvider";
 import { baseUrl } from "../utils";
+
+import SelectDropdown from "react-native-select-dropdown";
 import TestCardCoponent from "../components/TestCardCoponent";
+import { getSyllabus } from "../api/SubjectService";
+import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
+// import { Item } from "react-native-paper/lib/typescript/components/Drawer/Drawer";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
+
+const sports = [
+  {
+    label: "Football",
+    value: "football",
+  },
+  {
+    label: "Baseball",
+    value: "baseball",
+  },
+  {
+    label: "Hockey",
+    value: "hockey",
+  },
+];
+// const countries = ["Egypt", "Canada", "Australia", "Ireland"];
 export default function Purchased(props: any) {
   const [courseData, setCourseData] = useState<any>([]);
   const [courseType, setCourseType] = useState<any>();
+  const [currSubjectName, setCurrSubjectName] = useState<any>();
+  const [subjectName, setSubjectName] = useState([]);
   const { access_token, userDetail } = useStateContext();
   const Courseid = props.route.params.id;
   const [currrentCourseData, SetCurrrentCourseData] = useState<any>([]);
+  const [TestRefresh, setTestRefresh] = useState<string>("");
   const [res, setRes] = useState("Notes");
+  const getFilterData = async () => {
+    try {
+      let data = await getSyllabus(access_token);
+
+      await setSubjectName(data);
+      console.log("4372987598324745902379070", subjectName);
+    } catch (error) {}
+  };
+  useEffect(() => {
+    getFilterData();
+    // setSubjectName();
+  }, []);
   var Video = (
     <View
       style={{
@@ -221,12 +257,38 @@ export default function Purchased(props: any) {
       </TouchableOpacity>
     </View>
   );
+
   useEffect(() => {
-    getEnrollMockTestByUserIdAndCouresId();
     getCourseDetails(access_token, Courseid);
   }, [props]);
+  useEffect(() => {
+    getEnrollMockTestByUserIdAndCouresId();
+  }, [TestRefresh]);
   const [isTrue, setIsTrue] = useState(true);
-
+  const CreateCourseMockTest = async (token: any) => {
+    let data = JSON.stringify({
+      studentId: userDetail.id,
+      // mockTestId: 22,
+      courseManagementId: "Courseid",
+    });
+    const config = {
+      method: "GET",
+      url: `${baseUrl}/api/services/app/Session/GetCurrentLoginInformations`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Abp-TenantId": "1",
+      },
+      data: data,
+    };
+    await axios(config)
+      .then(function async(response: any) {
+        if (response.data.result.user != null) {
+        }
+      })
+      .catch(function (error: any) {
+        console.log(error);
+      });
+  };
   const getCourseDetails = async (token: any, id: any) => {
     let data = "";
     var config = {
@@ -248,11 +310,9 @@ export default function Purchased(props: any) {
       });
   };
 
-  useEffect(() => {}, []);
   const headers: any = {
     Authorization: `Bearer ${access_token}`,
-    Accept: "text/plain",
-    "Abp-TenantId": 1,
+    "Abp-TenantId": "1",
   };
   const getEnrollMockTestByUserIdAndCouresId = async () => {
     try {
@@ -288,7 +348,7 @@ export default function Purchased(props: any) {
         >
           {courseData.imagePath ? (
             <Image
-              source={{ uri: `${courseData.imagePath}` }}
+              source={{ uri: courseData.imagePath }}
               style={{
                 width: "80%",
                 top: 10,
@@ -358,15 +418,12 @@ export default function Purchased(props: any) {
           {res == "Mock Tests" ? (
             <ScrollView style={{ marginTop: 20, marginBottom: 60 }}>
               {currrentCourseData?.map((item: any, idx: any) => {
-                console.log(currrentCourseData);
                 return (
                   <TestCardCoponent
                     key={idx}
                     title={item.mockTest.title}
                     data={item}
-                    getEnrollMockTestByUserIdAndCouresId={
-                      getEnrollMockTestByUserIdAndCouresId
-                    }
+                    setTestRefresh={setTestRefresh}
                   />
                 );
               })}
@@ -402,6 +459,11 @@ export default function Purchased(props: any) {
                     >
                       {e.title}
                     </Text>
+                    <FontAwesome5
+                      name="file-download"
+                      size={25}
+                      color="#319EAE"
+                    />
                   </TouchableOpacity>
                 );
               })}
@@ -424,8 +486,8 @@ export default function Purchased(props: any) {
           {res == "Videos" ? (
             <ScrollView
               style={{
-                marginTop: 20,
-                marginBottom: 60,
+                marginTop: 10,
+                marginBottom: 20,
                 width: wid,
               }}
               contentContainerStyle={{
@@ -433,19 +495,76 @@ export default function Purchased(props: any) {
                 justifyContent: "center",
               }}
             >
-              {courseData.videos?.map((video: any) => {
-                console.log(courseData);
-                return (
-                  <VideoCard
-                    key={video.id}
-                    startTime={video.startTime}
-                    videoUrl={video.videoUrl}
-                    title={video.title}
-                    videoId={getVideoId(video.videoUrl)}
-                    navigation={props.navigation}
-                  />
-                );
-              })}
+              {/* <Text>useNativeAndroidPickerStyle (default)</Text> */}
+              {/* and iOS onUpArrow/onDownArrow toggle example */}
+              {/* <RNPickerSelect
+                onValueChange={(value: any) => console.log(value)}
+                items={[
+                  { label: "Football", value: "football" },
+                  { label: "Baseball", value: "baseball" },
+                  { label: "Hockey", value: "hockey" },
+                ]}
+              /> */}
+              <SelectDropdown
+                // defaultValue={"Select Subject"}
+                buttonStyle={{
+                  width: wid / 2,
+                  height: 40,
+                  borderRadius: 40,
+                  marginBottom: 10,
+                  backgroundColor: "#319EAE",
+                }}
+                defaultButtonText={"Subjects"}
+                searchPlaceHolder="Subjects"
+                dropdownStyle={{
+                  backgroundColor: "#fff",
+                  marginTop: -42,
+                  borderRadius: 12,
+                }}
+                buttonTextStyle={{
+                  color: "#FFF",
+                  fontFamily: "Poppins-Regular",
+                }}
+                data={subjectName}
+                onSelect={(selectedItem, index) => {
+                  setCurrSubjectName(selectedItem.id);
+                }}
+                rowTextForSelection={(item, index) => {
+                  return item.subjectName;
+                }}
+                buttonTextAfterSelection={(selectedItem, index) => {
+                  return selectedItem.subjectName;
+                }}
+              />
+
+              {currSubjectName &&
+                courseData.videos?.map((video: any) => {
+                  return (
+                    currSubjectName == video?.subjectId && (
+                      <VideoCard
+                        key={video.id}
+                        startTime={video.startTime}
+                        videoUrl={video.videoUrl}
+                        title={video.title}
+                        videoId={getVideoId(video.videoUrl)}
+                        navigation={props.navigation}
+                      />
+                    )
+                  );
+                })}
+              {!currSubjectName &&
+                courseData.videos?.map((video: any) => {
+                  return (
+                    <VideoCard
+                      key={video.id}
+                      startTime={video.startTime}
+                      videoUrl={video.videoUrl}
+                      title={video.title}
+                      videoId={getVideoId(video.videoUrl)}
+                      navigation={props.navigation}
+                    />
+                  );
+                })}
               {checkArrayIsEmpty(courseData.videos) && (
                 <Text
                   style={{

@@ -9,30 +9,20 @@ import {
   ActivityIndicator,
   ScrollView,
 } from "react-native";
+import WebView from "react-native-webview";
 
 import { Text } from "../components/Themed";
+import { trimTextName } from "../utils/Logics";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function CurrentAffairs(props: any) {
-  const trimTextName = (desc: string) => {
-    let newDesc = desc.split(" ");
-    if (desc.length < 10) return desc;
-    let res = "";
-    for (let i = 0; i <= 8 && i < newDesc.length; i++) {
-      res += newDesc[i] + " ";
-    }
-    return res + "...";
-  };
   console.log(props.item);
   const { title, description, image } = props.item;
-  console.log(image);
-  console.log(title);
 
   return (
     <ScrollView
       style={{
         backgroundColor: "#FAFAFB",
-        // height: "100%",
       }}
       contentContainerStyle={{ justifyContent: "flex-start" }}
     >
@@ -82,16 +72,34 @@ export default function CurrentAffairs(props: any) {
             >
               {title}
             </Text>
-            <Text
-              style={{
-                backgroundColor: "transparent",
-                marginVertical: 2,
-                fontFamily: "Poppins-Regular",
-                fontSize: 12,
-              }}
-            >
-              {trimTextName(description)}
-            </Text>
+            {trimTextName(description).charAt(0) != "<" ? (
+              <Text
+                style={{
+                  backgroundColor: "transparent",
+                  marginVertical: 2,
+                  fontFamily: "Poppins-Regular",
+                  fontSize: 12,
+                }}
+              >
+                {trimTextName(description)}
+              </Text>
+            ) : (
+              <View>
+                <WebView
+                  style={{
+                    backgroundColor: "transparent",
+                    width: wid / 1.8,
+                    height: high / 25,
+                  }}
+                  originWhitelist={["*"]}
+                  source={{
+                    html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=0.6"></head><style>
+    body { font-size: 100%; word-wrap: break-word; overflow-wrap: break-word; }
+</style><body>${description}</body></html>`,
+                  }}
+                />
+              </View>
+            )}
           </View>
           <AntDesign name="right" size={24} color="black" />
         </TouchableOpacity>

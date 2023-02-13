@@ -1,22 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useCallback } from "react";
 import { StyleSheet, Dimensions, TouchableOpacity, Image } from "react-native";
-
-import { Linking } from "react-native";
+import YoutubeIframe from "react-native-youtube-iframe";
 
 import { Text, View } from "../components/Themed";
+import { Alert } from "react-native";
 import { trimDate, getVideoId } from "../utils/Logics";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function VideoComponent(props: any) {
+  const [isVideoResume, setisVideoResume] = useState<boolean>(false);
   const { description, image, title, fileName, creationTime } = props.item;
   let detail = description + "";
+  const [playing, setPlaying] = useState(false);
+
+  const onStateChange = useCallback((state: any) => {
+    if (state === "ended") {
+      setPlaying(false);
+      Alert.alert("video has finished playing!");
+    }
+  }, []);
+  const togglePlaying = useCallback(() => {
+    setPlaying((prev) => !prev);
+  }, []);
 
   const [readMore, setReadMore] = useState(detail.length > 50 ? true : false);
   console.log(readMore, "ReadMore");
   return (
     <View>
       <TouchableOpacity
-        onPress={() => Linking.openURL(fileName)}
+        onPress={() => togglePlaying}
         style={{
           width: "90%",
           padding: 16,
@@ -59,23 +71,14 @@ export default function VideoComponent(props: any) {
         >
           {trimDate(creationTime)}
         </Text>
-        <Image
-          style={{
-            width: "100%",
-            alignSelf: "center",
-            height: high / 5.9,
-            resizeMode: "cover",
-            borderRadius: 5,
-            marginVertical: high / 100,
-          }}
-          resizeMode="stretch"
-          source={{
-            uri: `https://img.youtube.com/vi/${getVideoId(
-              fileName
-            )}/hqdefault.jpg`,
-          }}
-        />
 
+        <YoutubeIframe
+          height={high / 4}
+          controls={true}
+          play={playing}
+          videoId={getVideoId(fileName)}
+          onChangeState={onStateChange}
+        />
         <Text allowFontScaling={false} style={styles.cardDesc}>
           {description && readMore === true ? detail.slice(0, 180) : detail}
         </Text>

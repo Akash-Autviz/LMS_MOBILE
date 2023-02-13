@@ -18,9 +18,8 @@ import moment from "moment";
 
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
-
 const TestCardCoponent = (props: any) => {
-  const { data, title, getEnrollMockTestByUserIdAndCouresId } = props;
+  const { data, title, setTestRefresh } = props;
   const {
     id,
     isBuy,
@@ -46,6 +45,13 @@ const TestCardCoponent = (props: any) => {
     mockTestId: mockTestId,
   };
 
+  React.useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      GetUserMockTestSection();
+    });
+
+    return unsubscribe;
+  }, [navigation]);
   // const [currrentCourseData, SetCurrrentCourseData] = useState<any>();
   const [mockTestSectionData, setmockTestSectionData] = useState<any>([]);
   const { access_token } = useStateContext();
@@ -60,8 +66,7 @@ const TestCardCoponent = (props: any) => {
 
   const start = async (data: any) => {
     const { id, isView } = data;
-    getEnrollMockTestByUserIdAndCouresId();
-    GetUserMockTestSection();
+    setTestRefresh(new Date().getTime());
     if (isView) {
       Alert.alert(
         "Do you want to Resume the  mocktest...!!",

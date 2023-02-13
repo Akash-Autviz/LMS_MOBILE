@@ -23,36 +23,7 @@ const ResultModal = (props: any) => {
     setIndex(index);
   };
   const { SumbitTest } = props;
-  var questionModel = props?.quesIndexArray.map((e: any, id: any) => {
-    return index == id ? (
-      <QuestionNoContainer
-        setModalVisible={setModalVisible}
-        key={id}
-        quesno={id + 1}
-        color={"#319EAE"}
-        setquesIndexArray={props.setquesIndexArray}
-        quesIndexArray={props.quesIndexArray}
-      />
-    ) : (
-      // #FDD835
-      <QuestionNoContainer
-        setModalVisible={setModalVisible}
-        key={id}
-        quesno={id + 1}
-        color={
-          e.userAnswer
-            ? "#63a461"
-            : e.skip == true
-            ? "#d94646"
-            : e.isMarkUp == true
-            ? "#8c20d5"
-            : null
-        }
-        setquesIndexArray={props.setquesIndexArray}
-        quesIndexArray={props.quesIndexArray}
-      />
-    );
-  });
+
   useEffect(() => {
     setCurrentIndex;
   }, [ansResultIdx]);
@@ -129,7 +100,37 @@ const ResultModal = (props: any) => {
               marginBottom: high / 4.5,
             }}
           >
-            {questionModel}
+            {props?.quesIndexArray.map((e: any, id: any) => {
+              console.log(props.quesIndexArray);
+              return index == id ? (
+                <QuestionNoContainer
+                  setModalVisible={setModalVisible}
+                  key={id}
+                  quesno={id + 1}
+                  color={"#319EAE"}
+                  setquesIndexArray={props.setquesIndexArray}
+                  quesIndexArray={props.quesIndexArray}
+                />
+              ) : (
+                // #FDD835
+                <QuestionNoContainer
+                  setModalVisible={setModalVisible}
+                  key={id}
+                  quesno={id + 1}
+                  color={
+                    e.userAnswer
+                      ? "#63a461"
+                      : e.skip == true
+                      ? "#d94646"
+                      : e.isMarkUp == true
+                      ? "#8c20d5"
+                      : null
+                  }
+                  setquesIndexArray={props.setquesIndexArray}
+                  quesIndexArray={props.quesIndexArray}
+                />
+              );
+            })}
 
             <FinishButtonTest
               SumbitTest={SumbitTest}

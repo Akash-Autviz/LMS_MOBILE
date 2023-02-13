@@ -11,7 +11,7 @@ import { useStateContext } from "../screens/Context/ContextProvider";
 import AnswerOption from "./AnswerOption";
 import axios from "axios";
 import { baseUrl } from "../utils";
-import moment from "moment";          
+import moment from "moment";
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 export default function CurrentSubject(props: any) {
@@ -30,19 +30,21 @@ export default function CurrentSubject(props: any) {
     setDuration,
     SumbitTest,
   } = props;
-  console.log("child Renderd", quesData);
+
   const changeValue = (value: any) => {
-    if (value == "ans") {
-      currentSectionTypeQuestoion[index].userAnswer = answer;
-    } else if (value == "skip") {
-      currentSectionTypeQuestoion[index].skip = true;
-    } else if (value == "markup") {
-      currentSectionTypeQuestoion[index].isMarkUp = true;
-    }
+    currentSectionTypeQuestoion[index].userAnswer = value ? "" : answer;
+    currentSectionTypeQuestoion[index].skip = value == "skip" ? true : false;
+    currentSectionTypeQuestoion[index].isMarkUp =
+      value == "markup" ? true : false;
   };
+  console.log(currentSectionTypeQuestoion[index].mockTest);
+  console.log(currentSectionTypeQuestoion[index].question);
   const updateUserAnswer = (token: any, trueType: string) => {
+    changeValue(trueType);
     let data = JSON.stringify({
       creationTime: moment(),
+      mockTest: currentSectionTypeQuestoion[index].mockTest,
+      question: currentSectionTypeQuestoion[index].question,
       id: currentSectionTypeQuestoion[index].id,
       mockTestId: currentSectionTypeQuestoion[index].mockTestId,
       isDeleted: currentSectionTypeQuestoion[index].question.isDeleted,
@@ -65,7 +67,6 @@ export default function CurrentSubject(props: any) {
     };
     axios(config)
       .then(function (response: any) {
-        console.log("answer Updatted", response);
         setAnswer("");
       })
       .catch(function (error: any) {
@@ -80,7 +81,6 @@ export default function CurrentSubject(props: any) {
           Authorization: `Bearer ${access_token}`,
           "Content-Type": " application/json",
           "Abp-TenantId": "1",
-          // "Access-Control-Allow-Origin": `http://192.168.18.95:19000`,
         },
       };
       const res = await axios.put(
@@ -110,20 +110,20 @@ export default function CurrentSubject(props: any) {
   }, [index, sectionIdx]);
   const checkIndex = (value: string, id: number) => {
     if (value == "increment") {
-      changeValue("ans");
-      updateUserAnswer(access_token, "");
-
+      if (answer != "") updateUserAnswer(access_token, "");
       if (buttonValue === "Next Section" && sectionIdx + 1 < sectionLength) {
         updateUserAnswer(access_token, "");
         nextSection(sectionIdx + 1);
-      } else if (index < currentSectionTypeQuestoion.length - 1) {
+      } else if (
+        index < currentSectionTypeQuestoion.length - 1 &&
+        answer != ""
+      ) {
         setIndex(index + 1);
       }
     } else if (value == "skip") {
       setAnswer("");
       updateUserAnswer(access_token, "skip");
       if (index < currentSectionTypeQuestoion.length - 1) {
-        changeValue("skip");
         setIndex(index + 1);
       }
     } else {
@@ -148,7 +148,6 @@ export default function CurrentSubject(props: any) {
     setIndex(0);
   };
   const onMarkUpClick = () => {
-    changeValue("markup");
     updateUserAnswer(access_token, "markup");
     if (index < currentSectionTypeQuestoion.length - 1) {
       setIndex(index + 1);

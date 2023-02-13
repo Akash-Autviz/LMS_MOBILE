@@ -5,7 +5,6 @@ import {
   Dimensions,
   FlatList,
   ScrollView,
-  BackHandler,
   StyleSheet,
 } from "react-native";
 import { ActivityIndicator } from "react-native-paper";
@@ -19,12 +18,14 @@ import VideoCard from "../components/VideoCard";
 import { useStateContext } from "./Context/ContextProvider";
 import { getVideoId } from "../utils/Logics";
 import { baseUrl } from "../utils";
+import OnGoinVideoCard from "../components/OnGoinVideoCard";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function HomeScreen({ route, navigation }: any) {
   const [isLoading, setIsLoading] = useState(true);
   const [enrData, SetEnrData] = useState<any>([]);
   const [freeVideoData, SetFreeVideoData] = useState<any>([]);
+  const [onGoingVideoCourse, setonGoingVideoCourse] = useState<any>([]);
   const {
     setAccess_token,
     access_token,
@@ -33,6 +34,7 @@ export default function HomeScreen({ route, navigation }: any) {
     setuserImage,
     refresh,
   } = useStateContext();
+
   const getUserImage = async (access_token: string, userId: string) => {
     const config = {
       headers: {
@@ -78,20 +80,32 @@ export default function HomeScreen({ route, navigation }: any) {
         getUserData(value);
         setAccess_token(value);
         getUserImage(value, userId);
+        // getOngoingVideoCourses(value);
         getVideoContent(value);
         GetEnrolledCourseInformation(value, userId);
       });
     });
   }, [refresh]);
-
-  useEffect(() => {
-    const backbuttonHander = () => {
-      navigation.navigate("TabTwo");
-      return false;
+  const getOngoingVideoCourses = async (token: any) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer  ${token}`,
+        "Abp-TenantId": "1",
+      },
     };
-    BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
-  }, []);
-
+    try {
+      const res = await axios.get(
+        `${baseUrl}/api/services/app/CourseManagementAppServices/GetAllDataBasedOnCategory?courseType=Hybrid`,
+        config
+      );
+      setonGoingVideoCourse(res.data.result);
+    } catch (error) {
+      console.log(
+        "app/CourseManagementAppServices/GetAllDataBasedOnCategory?courseType=Hybrid",
+        error
+      );
+    }
+  };
   const getVideoContent = async (access_token: any) => {
     try {
       const config = {
@@ -137,7 +151,7 @@ export default function HomeScreen({ route, navigation }: any) {
 
   return (
     <ScrollView
-      style={{ width: wid, flex: 1, height: high, backgroundColor: "#F7F7F7" }}
+      style={{ width: wid, flex: 1, height: high, backgroundColor: "#FAFAFB" }}
     >
       {isLoading === true ? (
         <View
@@ -305,7 +319,9 @@ export default function HomeScreen({ route, navigation }: any) {
                     style={{
                       fontFamily: "Poppins-Medium",
                       width: "100%",
-                      fontSize: 13,
+                      alignContent: "center",
+                      fontSize: 16,
+                      textAlign: "center",
                       alignSelf: "center",
                       backgroundColor: "#FAFAFB",
                     }}
@@ -315,6 +331,71 @@ export default function HomeScreen({ route, navigation }: any) {
                 </View>
               )}
             </View>
+            {/* <View
+              style={{
+                backgroundColor: "#FAFAFB",
+                width: wid,
+              }}
+            >
+              <Text
+                allowFontScaling={false}
+                style={{
+                  fontFamily: "Poppins-Medium",
+                  fontSize: 19,
+                  left: wid / 12.8,
+                  color: "#212121",
+                  marginBottom: high / 85.4,
+                }}
+              >
+                Ongoing Video Courses
+              </Text>
+              {onGoingVideoCourse ? (
+                <ScrollView
+                  horizontal
+                  showsHorizontalScrollIndicator={false}
+                  style={{
+                    paddingVertical: 0,
+                    paddingLeft: wid / 12.8,
+                    // backgroundColor: "pink",
+                    flexDirection: "row",
+                    // height: high / 3.3,
+                  }}
+                >
+                  {onGoingVideoCourse.map((enr: any, idx: number) => {
+                    return (
+                      <OnGoinVideoCard
+                        key={idx}
+                        item={enr}
+                        navigation={navigation}
+                      />
+                    );
+                  })}
+                </ScrollView>
+              ) : (
+                <View
+                  style={{
+                    // paddingLeft: wid / 12.8,
+                    backgroundColor: "#FAFAFB",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    alignSelf: "center",
+                    height: high / 14.3,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontFamily: "Poppins-Medium",
+                      width: "100%",
+                      fontSize: 13,
+                      alignSelf: "center",
+                      backgroundColor: "#FAFAFB",
+                    }}
+                  >
+                    No Course has been purchased
+                  </Text>
+                </View>
+              )}
+            </View> */}
             <TouchableOpacity
               style={{
                 backgroundColor: "#FAFAFB",
@@ -380,8 +461,8 @@ export default function HomeScreen({ route, navigation }: any) {
                         fontFamily: "Poppins-Medium",
                         width: "100%",
                         alignContent: "center",
-                        fontSize: 13,
-                        left: wid / 3.5,
+                        fontSize: 16,
+                        textAlign: "center",
                         alignSelf: "center",
                         backgroundColor: "#FAFAFB",
                       }}

@@ -10,9 +10,9 @@ import {
   Keyboard,
   TouchableWithoutFeedback,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import React, { useState } from "react";
 import { useNavigation } from "@react-navigation/native";
-import { useStateContext } from "./Context/ContextProvider";
 import axios from "axios";
 import { baseUrl } from "../utils";
 import { FontAwesome } from "@expo/vector-icons";
@@ -22,35 +22,56 @@ const high = Dimensions.get("window").height;
 
 const SignUpScreen = () => {
   const navigation = useNavigation();
-  const [focused, setFocused] = useState(false);
   const [surName, setSurName] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
-  const config = {
-    "Content-Type": "application/json",
+  const resetValue = () => {
+    setSurName("null");
+    setName("");
+    setEmail("");
+    setPassword("");
+    setPhoneNumber("");
   };
   const checkValidation = () => {
     let PhoneNoRegex = new RegExp(/(0|91)?[6-9][0-9]{9}/);
-    // let EmailRegex = new RegExp(
-    //   /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/
-    // );
 
-    if (name.trim() == "") {
-      alert("Enter Name");
-    } else if (surName.trim() == "") {
-      alert("Enter surName");
+    if (name == "") {
+      Toast.show({
+        type: "info",
+        text1: "Please Enter Name",
+        position: "top",
+      });
+    } else if (surName == "") {
+      Toast.show({
+        type: "info",
+        text1: "Please Enter Surname",
+        position: "top",
+      });
     } else if (
       !PhoneNoRegex.test(phoneNumber) ||
       phoneNumber == "" ||
       phoneNumber.length != 10
     ) {
       if (!PhoneNoRegex.test(phoneNumber)) {
-        alert("Enter Correct PhoneNo");
-      } else alert("Enter 10 digit PhoneNo");
+        Toast.show({
+          type: "info",
+          text1: "Please Enter Correct PhoneNo",
+          position: "top",
+        });
+      } else
+        Toast.show({
+          type: "info",
+          text1: "Enter 10 digit PhoneNo",
+          position: "top",
+        });
     } else if (email == "" || !email.includes("@")) {
-      alert("Enter Correct Email");
+      Toast.show({
+        type: "info",
+        text1: "Please Enter Correct Email",
+        position: "top",
+      });
     } else if (password.trim() == "" || password.trim().length < 5) {
       alert("Weak Password");
     } else {
@@ -80,107 +101,131 @@ const SignUpScreen = () => {
     axios(config)
       .then((res: any) => {
         console.log("signInSucecesFull", res);
-        alert("SuccessFully Account created");
-        navigation.dispatch(StackActions.replace("SignIn"));
+
+        Toast.show({
+          type: "success",
+          text1: "OTP Sent SucecesFully ",
+          position: "top",
+        });
+        resetValue();
+        navigation.navigate("Otp", {
+          password: password,
+          email: email,
+          userId: res.data.result.id,
+        } as never);
       })
       .catch((error: any) => {
-        alert("Something went Wrong");
+        resetValue();
+        Toast.show({
+          type: "error",
+          text1: "Something went wrong!!!",
+          position: "top",
+          topOffset: 0,
+        });
         console.log(error);
       });
   };
 
-  // ("http://13.126.218.96/api/services/app/Account/Register");
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.inner}>
-          <Text style={styles.header}>Create Account</Text>
-          <View>
-            <Text style={styles.textHeader}>Name</Text>
-            <TextInput
-              value={name}
-              placeholder="Enter Name"
-              style={styles.textInput}
-              onChangeText={(data: any) => setName(data.trim())}
-            />
+      <View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+          <View style={styles.inner}>
+            <Text style={styles.header}>Create Account</Text>
+            <View>
+              <Text style={styles.textHeader}>Name</Text>
+              <TextInput
+                value={name}
+                placeholder="Enter Name"
+                style={styles.textInput}
+                onChangeText={(data: any) => setName(data)}
+              />
+            </View>
+            <View>
+              <Text style={styles.textHeader}>SurName</Text>
+              <TextInput
+                placeholder="Enter SurName"
+                value={surName}
+                style={styles.textInput}
+                onChangeText={(data: any) => setSurName(data)}
+              />
+            </View>
+            <View>
+              <Text style={styles.textHeader}>Phone Number</Text>
+              <TextInput
+                placeholder="Enter Phone No"
+                value={phoneNumber}
+                textContentType="telephoneNumber"
+                keyboardType="number-pad"
+                style={styles.textInput}
+                onChangeText={(data: any) => setPhoneNumber(data)}
+              />
+            </View>
+            <View>
+              <Text style={styles.textHeader}>Enter your email</Text>
+              <TextInput
+                placeholder="Enter your email"
+                keyboardType="email-address"
+                value={email}
+                style={styles.textInput}
+                onChangeText={(data: any) => setEmail(data)}
+              />
+            </View>
+            <View>
+              <Text style={styles.textHeader}>Password</Text>
+              <TextInput
+                placeholder="Enter Password"
+                style={styles.textInput}
+                value={password}
+                onChangeText={(data: any) => setPassword(data)}
+              />
+            </View>
           </View>
-          <View>
-            <Text style={styles.textHeader}>SurName</Text>
-            <TextInput
-              placeholder="Enter SurName"
-              value={surName}
-              style={styles.textInput}
-              onChangeText={(data: any) => setSurName(data)}
-            />
-          </View>
-          <View>
-            <Text style={styles.textHeader}>Phone Number</Text>
-            <TextInput
-              placeholder="Enter Phone No"
-              value={phoneNumber}
-              textContentType="telephoneNumber"
-              keyboardType="number-pad"
-              style={styles.textInput}
-              onChangeText={(data: any) => setPhoneNumber(data)}
-            />
-          </View>
-          <View>
-            <Text style={styles.textHeader}>Enter your email</Text>
-            <TextInput
-              placeholder="Enter your email"
-              keyboardType="email-address"
-              value={email}
-              style={styles.textInput}
-              onChangeText={(data: any) => setEmail(data)}
-            />
-          </View>
-          <View>
-            <Text style={styles.textHeader}>Password</Text>
-            <TextInput
-              placeholder="Enter Password"
-              style={styles.textInput}
-              value={password}
-              onChangeText={(data: any) => setPassword(data)}
-            />
-          </View>
+        </TouchableWithoutFeedback>
 
-          {/* <View style={styles.btnContainer}></View> */}
-        </View>
-      </TouchableWithoutFeedback>
-      <TouchableOpacity
-        onPress={checkValidation}
-        style={{
-          width: wid / 1.3,
-          flexDirection: "row",
-          height: high / 17,
-          marginTop: high / 50,
-          backgroundColor: "#1E2E46",
-          alignSelf: "center",
-          borderRadius: 14,
-          justifyContent: "center",
-        }}
-      >
-        <Text allowFontScaling={false} style={styles.BottomText}>
-          Sign Up
-        </Text>
-        <FontAwesome
-          name="long-arrow-right"
-          color={"white"}
-          style={{ alignSelf: "center", left: wid / 38.4 }}
-        ></FontAwesome>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={{ marginTop: high / 80, flexDirection: "row" }}
-        onPress={() => navigation.navigate("SignIn")}
-      >
-        <Text>Already have an account ? </Text>
-        <Text allowFontScaling={false} style={{ color: "#309EAF" }}>
-          Sign Up
-        </Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => checkValidation()}
+          style={{
+            width: wid / 1.3,
+            flexDirection: "row",
+            height: high / 17,
+            marginTop: high / 50,
+            backgroundColor: "#1E2E46",
+            alignSelf: "center",
+            borderRadius: 14,
+            justifyContent: "center",
+          }}
+        >
+          <Text allowFontScaling={false} style={styles.BottomText}>
+            Sign Up
+          </Text>
+          <FontAwesome
+            name="long-arrow-right"
+            color={"white"}
+            style={{ alignSelf: "center", left: wid / 38.4 }}
+          ></FontAwesome>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{
+            marginTop: high / 80,
+            flexDirection: "row",
+            width: wid,
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onPress={() => navigation.navigate("SignIn")}
+        >
+          <Text>Already have an account ? </Text>
+          <Text allowFontScaling={false} style={{ color: "#309EAF" }}>
+            Sign In
+          </Text>
+        </TouchableOpacity>
+        <Toast position="top" bottomOffset={20} />
+      </View>
     </KeyboardAvoidingView>
   );
 };
@@ -191,12 +236,12 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FAFAFB",
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
   },
   inner: {
     marginTop: high / 18,
-    height: high / 1.5,
+    height: high / 1.4,
     justifyContent: "space-around",
   },
   header: {
