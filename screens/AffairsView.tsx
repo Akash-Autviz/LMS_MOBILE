@@ -83,10 +83,11 @@ export default function AffairsView(props: any) {
                 width: wid / 1.2,
                 height: high / 2,
               }}
+              automaticallyAdjustContentInsets={true}
               originWhitelist={["*"]}
               source={{
-                html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=0.5"></head><style>
-    body { font-size: 12%; word-wrap: break-word; overflow-wrap: break-word; }
+                html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"></head><style>
+    body { font-size: 100%; word-wrap: break-word; overflow-wrap: break-word; }
 </style><body>${prop.description}</body></html>`,
               }}
             />

@@ -89,12 +89,12 @@ export default function CurrentAffairs(props: any) {
                   style={{
                     backgroundColor: "transparent",
                     width: wid / 1.8,
-                    height: high / 28,
+                    height: high / 25,
                   }}
                   originWhitelist={["*"]}
                   source={{
-                    html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=0.3"></head><style>
-    body { font-size: 12%; word-wrap: break-word; overflow-wrap: break-word; }
+                    html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=0.6"></head><style>
+    body { font-size: 100%; word-wrap: break-word; overflow-wrap: break-word; }
 </style><body>${description}</body></html>`,
                   }}
                 />

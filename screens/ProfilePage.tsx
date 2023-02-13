@@ -19,7 +19,8 @@ const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function ProfilePage(props: any) {
   const navigation = useNavigation();
-  const { userDetail, userImage, setAccess_token } = useStateContext();
+  const { userDetail, userImage, setAccess_token, setUserDetail } =
+    useStateContext();
   console.log(userDetail, "userSDeaawfkjkl");
 
   const logoutButtonHandler = async () => {
@@ -28,6 +29,8 @@ export default function ProfilePage(props: any) {
       await SecureStore.deleteItemAsync("userId1");
       await SecureStore.deleteItemAsync("user_id");
       await SecureStore.deleteItemAsync("access_token");
+      setAccess_token(null);
+      setUserDetail(null);
       navigation.dispatch(StackActions.replace("SignIn"));
     } catch (error) {
       console.log(error);
@@ -61,9 +64,7 @@ export default function ProfilePage(props: any) {
   });
 
   return (
-    <ScrollView style={{ backgroundColor: "#FAFAFB", width: wid }}>
-      {/* <ScrollView style={{marginBottom: 20}}> */}
-
+    <View style={{ backgroundColor: "#FAFAFB", width: wid }}>
       <ImageBackground
         imageStyle={{
           height: high / 1.9,
@@ -147,7 +148,7 @@ export default function ProfilePage(props: any) {
               fontSize: 19,
             }}
           >
-            {userDetail.name}
+            {setUserDetail && userDetail.name}
           </Text>
           <Text
             allowFontScaling={false}
@@ -192,7 +193,7 @@ export default function ProfilePage(props: any) {
           flexDirection: "row",
           justifyContent: "space-evenly",
           backgroundColor: "transparent",
-          bottom: high / 5.1,
+          bottom: high / 4,
         }}
       >
         <TouchableOpacity
@@ -200,7 +201,7 @@ export default function ProfilePage(props: any) {
             backgroundColor: "white",
             width: wid / 3,
             flexDirection: "row",
-            height: high / 15,
+            height: high / 18,
             borderRadius: 10,
             justifyContent: "center",
           }}
@@ -231,7 +232,7 @@ export default function ProfilePage(props: any) {
           flexDirection: "column",
           backgroundColor: "#FAFAFB",
           height: high / 1.1,
-          bottom: high / 7.116,
+          bottom: high / 5.116,
           alignContent: "flex-start",
         }}
       >
@@ -310,7 +311,7 @@ export default function ProfilePage(props: any) {
         </TouchableOpacity>
       </View>
       {/* </ScrollView> */}
-    </ScrollView>
+    </View>
   );
 }
 const styles = StyleSheet.create({

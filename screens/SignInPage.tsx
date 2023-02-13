@@ -58,15 +58,12 @@ export default function SignInPage(props: any) {
     axios(config)
       .then((res: any) => {
         setData(res.data.result.accessToken);
-        SecureStore.setItemAsync(
-          "userId1",
-          JSON.stringify(res.data.result.userId)
-        );
+        SecureStore.setItemAsync("userId1", `${res.data.result.userId}`);
         console.log("signInSucecesFull", res);
         if (data1 != null) {
           setAccess_token(res.data.result.accessToken);
-          save("user_id", JSON.stringify(res.data.result.user_id));
-          save("access_token", res.data.result.accessToken);
+          save("user_id", `${res.data.result.userId}`);
+          save("access_token", `${res.data.result.accessToken}`);
           navigation.dispatch(StackActions.replace("Root"));
         } else {
           Alert.alert("Invalid credentials", "Incorrect Email or Password", [
@@ -78,18 +75,19 @@ export default function SignInPage(props: any) {
       })
       .catch((error: any) => {
         console.log(error);
-
-        Alert.alert(error.response.data.error.details, "Login Failed", [
+        // navigation.navigate();
+        Alert.alert("Login Failed", error.response.data.error.details, [
           { text: "Okay" },
         ]);
+        // if(error.response.data.)
         // setUserMailId("");
         // setUserPassword("");
       });
-    Toast.show({
-      type: "info",
-      text1: "Please Enter Correct PhoneNo",
-      position: "bottom",
-    });
+    // Toast.show({
+    //   type: "info",
+    //   text1: "Please Enter Correct PhoneNo",
+    //   position: "bottom",
+    // });
   };
   const toggleFocus = () => {
     setFocused((prev: any) => !prev);

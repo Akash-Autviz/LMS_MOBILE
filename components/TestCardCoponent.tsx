@@ -18,7 +18,6 @@ import moment from "moment";
 
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
-
 const TestCardCoponent = (props: any) => {
   const { data, title, setTestRefresh } = props;
   const {

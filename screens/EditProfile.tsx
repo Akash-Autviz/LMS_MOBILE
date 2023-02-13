@@ -197,7 +197,7 @@ export default function EditProfile(props: any) {
     getcurrUserDeatail();
   }, []);
   return (
-    <ScrollView style={{ backgroundColor: "#FAFAFB", flex: 1 }}>
+    <ScrollView style={{ backgroundColor: "#FFF", flex: 1 }}>
       <ImageBackground
         style={{ paddingVertical: high / 30 }}
         imageStyle={{}}
@@ -311,7 +311,6 @@ export default function EditProfile(props: any) {
             keyboardType="email-address"
             value={email}
             style={styles.textInput}
-            onChangeText={(data: any) => setEmail(data)}
           />
           <TouchableOpacity
             onPress={() => {

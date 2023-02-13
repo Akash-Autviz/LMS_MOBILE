@@ -191,7 +191,7 @@ function RootNavigator() {
           headerShown: true,
           headerBackButtonMenuEnabled: true,
           headerTitleAlign: "center",
-          headerTitle: "Course Details",
+          headerTitle: "",
         }}
       />
     </Stack.Navigator>

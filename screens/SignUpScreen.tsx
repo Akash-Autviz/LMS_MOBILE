@@ -27,7 +27,13 @@ const SignUpScreen = () => {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
-
+  const resetValue = () => {
+    setSurName("null");
+    setName("");
+    setEmail("");
+    setPassword("");
+    setPhoneNumber("");
+  };
   const checkValidation = () => {
     let PhoneNoRegex = new RegExp(/(0|91)?[6-9][0-9]{9}/);
 
@@ -101,37 +107,34 @@ const SignUpScreen = () => {
           text1: "OTP Sent SucecesFully ",
           position: "top",
         });
-
-        navigation.navigate("Otp", { userId: res.data.result.id } as never);
+        resetValue();
+        navigation.navigate("Otp", {
+          password: password,
+          email: email,
+          userId: res.data.result.id,
+        } as never);
       })
       .catch((error: any) => {
+        resetValue();
         Toast.show({
           type: "error",
           text1: "Something went wrong!!!",
           position: "top",
+          topOffset: 0,
         });
         console.log(error);
       });
   };
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
     >
-      <View
-        style={{
-          marginTop: 10,
-          // backgroundColor: "pink",
-          // height: 40,
-          // width: 100,
-        }}
-      >
-        <Text style={styles.header}>Create Account</Text>
-      </View>
-      {/* <Toast position="top" topOffset={0} /> */}
       <View>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.inner}>
+            <Text style={styles.header}>Create Account</Text>
             <View>
               <Text style={styles.textHeader}>Name</Text>
               <TextInput
@@ -233,11 +236,12 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#FAFAFB",
     flex: 1,
+    alignItems: "center",
     justifyContent: "center",
   },
   inner: {
     marginTop: high / 18,
-    height: high / 1.5,
+    height: high / 1.4,
     justifyContent: "space-around",
   },
   header: {

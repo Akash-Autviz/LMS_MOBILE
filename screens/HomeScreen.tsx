@@ -151,7 +151,7 @@ export default function HomeScreen({ route, navigation }: any) {
 
   return (
     <ScrollView
-      style={{ width: wid, flex: 1, height: high, backgroundColor: "#F7F7F7" }}
+      style={{ width: wid, flex: 1, height: high, backgroundColor: "#FAFAFB" }}
     >
       {isLoading === true ? (
         <View
@@ -319,7 +319,9 @@ export default function HomeScreen({ route, navigation }: any) {
                     style={{
                       fontFamily: "Poppins-Medium",
                       width: "100%",
-                      fontSize: 13,
+                      alignContent: "center",
+                      fontSize: 16,
+                      textAlign: "center",
                       alignSelf: "center",
                       backgroundColor: "#FAFAFB",
                     }}
@@ -459,8 +461,8 @@ export default function HomeScreen({ route, navigation }: any) {
                         fontFamily: "Poppins-Medium",
                         width: "100%",
                         alignContent: "center",
-                        fontSize: 13,
-                        left: wid / 3.5,
+                        fontSize: 16,
+                        textAlign: "center",
                         alignSelf: "center",
                         backgroundColor: "#FAFAFB",
                       }}
