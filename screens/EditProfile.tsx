@@ -27,7 +27,6 @@ import { baseUrl, header } from "../utils";
 import moment from "moment";
 
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
-
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 
@@ -43,34 +42,186 @@ export default function EditProfile(props: any) {
   const [resourcePath, setresourcePath] = useState("");
   const [hasGalleryPermission, setHasGalleryPermission] =
     useState<boolean>(false);
-  const [iamge, setImgae] = useState<String>("");
+  const [image, setImgae] = useState<String>("");
   let config: any = {
-    "Content-Type": "application/json",
+    "Content-Type": "multipart/form-data",
     "Abp-TenantId": "1",
     Authorization: `Bearer ${access_token}`,
   };
   const [cameraPhoto, setCameraPhoto] = useState();
   const [galleryPhoto, setGalleryPhoto] = useState();
 
-  let options: any = {
-    saveToPhotos: true,
-    mediaType: "photo",
+  const uploadImage = async (file: any) => {
+    //             Content-Disposition: form-data; name="file"; filename="MicrosoftTeams-image.png"
+    // Content-Type: image/png
+    console.log("file", file);
+    const content_ = new FormData();
+    content_.append();
+    console.log(content_);
+    try {
+      const res = await axios.post(
+        `${baseUrl}/api/services/app/CommonService/UploadImage`,
+        content_,
+        config
+      );
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
   };
+  // let options: any = {
+  //   saveToPhotos: true,
+  //   mediaType: "photo",
+  // };
+  const getImageFromLibrary = async () => {
+    try {
+      const grantedcamera = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: "App Camera Permission",
+          message: "App needs access to your camera ",
+          buttonNeutral: "Ask Me Later",
+          buttonNegative: "Cancel",
+          buttonPositive: "OK",
+        }
+      );
+      const grantedstorage = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: "App Camera Permission",
+          message: "App needs access to your camera ",
+          buttonNeutral: "Ask Me Later",
+          buttonNegative: "Cancel",
+          buttonPositive: "OK",
+        }
+      );
+      if (
+        grantedcamera === PermissionsAndroid.RESULTS.GRANTED &&
+        grantedstorage === PermissionsAndroid.RESULTS.GRANTED
+      ) {
+        console.log("Camera & storage permission given");
 
-  const openCamera = async () => {
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.CAMERA
+        var options: any = {
+          mediaType: "photo", //to allow only photo to select ...no video
+          saveToPhotos: true, //to store captured photo via camera to photos or else it will be stored in temp folders and will get deleted on temp clear
+          includeBase64: false,
+        };
+
+        launchImageLibrary(options, (res: any) => {
+          console.log("Response = ", res);
+
+          if (res.didCancel) {
+            console.log("User cancelled image picker");
+          } else if (res.error) {
+            console.log("ImagePicker Error: ", res.error);
+          } else if (res.customButton) {
+            console.log("User tapped custom button: ", res.customButton);
+            alert(res.customButton);
+          } else {
+            // let source = res;
+            // var resourcePath1 = source.assets[0].uri;
+            const source = { uri: res.uri };
+            // console.log("response", JSON.stringify(res.assets));
+            console.log("response", JSON.stringify(res));
+            console.log("flasdjflasdf;lasdhf", res.assets[0].uri);
+
+            setImgae(res.assets[0].uri);
+            uploadImage(res.assets[0]);
+
+            //             Content-Disposition: form-data; name="file"; filename="MicrosoftTeams-image.png"
+            // Content-Type: image/png
+          }
+        });
+      } else {
+        console.log("Camera permission denied");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const launchCameraa = async () => {
+    const grantedcamera = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.CAMERA,
+      {
+        title: "App Camera Permission",
+        message: "App needs access to your camera ",
+        buttonNeutral: "Ask Me Later",
+        buttonNegative: "Cancel",
+        buttonPositive: "OK",
+      }
     );
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      const result: any = await launchCamera(options);
-      setCameraPhoto(result.assets[0].uri);
+    const grantedstorage = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      {
+        title: "App Camera Permission",
+        message: "App needs access to your camera ",
+        buttonNeutral: "Ask Me Later",
+        buttonNegative: "Cancel",
+        buttonPositive: "OK",
+      }
+    );
+    if (
+      grantedcamera === PermissionsAndroid.RESULTS.GRANTED &&
+      grantedstorage === PermissionsAndroid.RESULTS.GRANTED
+    ) {
+      console.log("Camera & storage permission given");
+
+      var options: any = {
+        mediaType: "photo", //to allow only photo to select ...no video
+        saveToPhotos: true, //to store captured photo via camera to photos or else it will be stored in temp folders and will get deleted on temp clear
+        includeBase64: false,
+      };
+
+      launchCamera(options, (res: any) => {
+        console.log("Response = ", res);
+
+        if (res.didCancel) {
+          console.log("User cancelled image picker");
+        } else if (res.error) {
+          console.log("ImagePicker Error: ", res.error);
+        } else if (res.customButton) {
+          console.log("User tapped custom button: ", res.customButton);
+          alert(res.customButton);
+        } else {
+          // let source = res;
+          // var resourcePath1 = source.assets[0].uri;
+          const source = { uri: res.uri };
+          console.log("response", JSON.stringify(res));
+          console.log("flasdjflasdf;lasdhf", res.assets);
+          setImgae(res.assets[0].uri);
+        }
+      });
+    } else {
+      console.log("Camera permission denied");
     }
   };
 
-  const openGallery = async () => {
-    const result: any = await launchImageLibrary(options);
-    setGalleryPhoto(result.assets[0].uri);
-  };
+  // const launchCameraa = async () => {
+  //   let options: any = {
+  //     maxWidth: wid,
+  //     maxHeight: high / 2,
+  //     storageOptions: {
+  //       skipBackup: true,
+  //       path: "images",
+  //     },
+  //   };
+  //   const result = await launchCamera(options);
+  //   console.log(result);
+  // };
+  // const openCamera = async () => {
+  //   const granted = await PermissionsAndroid.request(
+  //     PermissionsAndroid.PERMISSIONS.CAMERA
+  //   );
+  //   if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+  //     const result: any = await launchCamera(options);
+  //     setCameraPhoto(result.assets[0].uri);
+  //   }
+  // };
+
+  // const openGallery = async () => {
+  //   const result: any = await launchImageLibrary(options);
+  //   setGalleryPhoto(result.assets[0].uri);
+  // };
 
   const save = async () => {
     Toast.show({
@@ -196,6 +347,7 @@ export default function EditProfile(props: any) {
   useEffect(() => {
     getcurrUserDeatail();
   }, []);
+  console.log(image);
   return (
     <ScrollView style={{ backgroundColor: "#FFF", flex: 1 }}>
       <ImageBackground
@@ -221,10 +373,23 @@ export default function EditProfile(props: any) {
             backgroundColor: "transparent",
           }}
         >
-          {userImage ? (
+          {/* {image && (
             <Image
-              source={require("../assets/images/profile.png")}
-              //   source={{ uri: userImage }}
+              // source={require("../assets/images/profile.png")}
+              source={{ uri: image ?? "" }}
+              style={{
+                marginTop: high / 30,
+                alignSelf: "center",
+                borderRadius: 18,
+                width: wid / 4.5,
+                height: wid / 4.5,
+              }}
+            />
+          )} */}
+          {userImage && !image ? (
+            <Image
+              // source={require("../assets/images/profile.png")}
+              source={{ uri: userImage }}
               style={{
                 marginTop: high / 30,
                 alignSelf: "center",
@@ -235,7 +400,9 @@ export default function EditProfile(props: any) {
             />
           ) : (
             <Image
-              source={require("../assets/images/profile.png")}
+              source={
+                image ? { uri: image } : require("../assets/images/profile.png")
+              }
               style={{
                 alignSelf: "center",
                 marginTop: high / 30,
@@ -258,7 +425,7 @@ export default function EditProfile(props: any) {
             Do not disturb, doing a study right now.
           </Text>
           <TouchableOpacity
-            onPress={() => openGallery()}
+            onPress={() => getImageFromLibrary()}
             style={{
               justifyContent: "center",
               backgroundColor: "#2C384C",
