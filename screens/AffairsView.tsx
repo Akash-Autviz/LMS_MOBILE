@@ -17,6 +17,7 @@ export default function AffairsView(props: any) {
     };
     BackHandler.addEventListener("hardwareBackPress", backbuttonHander);
   });
+  console.log("faskdjhfas");
 
   return (
     <ScrollView
