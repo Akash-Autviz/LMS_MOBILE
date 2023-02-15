@@ -16,7 +16,6 @@ import { trimTextName } from "../utils/Logics";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function CurrentAffairs(props: any) {
-  console.log(props.item);
   const { title, description, image } = props.item;
 
   return (

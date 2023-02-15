@@ -48,6 +48,7 @@ import SignUpScreen from "../screens/SignUpScreen";
 import WebViewInMobile from "../screens/WebViewInMobile";
 import EditProfile from "../screens/EditProfile";
 import OtpScreen from "../screens/OtpScreen";
+import QuizTestScreen from "../screens/QuizTestScreen";
 export default function Navigation({
   colorScheme,
 }: {
@@ -155,6 +156,11 @@ function RootNavigator() {
       <Stack.Screen
         name="TestTypeScreen"
         component={MockTestTypeTest}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="QuizTest"
+        component={QuizTestScreen}
         options={{ headerShown: false }}
       />
 

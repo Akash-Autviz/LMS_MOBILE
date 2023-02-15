@@ -21,17 +21,8 @@ import { StackActions, useNavigation } from "@react-navigation/native";
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 export default function MockTestSubjectTest(props: any) {
-  const {
-    id,
-    courseManagementId,
-    isReattempt,
-    isResulted,
-    isSubmitted,
-    isView,
-    isDeleted,
-    mockTestId,
-    studentId,
-  } = props.route.params.data;
+  const { id, isReattempt, isDeleted, mockTestId, studentId } =
+    props.route.params.data;
   const navigation = useNavigation();
   const [quesIndexArray, setquesIndexArray] = useState<any>();
   const [mockTestSectionData, setmockTestSectionData] = useState<any>();

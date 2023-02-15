@@ -43,7 +43,7 @@ export default function EditProfile(props: any) {
   const [hasGalleryPermission, setHasGalleryPermission] =
     useState<boolean>(false);
   const [image, setImgae] = useState<String>("");
-  let config: any = {
+  let header: any = {
     "Content-Type": "multipart/form-data",
     "Abp-TenantId": "1",
     Authorization: `Bearer ${access_token}`,
@@ -52,22 +52,25 @@ export default function EditProfile(props: any) {
   const [galleryPhoto, setGalleryPhoto] = useState();
 
   const uploadImage = async (file: any) => {
-    //             Content-Disposition: form-data; name="file"; filename="MicrosoftTeams-image.png"
-    // Content-Type: image/png
-    console.log("file", file);
-    const content_ = new FormData();
-    content_.append();
-    console.log(content_);
-    try {
-      const res = await axios.post(
-        `${baseUrl}/api/services/app/CommonService/UploadImage`,
-        content_,
-        config
-      );
-      console.log(res);
-    } catch (error) {
-      console.log(error);
-    }
+    var data = new FormData();
+    data.append("file", file.uri);
+    console.log();
+
+    var config = {
+      method: "post",
+      maxBodyLength: Infinity,
+      url: "http://13.126.218.96/api/services/app/CommonService/UploadImage",
+      headers: header,
+      data: data,
+    };
+
+    axios(config)
+      .then(function (response: any) {
+        console.log(JSON.stringify(response.data));
+      })
+      .catch(function (error: any) {
+        console.log(error);
+      });
   };
   // let options: any = {
   //   saveToPhotos: true,
@@ -240,7 +243,6 @@ export default function EditProfile(props: any) {
       emailAddress: email,
       isActive: true,
       fullName: currUserDetail.fullName,
-      //   normalPassword: "Sujata@123",
       creationTime: moment(),
       roleNames: ["STUDENT"],
     });
@@ -249,7 +251,7 @@ export default function EditProfile(props: any) {
         `${baseUrl}/api/services/app/User/Update`,
         data,
         {
-          headers: config,
+          headers: header,
         }
       );
 

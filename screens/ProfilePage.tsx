@@ -148,7 +148,7 @@ export default function ProfilePage(props: any) {
               fontSize: 19,
             }}
           >
-            {setUserDetail && userDetail.name}
+            {userDetail && userDetail.name}
           </Text>
           <Text
             allowFontScaling={false}

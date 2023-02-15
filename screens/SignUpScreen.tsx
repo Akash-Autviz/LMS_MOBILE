@@ -28,50 +28,54 @@ const SignUpScreen = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const resetValue = () => {
-    setSurName("null");
-    setName("");
-    setEmail("");
-    setPassword("");
-    setPhoneNumber("");
+    // setSurName("");
+    // setName("");
+    // setEmail("");
+    // setPassword("");
+    // setPhoneNumber("");
   };
   const checkValidation = () => {
     let PhoneNoRegex = new RegExp(/(0|91)?[6-9][0-9]{9}/);
 
     if (name == "") {
-      Toast.show({
-        type: "info",
-        text1: "Please Enter Name",
-        position: "top",
-      });
+      // Toast.show({
+      //   type: "info",
+      //   text1: "Please Enter Name",
+      //   position: "top",
+      // });
+      alert("Please Enter Name");
     } else if (surName == "") {
-      Toast.show({
-        type: "info",
-        text1: "Please Enter Surname",
-        position: "top",
-      });
+      // Toast.show({
+      //   type: "info",
+      //   text1: "Please Enter Surname",
+      //   position: "top",
+      // });
+      alert("Please Enter Surname");
     } else if (
       !PhoneNoRegex.test(phoneNumber) ||
       phoneNumber == "" ||
       phoneNumber.length != 10
     ) {
       if (!PhoneNoRegex.test(phoneNumber)) {
-        Toast.show({
-          type: "info",
-          text1: "Please Enter Correct PhoneNo",
-          position: "top",
-        });
-      } else
-        Toast.show({
-          type: "info",
-          text1: "Enter 10 digit PhoneNo",
-          position: "top",
-        });
+        // Toast.show({
+        //   type: "info",
+        //   text1: "Please Enter Correct PhoneNo",
+        //   position: "top",
+        // });
+        alert("Please Enter Correct PhoneNo");
+      } else alert("Enter 10 digit PhoneNo");
+      // Toast.show({
+      //   type: "info",
+      //   text1: "Enter 10 digit PhoneNo",
+      //   position: "top",
+      // });
     } else if (email == "" || !email.includes("@")) {
-      Toast.show({
-        type: "info",
-        text1: "Please Enter Correct Email",
-        position: "top",
-      });
+      alert("Please Enter Correct Email");
+      // Toast.show({
+      //   type: "info",
+      //   text1: "Please Enter Correct Email",
+      //   position: "top",
+      // });
     } else if (password.trim() == "" || password.trim().length < 5) {
       alert("Weak Password");
     } else {
@@ -118,11 +122,12 @@ const SignUpScreen = () => {
         resetValue();
         Toast.show({
           type: "error",
-          text1: "Something went wrong!!!",
+          text1: error.response.data.error.message,
           position: "top",
           topOffset: 0,
         });
-        console.log(error);
+        // alert(error.response);
+        console.log(error.response.data.error.message);
       });
   };
 
@@ -132,6 +137,7 @@ const SignUpScreen = () => {
       style={styles.container}
     >
       <View>
+        <Toast></Toast>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.inner}>
             <Text style={styles.header}>Create Account</Text>

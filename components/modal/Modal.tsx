@@ -27,7 +27,7 @@ const ResultModal = (props: any) => {
   useEffect(() => {
     setCurrentIndex;
   }, [ansResultIdx]);
-
+  console.log(props.quesIndexArray);
   return (
     <View style={styles.centeredView}>
       <Modal
@@ -67,7 +67,7 @@ const ResultModal = (props: any) => {
                 color: "white",
               }}
             >
-              {props.currentSection}
+              {props.currentSection && props.currentSection}
             </Text>
             <TouchableOpacity
               onPress={() => {
@@ -101,7 +101,6 @@ const ResultModal = (props: any) => {
             }}
           >
             {props?.quesIndexArray.map((e: any, id: any) => {
-              console.log(props.quesIndexArray);
               return index == id ? (
                 <QuestionNoContainer
                   setModalVisible={setModalVisible}

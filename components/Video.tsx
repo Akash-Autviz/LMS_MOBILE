@@ -24,7 +24,6 @@ export default function VideoComponent(props: any) {
   }, []);
 
   const [readMore, setReadMore] = useState(detail.length > 50 ? true : false);
-  console.log(readMore, "ReadMore");
   return (
     <View>
       <TouchableOpacity
@@ -79,10 +78,12 @@ export default function VideoComponent(props: any) {
           videoId={getVideoId(fileName)}
           onChangeState={onStateChange}
         />
-        <Text allowFontScaling={false} style={styles.cardDesc}>
-          {description && readMore === true ? detail.slice(0, 180) : detail}
-        </Text>
-        {detail.length < 179 && (
+        {description != null && (
+          <Text allowFontScaling={false} style={styles.cardDesc}>
+            {description && readMore === true ? detail.slice(0, 180) : detail}
+          </Text>
+        )}
+        {description != null && (
           <TouchableOpacity
             style={{}}
             onPress={() => {
@@ -99,21 +100,6 @@ export default function VideoComponent(props: any) {
             </Text>
           </TouchableOpacity>
         )}
-        <TouchableOpacity
-          style={{}}
-          onPress={() => {
-            setReadMore(!readMore);
-          }}
-        >
-          <Text
-            style={{
-              color: "#319EAE",
-              fontSize: 14,
-            }}
-          >
-            {readMore === true ? "... Read More" : "Read Less"}
-          </Text>
-        </TouchableOpacity>
       </TouchableOpacity>
     </View>
   );

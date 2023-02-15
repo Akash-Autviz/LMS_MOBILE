@@ -1,5 +1,7 @@
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import React, { useState } from "react";
+import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import {
   StyleSheet,
   Dimensions,
@@ -8,187 +10,162 @@ import {
 } from "react-native";
 
 import { Text, View } from "../components/Themed";
+import { useStateContext } from "../screens/Context/ContextProvider";
+import { baseUrl } from "../utils";
 import AnswerOption from "./AnswerOption";
 
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function Quiz(props: any) {
-  // const { title, subjectName, description, fileName } = props.item;
-  const [like, setLike] = useState<boolean>(false);
-  const [answer, setAnswer] = useState("");
-  const { data, index } = props;
+  const { access_token } = useStateContext();
+  const navigate = useNavigation();
+  const { title, data } = props;
+  const [result, setResult] = useState(false);
+  const [resultData, setResutlData] = useState({});
 
-  // const shareQuiz = async () => {
-  //   try {
-  //     const result = await Share.share({
-  //       message:
-  //         "React Native | A framework for building native apps using React",
-  //     });
-  //     if (result.action === Share.sharedAction) {
-  //       if (result.activityType) {
-  //         // shared with activity type of result.activityType
-  //       } else {
-  //         // shared
-  //       }
-  //     } else if (result.action === Share.dismissedAction) {
-  //       // dismissed
-  //     }
-  //   } catch (error: any) {
-  //     alert(error.message);
-  //   }
-  // };
+  const headers: any = {
+    "Abp-TenantId": "1",
+    Authorization: `Bearer ${access_token}`,
+  };
+  const getResult = async () => {
+    try {
+      var config = {
+        method: "get",
+        url: `${baseUrl}/api/services/app/BlogResult/GetBlogResult?id=${data.id}`,
+        headers: headers,
+      };
+
+      const res = await axios(config);
+      setResult(res.data.result != null);
+      setResutlData(resultData);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getResult();
+  }, []);
+
   return (
-    <View>
-      <ScrollView
-        style={{
-          backgroundColor: "#FAFAFB",
-          marginBottom: 20,
-        }}
+    <View
+      style={{
+        alignSelf: "center",
+        width: "92%",
+        borderStyle: "dashed",
+        borderColor: "#C9C17F",
+        borderWidth: 1,
+        borderRadius: 11,
+        marginVertical: "2%",
+      }}
+    >
+      <View
+        style={[
+          styles.paddingInContainer,
+          styles.MockTestCard,
+          {
+            alignItems: "center",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginTop: high / 80,
+            marginBottom: high / 50,
+          },
+        ]}
       >
         <View
-          style={{
-            marginVertical: high / 100,
-            paddingHorizontal: wid / 19.2,
-            backgroundColor: "#FAFAFB",
-          }}
+          style={[
+            styles.MockTestCard,
+            {
+              justifyContent: "space-between",
+              marginTop: high / 71.16,
+            },
+          ]}
         >
           <Text
             allowFontScaling={false}
-            style={{ fontSize: 13, fontFamily: "Poppins-Bold" }}
+            style={{ fontSize: 14, fontFamily: "Poppins-Bold" }}
           >
-            {index + 1} {data.question.questions}
+            {title}
           </Text>
         </View>
-        <View style={{ backgroundColor: "#FAFAFB" }}>
-          <View
+
+        <View style={{}}>
+          <TouchableOpacity
             style={{
-              marginVertical: high / 71.166,
-              backgroundColor: "#FAFAFB",
+              backgroundColor: "#319EAE",
+
+              width: wid / 5,
+              justifyContent: "center",
+              alignContent: "center",
+              height: high / 25.5,
+              borderRadius: 4,
+            }}
+            onPress={() => {
+              navigate.navigate("QuizTest", { id: data.id } as never);
+              // reattempt(currrentCourseData);
             }}
           >
-            <TouchableOpacity onPress={() => setAnswer("a")}>
-              {answer == "a" ? (
-                <AnswerOption
-                  key={1}
-                  title={"A"}
-                  text={data.question.option1}
-                  isSelected={"isSelected"}
-                />
-              ) : (
-                <AnswerOption
-                  key={2}
-                  title={"A"}
-                  text={data.question.option1}
-                />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setAnswer("b")}>
-              {answer == "b" ? (
-                <AnswerOption
-                  key={3}
-                  title={"B"}
-                  text={data.question.option2}
-                  isSelected={"isSelected"}
-                />
-              ) : (
-                <AnswerOption
-                  key={4}
-                  title={"B"}
-                  text={data.question.option2}
-                />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setAnswer("c")}>
-              {answer == "c" ? (
-                <AnswerOption
-                  key={5}
-                  title={"C"}
-                  text={data.question.option3}
-                  isSelected={"isSelected"}
-                />
-              ) : (
-                <AnswerOption
-                  key={6}
-                  title={"C"}
-                  text={data.question.option3}
-                />
-              )}
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => setAnswer("d")}>
-              {answer == "d" ? (
-                <AnswerOption
-                  key={8}
-                  title={"D"}
-                  text={data.question.option4}
-                  isSelected={"isSelected"}
-                />
-              ) : (
-                <AnswerOption
-                  key={9}
-                  title={"D"}
-                  text={data.question.option4}
-                />
-              )}
+            <Text
+              allowFontScaling={false}
+              style={{
+                color: "white",
+                fontFamily: "Poppins-Regular",
+                fontSize: 12,
+                alignSelf: "center",
+              }}
+            >
+              Take Test
+            </Text>
+          </TouchableOpacity>
+        </View>
+        {result && (
+          <View style={{}}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#319EAE",
+                width: wid / 4,
+                justifyContent: "center",
+                alignContent: "center",
+                height: high / 25.5,
+                borderRadius: 4,
+              }}
+              onPress={() => {
+                navigate.navigate("TestResult", {
+                  id: data.id,
+                  type: "quiz",
+                } as never);
+              }}
+            >
+              <Text
+                allowFontScaling={false}
+                style={{
+                  color: "white",
+                  fontFamily: "Poppins-Regular",
+                  fontSize: 12,
+                  alignSelf: "center",
+                }}
+              >
+                View Result
+              </Text>
             </TouchableOpacity>
           </View>
-          {answer ? (
-            <>
-              {answer != data.question.answer ? (
-                <View style={{ alignSelf: "center" }}>
-                  <Text style={{ color: "red", fontSize: 18 }}>
-                    Wrong Answer The correct Answer is{" "}
-                    {data.question.answer.toUpperCase()}
-                  </Text>
-                </View>
-              ) : (
-                <View style={{ alignSelf: "center" }}>
-                  <Text style={{ color: "green", fontSize: 18 }}>
-                    Correct Answer
-                  </Text>
-                </View>
-              )}
-            </>
-          ) : (
-            <></>
-          )}
-        </View>
-      </ScrollView>
+        )}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  MockTestCard: {
     alignItems: "center",
-    justifyContent: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
-  image: {
-    width: wid / 1.2,
-    height: wid / 2.4,
-    borderRadius: 10,
-    alignSelf: "center",
+  paddingInContainer: {
+    paddingHorizontal: wid / 19.2,
   },
-  cardDesc: {
-    alignSelf: "center",
-    fontFamily: "Poppins-Medium",
-    fontSize: 12,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-  },
-  cardText: {
-    fontFamily: "Poppins-Bold",
-    fontSize: 17,
-    fontWeight: "700",
-    width: "80%",
-    paddingHorizontal: 4,
-  },
-  separator: {
-    marginVertical: 30,
-    height: 1,
-    width: "80%",
+  fontColor: {
+    color: "#8A8A8A",
+    fontFamily: "Poppins-Regular",
   },
 });
 // {/* <TouchableOpacity style={styles.topicCntr}>

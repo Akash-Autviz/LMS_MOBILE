@@ -28,7 +28,6 @@ export default function AffairsView(props: any) {
       <ScrollView
         scrollEnabled
         style={{
-          // height: high / 0.7,
           backgroundColor: "pink",
         }}
         contentContainerStyle={{ justifyContent: "center" }}
@@ -36,7 +35,7 @@ export default function AffairsView(props: any) {
         <View
           style={{
             width: wid,
-            // height: high / 1.7,
+
             justifyContent: "center",
             alignItems: "center",
             flexDirection: "column",

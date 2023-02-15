@@ -8,9 +8,6 @@ import {
   BackHandler,
   Dimensions,
 } from "react-native";
-
-import ResultScreenCard from "../components/ResultScreenCard";
-import { TestResultData } from "../data/TestResultData";
 import axios from "axios";
 import { baseUrl } from "../utils";
 import { useStateContext } from "./Context/ContextProvider";
@@ -25,7 +22,10 @@ const TestResultScreen = (props: any) => {
       let data = "";
       const config = {
         method: "GET",
-        url: `${baseUrl}/api/services/app/MockTestResultService/GetMockTestResult?id=${props.route.params.id}`,
+        url:
+          props.route.params.type == "quiz"
+            ? `${baseUrl}/api/services/app/BlogResult/GetBlogResult?id=${props.route.params.id}`
+            : `${baseUrl}/api/services/app/MockTestResultService/GetMockTestResult?id=${props.route.params.id}`,
         headers: {
           Authorization: `Bearer ${access_token}`,
           "Abp-TenantId": "1",
@@ -35,7 +35,6 @@ const TestResultScreen = (props: any) => {
       await axios(config)
         .then(function async(response: any) {
           SetResultData(response.data.result);
-          console.log(response);
         })
         .catch(function (error: any) {
           console.log(error);

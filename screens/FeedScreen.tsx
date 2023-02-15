@@ -49,27 +49,43 @@ export default function FeedScreen(props: any) {
   const [data, SetData] = useState<any>([]);
   const [feedData, setFeedData] = useState<any>([]);
   const [quizData, setQuizDate] = useState<any>([]);
-  const getQuizQuestion = async (value: any) => {
-    try {
-      let config = {
-        headers: {
-          Authorization: `Bearer  ${value}`,
-        },
-      };
-      const res = await axios.get(
-        `${baseUrl}/api/services/app/QuestionBlogAppSevice/GetAllBlogsQuestions?subjectId=0`
-      );
+  // const getQuizTests = async (value: String) => {
+  //   let config = {
+  //     headers: {
+  //       Authorization: `Bearer  ${value}`,
+  //     },
+  //   };
+  //   try {
+  //     const res = await axios.get(
+  //       `${baseUrl}api/services/app/BlogAppServices/GetAllBlogs?subjectId=0`,
+  //       config
+  //     );
+  //     // console.log("getVlogSErverice", res);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+  // const getQuizQuestion = async (value: any) => {
+  //   try {
+  //     let config = {
+  //       headers: {
+  //         Authorization: `Bearer  ${value}`,
+  //       },
+  //     };
+  //     const res = await axios.get(
+  //       `${baseUrl}/api/services/app/QuestionBlogAppSevice/GetAllBlogsQuestions?subjectId=0`
+  //     );
 
-      setQuizDate(res.data.result);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //     setQuizDate(res.data.result);
+  //     // console.log("getAllBlog Question", res);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
   useEffect(() => {
     SecureStore.getItemAsync("access_token").then((value: any) => {
       if (value != null) {
         Jobnotification(value);
-        getQuizQuestion(value);
       }
     });
   }, []);
@@ -88,6 +104,7 @@ export default function FeedScreen(props: any) {
 
     axios(config)
       .then(function (response: any) {
+        // console.log(response);
         SetData(response.data.result);
       })
       .catch(function (error: any) {
@@ -102,6 +119,7 @@ export default function FeedScreen(props: any) {
       }
     });
   };
+  const getBlogById = (id: number) => {};
   useEffect(() => {
     filterData(currentState);
   }, [currentState]);
@@ -209,31 +227,39 @@ export default function FeedScreen(props: any) {
                     navigation={props.navigation}
                     key={Math.random() * 100}
                   />
-                )
+                );
               }
             })}
           </ScrollView>
         ) : currentState == "Video" ? (
           <ScrollView
-            style={{ marginBottom: 90, backgroundColor: "transparent" }}
+            style={{
+              marginBottom: 90,
+              marginTop: 12,
+              backgroundColor: "transparent",
+            }}
           >
-            {data.map((data1: any) => {
+            {data.map((data1: any, idx: number) => {
               if (data1.type == "Video") {
-                return <Video item={data1} key={Math.random() * 100} />;
+                return <Video item={data1} key={idx} />;
               }
             })}
           </ScrollView>
         ) : currentState == "Quiz" ? (
           <ScrollView style={{ marginBottom: 90 }}>
-            {quizData.map((data1: any, idx: any) => {
-              return (
-                <Quiz
-                  key={Math.random() * 100}
-                  data={data1}
-                  index={idx}
-                  navigation={props.navigation}
-                />
-              );
+            {data.map((data1: any, idx: any) => {
+              if (data1.type == "Daily Quiz")
+                return (
+                  <Quiz
+                    key={idx}
+                    title={data1.title}
+                    isResulted={data1.isResulted}
+                    id={data1.id}
+                    data={data1}
+                    index={idx}
+                    navigation={props.navigation}
+                  />
+                );
             })}
           </ScrollView>
         ) : (

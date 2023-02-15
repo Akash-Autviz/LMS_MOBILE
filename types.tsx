@@ -50,6 +50,7 @@ export type RootStackParamList = {
   WebViewInMobile: undefined;
   EditProfile: undefined;
   Otp: undefined;
+  QuizTest: undefined;
 };
 
 export type RootStackScreenProps<Screen extends keyof RootStackParamList> =
