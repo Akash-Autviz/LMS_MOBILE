@@ -442,7 +442,16 @@ export default function Purchased(props: any) {
             </ScrollView>
           ) : null}
           {res == "Notes" ? (
-            <ScrollView>
+            <ScrollView
+              style={{
+                marginBottom: 100,
+                width: wid,
+              }}
+              contentContainerStyle={{
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
               {courseData.notes?.map((e: any, idx: number) => {
                 return (
                   <TouchableOpacity
@@ -505,37 +514,39 @@ export default function Purchased(props: any) {
                   { label: "Hockey", value: "hockey" },
                 ]}
               /> */}
-              <SelectDropdown
-                // defaultValue={"Select Subject"}
-                buttonStyle={{
-                  width: wid / 2,
-                  height: 40,
-                  borderRadius: 40,
-                  marginBottom: 10,
-                  backgroundColor: "#319EAE",
-                }}
-                defaultButtonText={"Subjects"}
-                searchPlaceHolder="Subjects"
-                dropdownStyle={{
-                  backgroundColor: "#fff",
-                  marginTop: -42,
-                  borderRadius: 12,
-                }}
-                buttonTextStyle={{
-                  color: "#FFF",
-                  fontFamily: "Poppins-Regular",
-                }}
-                data={subjectName}
-                onSelect={(selectedItem, index) => {
-                  setCurrSubjectName(selectedItem.id);
-                }}
-                rowTextForSelection={(item, index) => {
-                  return item.subjectName;
-                }}
-                buttonTextAfterSelection={(selectedItem, index) => {
-                  return selectedItem.subjectName;
-                }}
-              />
+              {!checkArrayIsEmpty(courseData.videos) && (
+                <SelectDropdown
+                  // defaultValue={"Select Subject"}
+                  buttonStyle={{
+                    width: wid / 2,
+                    height: 40,
+                    borderRadius: 40,
+                    marginBottom: 10,
+                    backgroundColor: "#319EAE",
+                  }}
+                  defaultButtonText={"Subjects"}
+                  searchPlaceHolder="Subjects"
+                  dropdownStyle={{
+                    backgroundColor: "#fff",
+                    marginTop: -42,
+                    borderRadius: 12,
+                  }}
+                  buttonTextStyle={{
+                    color: "#FFF",
+                    fontFamily: "Poppins-Regular",
+                  }}
+                  data={subjectName}
+                  onSelect={(selectedItem, index) => {
+                    setCurrSubjectName(selectedItem.id);
+                  }}
+                  rowTextForSelection={(item, index) => {
+                    return item.subjectName;
+                  }}
+                  buttonTextAfterSelection={(selectedItem, index) => {
+                    return selectedItem.subjectName;
+                  }}
+                />
+              )}
 
               {currSubjectName &&
                 courseData.videos?.map((video: any) => {

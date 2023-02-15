@@ -18,7 +18,7 @@ import VideoCard from "../components/VideoCard";
 import { useStateContext } from "./Context/ContextProvider";
 import { getVideoId } from "../utils/Logics";
 import { baseUrl } from "../utils";
-import OnGoinVideoCard from "../components/OnGoinVideoCard";
+
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function HomeScreen({ route, navigation }: any) {
@@ -150,9 +150,7 @@ export default function HomeScreen({ route, navigation }: any) {
   };
 
   return (
-    <ScrollView
-      style={{ width: wid, flex: 1, height: high, backgroundColor: "#FAFAFB" }}
-    >
+    <ScrollView style={{ width: wid, flex: 1, backgroundColor: "#F7F7F7" }}>
       {isLoading === true ? (
         <View
           style={{
@@ -167,11 +165,11 @@ export default function HomeScreen({ route, navigation }: any) {
       ) : (
         <>
           <HeaderNav setIsLoading={setIsLoading} name={"DashBoard"} />
-          <ScrollView style={{ backgroundColor: "#FAFAFB" }}>
+          <ScrollView style={{ backgroundColor: "#F7F7F7" }}>
             <View
               style={{
                 top: high / 85.4,
-                backgroundColor: "#FAFAFB",
+                backgroundColor: "#F7F7F7",
                 width: wid / 0.45,
               }}
             >

@@ -133,7 +133,7 @@ export default function TabTwoScreen({ routes, navigation }: any) {
     <View style={{ backgroundColor: "#F7F7F7", flex: 1 }}>
       <HeaderNav name="My Courses" navigation={navigation} />
       {isLoading == false ? (
-        <View>
+        <View style={{ backgroundColor: "#FFF", height: high }}>
           <View style={styles.searchBarContainer}>
             <TextInput
               allowFontScaling={false}
@@ -507,7 +507,7 @@ export default function TabTwoScreen({ routes, navigation }: any) {
       ) : (
         <View
           style={{
-            height: high / 1.5,
+            height: high,
             alignSelf: "center",
             justifyContent: "center",
             alignItems: "center",

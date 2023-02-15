@@ -31,7 +31,7 @@ const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 
 export default function EditProfile(props: any) {
-  const { userDetail, userImage, setUserDetail, access_token } =
+  const { userDetail, userImage, setuserImage, setUserDetail, access_token } =
     useStateContext();
   const navigation = useNavigation();
   const [currUserDetail, setcurrUserDetail] = useState<any>();
@@ -227,11 +227,6 @@ export default function EditProfile(props: any) {
   // };
 
   const save = async () => {
-    Toast.show({
-      type: "success",
-      text1: "Saved",
-      position: "top",
-    });
     let data: any = JSON.stringify({
       id: currUserDetail.id,
       userName: phoneNumber,
@@ -246,29 +241,62 @@ export default function EditProfile(props: any) {
       creationTime: moment(),
       roleNames: ["STUDENT"],
     });
+    let header = {
+      "Abp-TenantId": "1",
+      Authorization: `Bearer ${access_token}`,
+      "Content-Type": "application/json",
+    };
     try {
-      const res = await axios.put(
-        `${baseUrl}/api/services/app/User/Update`,
-        data,
-        {
-          headers: header,
-        }
-      );
+      var config = {
+        method: "put",
+        maxBodyLength: Infinity,
+        url: `${baseUrl}/api/services/app/User/Update`,
+        headers: header,
+        data: data,
+      };
 
-      Toast.show({
-        type: "success",
-        text1: "Saved",
-        position: "top",
-      });
-      setUserDetail({
-        name: name,
-        surname: surName,
-        userName: phoneNumber,
-        emailAddress: email,
-        id: userDetail.id,
-      });
-      console.log(res);
-      navigation.goBack();
+      const res = await axios(config)
+        .then(function (response) {
+          Toast.show({
+            type: "success",
+            text1: "Saved",
+            position: "top",
+          });
+          console.log(response.data);
+          setUserDetail({
+            name: response.data.result.name,
+            surname: response.data.result.surname,
+            userName: response.data.result.name.userName,
+            emailAddress: response.data.result.emailAddress,
+            id: userDetail.id,
+          });
+          // setuserImage(response.data.result.pofileImage);
+          navigation.goBack();
+        })
+        .catch((err) => {
+          Toast.show({
+            type: "error",
+            text1: "Please Enter Correct Details!!!",
+            position: "top",
+          });
+          console.log(err);
+        });
+
+      // const res = await axios.put(
+      //   `${baseUrl}/api/services/app/User/Update`,
+      //   data,
+      //   {
+      //     headers: header,
+      //   }
+      // );
+
+      // Toast.show({
+      //   type: "success",
+      //   text1: "Saved",
+      //   position: "top",
+      // });
+
+      // console.log(res);
     } catch (error) {
       console.log(error);
       Toast.show({
@@ -336,6 +364,7 @@ export default function EditProfile(props: any) {
         `${baseUrl}/api/services/app/User/Get?Id=${userDetail.id}`,
         { headers: header }
       );
+
       console.log(result);
       setcurrUserDetail(result);
       setPhoneNumber(result.userName);
@@ -475,12 +504,10 @@ export default function EditProfile(props: any) {
             style={styles.textInput}
             onChangeText={(data: any) => setPhoneNumber(data)}
           />
-          <TextInput
-            placeholder="Enter your email"
-            keyboardType="email-address"
-            value={email}
-            style={styles.textInput}
-          />
+          <Text style={[styles.textInput, { textAlignVertical: "center" }]}>
+            {email}
+          </Text>
+
           <TouchableOpacity
             onPress={() => {
               checkValidation();

@@ -76,7 +76,7 @@ const SignUpScreen = () => {
       //   text1: "Please Enter Correct Email",
       //   position: "top",
       // });
-    } else if (password.trim() == "" || password.trim().length < 5) {
+    } else if (password == "" || password.length < 5) {
       alert("Weak Password");
     } else {
       signUp();
@@ -110,7 +110,7 @@ const SignUpScreen = () => {
           type: "success",
           text1: "OTP Sent SucecesFully ",
           position: "top",
-        });
+      });
         resetValue();
         navigation.navigate("Otp", {
           password: password,
@@ -119,15 +119,16 @@ const SignUpScreen = () => {
         } as never);
       })
       .catch((error: any) => {
+        //  Toast.show({
+        //    type: "error",
+        //    text1: error.response.data.error.message,
+        //    position: "top",
+        //    topOffset: 0,
+        //  });
         resetValue();
-        Toast.show({
-          type: "error",
-          text1: error.response.data.error.message,
-          position: "top",
-          topOffset: 0,
-        });
+
         // alert(error.response);
-        console.log(error.response.data.error.message);
+        alert(error.response.data.error.message);
       });
   };
 
@@ -137,7 +138,6 @@ const SignUpScreen = () => {
       style={styles.container}
     >
       <View>
-        <Toast></Toast>
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View style={styles.inner}>
             <Text style={styles.header}>Create Account</Text>

@@ -28,9 +28,10 @@ export default function ProfilePage(props: any) {
       setAccess_token(null);
       await SecureStore.deleteItemAsync("userId1");
       await SecureStore.deleteItemAsync("user_id");
+      setUserDetail(null);
       await SecureStore.deleteItemAsync("access_token");
       setAccess_token(null);
-      setUserDetail(null);
+
       navigation.dispatch(StackActions.replace("SignIn"));
     } catch (error) {
       console.log(error);

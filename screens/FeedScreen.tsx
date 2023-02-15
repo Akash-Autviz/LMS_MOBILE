@@ -119,7 +119,7 @@ export default function FeedScreen(props: any) {
       }
     });
   };
-  const getBlogById = (id: number) => {};
+
   useEffect(() => {
     filterData(currentState);
   }, [currentState]);
