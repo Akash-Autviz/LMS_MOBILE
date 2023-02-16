@@ -23,6 +23,7 @@ import Toast from "react-native-toast-message";
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 export default function MockTestSubjectTest(props: any) {
+  useEffect(() => {});
   const { id } = props.route.params;
   const navigation = useNavigation();
   const [quesIndexArray, setquesIndexArray] = useState<any>([]);
@@ -67,6 +68,26 @@ export default function MockTestSubjectTest(props: any) {
       setButtonValue("Next");
     }
   };
+  useEffect(() => {
+    const backAction = () => {
+      Alert.alert("Hold on!", "Are you sure you want to go back?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel",
+        },
+        { text: "YES", onPress: () => navigation.navigate("Feed") },
+      ]);
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
   const GetQuestionsById = async () => {
     try {
       var config = {
@@ -103,7 +124,7 @@ export default function MockTestSubjectTest(props: any) {
           {
             text: "Ok",
             onPress: () => {
-              navigation.dispatch(StackActions.replace("Root"));
+              navigation.goBack();
             },
           },
         ]);

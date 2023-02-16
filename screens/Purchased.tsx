@@ -39,6 +39,7 @@ export default function Purchased(props: any) {
   const [courseType, setCourseType] = useState<any>();
   const [currSubjectName, setCurrSubjectName] = useState<any>();
   const [subjectName, setSubjectName] = useState([]);
+
   const { access_token, userDetail } = useStateContext();
   const Courseid = props.route.params.id;
   const [currrentCourseData, SetCurrrentCourseData] = useState<any>([]);
@@ -54,7 +55,6 @@ export default function Purchased(props: any) {
   };
   useEffect(() => {
     getFilterData();
-    // setSubjectName();
   }, []);
   var Video = (
     <View
@@ -268,6 +268,9 @@ export default function Purchased(props: any) {
       getEnrollMockTestByUserIdAndCouresId();
     }, [])
   );
+  useEffect(() => {
+    setCurrSubjectName(null);
+  }, [res]);
   const [isTrue, setIsTrue] = useState(true);
   const CreateCourseMockTest = async (token: any) => {
     let data = JSON.stringify({

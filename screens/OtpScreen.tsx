@@ -8,8 +8,6 @@ import {
   KeyboardAvoidingView,
   Platform,
   Alert,
-  Keyboard,
-  TouchableWithoutFeedback,
 } from "react-native";
 import * as SecureStore from "expo-secure-store";
 import Toast from "react-native-toast-message";
@@ -55,7 +53,7 @@ const OtpScreen = (props: any) => {
           text1: error.response.data.error.message,
           position: "top",
         });
-        console.log(error.response.data.error.message);
+        alert(error.response.data.error.message);
       });
   };
   const resendOtp = async () => {
@@ -78,7 +76,6 @@ const OtpScreen = (props: any) => {
           text1: "Resent OTP Successfull",
           position: "top",
         });
-        setOtp("");
         console.log(JSON.stringify(response.data));
       })
 

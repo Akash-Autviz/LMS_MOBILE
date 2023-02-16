@@ -121,7 +121,6 @@ export default function MockTestCard(props: any) {
 
     axios(config)
       .then(function (response: any) {
-        upComingData();
         createPayment();
         getCourseDetails(access_token, id);
         console.log(response, "Create Enroll Success");
@@ -149,6 +148,7 @@ export default function MockTestCard(props: any) {
     RazorpayCheckout.open(options as any)
       .then((data: any) => {
         setRefresh(new Date().getTime());
+        upComingData();
         createEnrollementCoures();
       })
       .catch((error: any) => {

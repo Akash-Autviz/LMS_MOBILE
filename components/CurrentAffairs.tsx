@@ -36,7 +36,7 @@ export default function CurrentAffairs(props: any) {
         >
           <View
             style={{
-              height: "30%",
+              height: "34%",
               width: "20%",
               backgroundColor: "#FAFAFB",
               justifyContent: "center",
@@ -46,7 +46,7 @@ export default function CurrentAffairs(props: any) {
               style={{
                 resizeMode: "contain",
                 backgroundColor: "#FAFAFB",
-                width: wid / 6.4,
+                width: wid / 5.4,
                 height: wid / 5.4,
               }}
               source={{ uri: `${image}` }}
@@ -56,7 +56,7 @@ export default function CurrentAffairs(props: any) {
             style={{
               paddingVertical: high / 180,
               alignSelf: "flex-start",
-              width: wid / 1.9,
+              width: wid / 2,
               flexDirection: "column",
               backgroundColor: "transparent",
             }}
@@ -64,14 +64,14 @@ export default function CurrentAffairs(props: any) {
             <Text
               style={{
                 backgroundColor: "transparent",
-                marginTop: 2,
+                marginVertical: 2,
                 fontFamily: "Poppins-Bold",
                 fontSize: 18,
               }}
             >
               {title}
             </Text>
-            {trimTextName(description).charAt(0) != "<" ? (
+            {description && trimTextName(description).charAt(0) != "<" ? (
               <Text
                 style={{
                   backgroundColor: "transparent",
@@ -87,13 +87,13 @@ export default function CurrentAffairs(props: any) {
                 <WebView
                   style={{
                     backgroundColor: "transparent",
-                    marginTop: -7,
+                    marginTop: -10,
                     width: wid / 1.8,
-                    height: high / 25,
+                    height: high / 15,
                   }}
                   originWhitelist={["*"]}
                   source={{
-                    html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=0.6"></head><style>
+                    html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=0.7"></head><style>
     body { font-size: 100%; word-wrap: break-word; overflow-wrap: break-word; }
 </style><body>${description}</body></html>`,
                   }}
@@ -101,7 +101,7 @@ export default function CurrentAffairs(props: any) {
               </View>
             )}
           </View>
-          <AntDesign name="right" size={30} color="black" />
+          <AntDesign name="right" size={24} color="black" />
         </TouchableOpacity>
       ) : null}
     </ScrollView>

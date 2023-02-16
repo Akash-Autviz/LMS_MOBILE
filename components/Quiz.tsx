@@ -1,24 +1,18 @@
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import {
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
+import { StyleSheet, Dimensions, TouchableOpacity } from "react-native";
 
 import { Text, View } from "../components/Themed";
 import { useStateContext } from "../screens/Context/ContextProvider";
 import { baseUrl } from "../utils";
-import AnswerOption from "./AnswerOption";
 
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function Quiz(props: any) {
   const { access_token } = useStateContext();
-  const navigate = useNavigation();
+  const navigation = useNavigation();
   const { title, data } = props;
   const [result, setResult] = useState(false);
   const [resultData, setResutlData] = useState({});
@@ -55,53 +49,75 @@ export default function Quiz(props: any) {
         borderColor: "#C9C17F",
         borderWidth: 1,
         borderRadius: 11,
+        flexDirection: "row",
+        justifyContent: "space-between",
         marginVertical: "2%",
+        alignItems: "center",
+        paddingHorizontal: 10,
+        paddingVertical: 7,
       }}
     >
+      <View style={{}}>
+        <Text
+          allowFontScaling={false}
+          style={{ fontSize: 14, fontFamily: "Poppins-Bold" }}
+        >
+          {title}
+        </Text>
+      </View>
+
       <View
-        style={[
-          styles.paddingInContainer,
-          styles.MockTestCard,
-          {
-            alignItems: "center",
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginTop: high / 80,
-            marginBottom: high / 50,
-          },
-        ]}
+        style={{
+          justifyContent: "flex-end",
+          flexDirection: "row",
+          width: wid / 1.8,
+          alignItems: "center",
+        }}
       >
-        <View
-          style={[
-            styles.MockTestCard,
-            {
-              justifyContent: "space-between",
-              marginTop: high / 71.16,
-            },
-          ]}
+        <TouchableOpacity
+          style={{
+            backgroundColor: "#319EAE",
+
+            justifyContent: "center",
+            alignContent: "center",
+            width: wid / 4,
+            height: high / 25.5,
+            borderRadius: 4,
+          }}
+          onPress={() => {
+            navigation.navigate("QuizTest", { id: data.id } as never);
+          }}
         >
           <Text
             allowFontScaling={false}
-            style={{ fontSize: 14, fontFamily: "Poppins-Bold" }}
+            style={{
+              color: "white",
+              fontFamily: "Poppins-Regular",
+              fontSize: 12,
+              textAlign: "center",
+              alignSelf: "center",
+            }}
           >
-            {title}
+            Take Test
           </Text>
-        </View>
-
-        <View style={{}}>
+        </TouchableOpacity>
+        {result && (
           <TouchableOpacity
             style={{
               backgroundColor: "#319EAE",
 
-              width: wid / 5,
               justifyContent: "center",
               alignContent: "center",
+              width: wid / 4,
+              marginLeft: wid / 30,
               height: high / 25.5,
               borderRadius: 4,
             }}
             onPress={() => {
-              navigate.navigate("QuizTest", { id: data.id } as never);
-              // reattempt(currrentCourseData);
+              navigation.navigate("TestResult", {
+                id: data.id,
+                type: "quiz",
+              } as never);
             }}
           >
             <Text
@@ -113,41 +129,9 @@ export default function Quiz(props: any) {
                 alignSelf: "center",
               }}
             >
-              Take Test
+              View Result
             </Text>
           </TouchableOpacity>
-        </View>
-        {result && (
-          <View style={{}}>
-            <TouchableOpacity
-              style={{
-                backgroundColor: "#319EAE",
-                width: wid / 4,
-                justifyContent: "center",
-                alignContent: "center",
-                height: high / 25.5,
-                borderRadius: 4,
-              }}
-              onPress={() => {
-                navigate.navigate("TestResult", {
-                  id: data.id,
-                  type: "quiz",
-                } as never);
-              }}
-            >
-              <Text
-                allowFontScaling={false}
-                style={{
-                  color: "white",
-                  fontFamily: "Poppins-Regular",
-                  fontSize: 12,
-                  alignSelf: "center",
-                }}
-              >
-                View Result
-              </Text>
-            </TouchableOpacity>
-          </View>
         )}
       </View>
     </View>

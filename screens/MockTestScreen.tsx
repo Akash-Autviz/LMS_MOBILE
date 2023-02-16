@@ -18,6 +18,7 @@ export default function MockTest(props: any) {
   const [myMockData, setMyMockData] = useState<any>([]);
   const { access_token, userDetail } = useStateContext();
   const [isLoading, setisLoading] = useState<boolean>(false);
+  const [noUpcomingMockTest, setNoUpcomingMockTest] = useState(false);
   const [isThereAnyPurchasedMocktest, setisThereAnyPurchasedMocktest] =
     useState<boolean>(false);
   const [isAllBuy, setisAllBuy] = useState<boolean>(true);
@@ -56,7 +57,13 @@ export default function MockTest(props: any) {
       );
       console.log(data, "upcomingDataResonse");
       setMockData(data.result);
+
       setisLoading(false);
+      data.result.map((e: any) => {
+        if (e.isBuy == false) {
+          setNoUpcomingMockTest(true);
+        }
+      });
     } catch (error) {
       console.log(error, "upcomingDataResonse");
       setisLoading(false);
@@ -209,6 +216,21 @@ export default function MockTest(props: any) {
                     )
                   );
                 })}
+                {!noUpcomingMockTest && (
+                  <View
+                    style={{
+                      alignItems: "center",
+                      justifyContent: "center",
+                      height: high / 2.33,
+
+                      width: wid,
+                    }}
+                  >
+                    <Text style={{ fontFamily: "Poppins-Bold", fontSize: 20 }}>
+                      No Mock Tests
+                    </Text>
+                  </View>
+                )}
               </ScrollView>
             )}
             {res == "My Mock" && (
