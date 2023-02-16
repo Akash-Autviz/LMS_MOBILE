@@ -14,6 +14,7 @@ import SelectDropdown from "react-native-select-dropdown";
 import TestCardCoponent from "../components/TestCardCoponent";
 import { getSyllabus } from "../api/SubjectService";
 import { AntDesign, FontAwesome5 } from "@expo/vector-icons";
+import { useFocusEffect } from "@react-navigation/native";
 // import { Item } from "react-native-paper/lib/typescript/components/Drawer/Drawer";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
@@ -261,9 +262,12 @@ export default function Purchased(props: any) {
   useEffect(() => {
     getCourseDetails(access_token, Courseid);
   }, [props]);
-  useEffect(() => {
-    getEnrollMockTestByUserIdAndCouresId();
-  }, [TestRefresh]);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      getEnrollMockTestByUserIdAndCouresId();
+    }, [])
+  );
   const [isTrue, setIsTrue] = useState(true);
   const CreateCourseMockTest = async (token: any) => {
     let data = JSON.stringify({

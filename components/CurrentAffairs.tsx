@@ -47,7 +47,7 @@ export default function CurrentAffairs(props: any) {
                 resizeMode: "contain",
                 backgroundColor: "#FAFAFB",
                 width: wid / 6.4,
-                height: wid / 6.4,
+                height: wid / 5.4,
               }}
               source={{ uri: `${image}` }}
             ></Image>
@@ -56,7 +56,7 @@ export default function CurrentAffairs(props: any) {
             style={{
               paddingVertical: high / 180,
               alignSelf: "flex-start",
-              width: wid / 2,
+              width: wid / 1.9,
               flexDirection: "column",
               backgroundColor: "transparent",
             }}
@@ -64,7 +64,7 @@ export default function CurrentAffairs(props: any) {
             <Text
               style={{
                 backgroundColor: "transparent",
-                marginVertical: 2,
+                marginTop: 2,
                 fontFamily: "Poppins-Bold",
                 fontSize: 18,
               }}
@@ -87,6 +87,7 @@ export default function CurrentAffairs(props: any) {
                 <WebView
                   style={{
                     backgroundColor: "transparent",
+                    marginTop: -7,
                     width: wid / 1.8,
                     height: high / 25,
                   }}
@@ -100,7 +101,7 @@ export default function CurrentAffairs(props: any) {
               </View>
             )}
           </View>
-          <AntDesign name="right" size={24} color="black" />
+          <AntDesign name="right" size={30} color="black" />
         </TouchableOpacity>
       ) : null}
     </ScrollView>

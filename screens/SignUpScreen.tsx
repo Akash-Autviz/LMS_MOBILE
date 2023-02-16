@@ -16,7 +16,8 @@ import { useNavigation } from "@react-navigation/native";
 import axios from "axios";
 import { baseUrl } from "../utils";
 import { FontAwesome } from "@expo/vector-icons";
-import { StackActions } from "@react-navigation/native";
+
+import { ActivityIndicator } from "react-native-paper";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 
@@ -27,14 +28,17 @@ const SignUpScreen = () => {
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
+  const [isloading, setLoading] = useState(false);
   const resetValue = () => {
-    // setSurName("");
-    // setName("");
-    // setEmail("");
-    // setPassword("");
-    // setPhoneNumber("");
+    setLoading(false);
+    setSurName("");
+    setName("");
+    setEmail("");
+    setPassword("");
+    setPhoneNumber("");
   };
   const checkValidation = () => {
+    setLoading(true);
     let PhoneNoRegex = new RegExp(/(0|91)?[6-9][0-9]{9}/);
 
     if (name == "") {
@@ -43,6 +47,7 @@ const SignUpScreen = () => {
       //   text1: "Please Enter Name",
       //   position: "top",
       // });
+      setLoading(false);
       alert("Please Enter Name");
     } else if (surName == "") {
       // Toast.show({
@@ -51,6 +56,7 @@ const SignUpScreen = () => {
       //   position: "top",
       // });
       alert("Please Enter Surname");
+      setLoading(false);
     } else if (
       !PhoneNoRegex.test(phoneNumber) ||
       phoneNumber == "" ||
@@ -63,7 +69,11 @@ const SignUpScreen = () => {
         //   position: "top",
         // });
         alert("Please Enter Correct PhoneNo");
-      } else alert("Enter 10 digit PhoneNo");
+        setLoading(false);
+      } else {
+        setLoading(false);
+        alert("Enter 10 digit PhoneNo");
+      }
       // Toast.show({
       //   type: "info",
       //   text1: "Enter 10 digit PhoneNo",
@@ -71,13 +81,20 @@ const SignUpScreen = () => {
       // });
     } else if (email == "" || !email.includes("@")) {
       alert("Please Enter Correct Email");
+      setLoading(false);
       // Toast.show({
       //   type: "info",
       //   text1: "Please Enter Correct Email",
       //   position: "top",
       // });
     } else if (password == "" || password.length < 5) {
-      alert("Weak Password");
+      if (password == "") {
+        alert("Enter Password");
+      } else {
+        alert("Weak Password");
+      }
+
+      setLoading(false);
     } else {
       signUp();
     }
@@ -110,7 +127,7 @@ const SignUpScreen = () => {
           type: "success",
           text1: "OTP Sent SucecesFully ",
           position: "top",
-      });
+        });
         resetValue();
         navigation.navigate("Otp", {
           password: password,
@@ -119,16 +136,8 @@ const SignUpScreen = () => {
         } as never);
       })
       .catch((error: any) => {
-        //  Toast.show({
-        //    type: "error",
-        //    text1: error.response.data.error.message,
-        //    position: "top",
-        //    topOffset: 0,
-        //  });
-        resetValue();
-
-        // alert(error.response);
         alert(error.response.data.error.message);
+        setLoading(false);
       });
   };
 
@@ -205,14 +214,20 @@ const SignUpScreen = () => {
             justifyContent: "center",
           }}
         >
-          <Text allowFontScaling={false} style={styles.BottomText}>
-            Sign Up
-          </Text>
-          <FontAwesome
-            name="long-arrow-right"
-            color={"white"}
-            style={{ alignSelf: "center", left: wid / 38.4 }}
-          ></FontAwesome>
+          {isloading ? (
+            <ActivityIndicator size="small" color="#319EAE" />
+          ) : (
+            <>
+              <Text allowFontScaling={false} style={styles.BottomText}>
+                Sign Up
+              </Text>
+              <FontAwesome
+                name="long-arrow-right"
+                color={"white"}
+                style={{ alignSelf: "center", left: wid / 38.4 }}
+              ></FontAwesome>
+            </>
+          )}
         </TouchableOpacity>
 
         <TouchableOpacity

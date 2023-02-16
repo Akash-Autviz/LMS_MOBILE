@@ -21,6 +21,7 @@ import { ActivityIndicator } from "react-native-paper";
 import { useStateContext } from "./Context/ContextProvider";
 import { baseUrl } from "../utils";
 import { checkArrayIsEmpty } from "../utils/Logics";
+import { useFocusEffect } from "@react-navigation/native";
 const wid = Dimensions.get("window").width;
 const high = Dimensions.get("window").height;
 export default function TabTwoScreen({ routes, navigation }: any) {
@@ -109,10 +110,9 @@ export default function TabTwoScreen({ routes, navigation }: any) {
     }
   }, [debouncedSearchTerm]);
   useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      onClear();
-    });
+    const unsubscribe = navigation.addListener("focus", () => {});
   }, [navigation]);
+ 
   const filterData = async () => {
     let filterRes = await nameData.filter((result: any) => {
       if (result.isDeleted == false) {

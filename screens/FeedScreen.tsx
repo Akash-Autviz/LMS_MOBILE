@@ -48,40 +48,7 @@ export default function FeedScreen(props: any) {
   };
   const [data, SetData] = useState<any>([]);
   const [feedData, setFeedData] = useState<any>([]);
-  const [quizData, setQuizDate] = useState<any>([]);
-  // const getQuizTests = async (value: String) => {
-  //   let config = {
-  //     headers: {
-  //       Authorization: `Bearer  ${value}`,
-  //     },
-  //   };
-  //   try {
-  //     const res = await axios.get(
-  //       `${baseUrl}api/services/app/BlogAppServices/GetAllBlogs?subjectId=0`,
-  //       config
-  //     );
-  //     // console.log("getVlogSErverice", res);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-  // const getQuizQuestion = async (value: any) => {
-  //   try {
-  //     let config = {
-  //       headers: {
-  //         Authorization: `Bearer  ${value}`,
-  //       },
-  //     };
-  //     const res = await axios.get(
-  //       `${baseUrl}/api/services/app/QuestionBlogAppSevice/GetAllBlogsQuestions?subjectId=0`
-  //     );
 
-  //     setQuizDate(res.data.result);
-  //     // console.log("getAllBlog Question", res);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
   useEffect(() => {
     SecureStore.getItemAsync("access_token").then((value: any) => {
       if (value != null) {
