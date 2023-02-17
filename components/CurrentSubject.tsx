@@ -12,12 +12,15 @@ import AnswerOption from "./AnswerOption";
 import axios from "axios";
 import { baseUrl } from "../utils";
 import moment from "moment";
+import RenderHtml from "react-native-render-html";
+
 const high = Dimensions.get("window").height;
 const wid = Dimensions.get("window").width;
 export default function CurrentSubject(props: any) {
   const { index, setIndex, access_token } = useStateContext();
   const [answer, setAnswer] = useState("");
   const [buttonValue, setButtonValue] = useState("Next");
+
   const {
     currentSectionTypeQuestoion,
     setSectionIdx,
@@ -104,7 +107,9 @@ export default function CurrentSubject(props: any) {
       setButtonValue("Next");
     }
   };
-
+  const source = {
+    html: `${currentSectionTypeQuestoion[index].question.questions}`,
+  };
   useEffect(() => {
     checkButton();
   }, [index, sectionIdx]);
@@ -153,6 +158,7 @@ export default function CurrentSubject(props: any) {
       setIndex(index + 1);
     }
   };
+
   return (
     <>
       {Array.isArray(currentSectionTypeQuestoion) &&
@@ -165,8 +171,9 @@ export default function CurrentSubject(props: any) {
           >
             <View
               style={{
-                marginVertical: high / 100,
-                paddingHorizontal: wid / 19.2,
+                marginTop: 10,
+                paddingHorizontal: wid / 14.2,
+                flexDirection: "row",
                 backgroundColor: "#FAFAFB",
               }}
             >
@@ -174,9 +181,9 @@ export default function CurrentSubject(props: any) {
                 allowFontScaling={false}
                 style={{ fontSize: 13, fontFamily: "Poppins-Bold" }}
               >
-                {index + 1}.{" "}
-                {currentSectionTypeQuestoion[index].question.questions}
+                {index + 1 + " "}.
               </Text>
+              <RenderHtml contentWidth={wid} source={source} />
             </View>
             <View style={{ backgroundColor: "#FAFAFB" }}>
               <View

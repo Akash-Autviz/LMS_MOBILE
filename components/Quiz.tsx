@@ -53,8 +53,8 @@ export default function Quiz(props: any) {
         justifyContent: "space-between",
         marginVertical: "2%",
         alignItems: "center",
-        paddingHorizontal: 10,
-        paddingVertical: 7,
+        paddingHorizontal: 12,
+        paddingVertical: 15,
       }}
     >
       <View style={{}}>
@@ -80,7 +80,7 @@ export default function Quiz(props: any) {
 
             justifyContent: "center",
             alignContent: "center",
-            width: wid / 4,
+            width: wid / 4.5,
             height: high / 25.5,
             borderRadius: 4,
           }}
@@ -108,8 +108,8 @@ export default function Quiz(props: any) {
 
               justifyContent: "center",
               alignContent: "center",
-              width: wid / 4,
-              marginLeft: wid / 30,
+              width: wid / 4.3,
+              marginLeft: wid / 40,
               height: high / 25.5,
               borderRadius: 4,
             }}

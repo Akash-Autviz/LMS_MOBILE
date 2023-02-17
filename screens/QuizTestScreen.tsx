@@ -124,7 +124,9 @@ export default function MockTestSubjectTest(props: any) {
           {
             text: "Ok",
             onPress: () => {
-              navigation.goBack();
+              navigation.dispatch(
+                StackActions.replace("Feed", { user: "jane" })
+              );
             },
           },
         ]);
@@ -164,9 +166,8 @@ export default function MockTestSubjectTest(props: any) {
       if (index > 0) setIndex(index - 1);
     }
   };
-
-  const updateUserAnswer = (token: any, trueType: string) => {
-    changeValue(trueType);
+  const updateUserAnswer = (token: any, type: string) => {
+    changeValue(type);
     let data = JSON.stringify({
       creationTime: moment(),
       mockTest: quesIndexArray[index].mockTest,
@@ -174,11 +175,11 @@ export default function MockTestSubjectTest(props: any) {
       id: quesIndexArray[index].id,
       mockTestId: quesIndexArray[index].mockTestId,
       isDeleted: quesIndexArray[index].question.isDeleted,
-      userAnswer: trueType ? "" : answer,
+      userAnswer: type ? "" : answer,
       quesId: quesIndexArray[index].questionId,
       creatorUserId: quesIndexArray[index].creatorUserId,
-      skip: trueType == "skip" ? true : false,
-      isMarkUp: trueType == "markup" ? true : false,
+      skip: type == "skip" ? true : false,
+      isMarkUp: type == "markup" ? true : false,
       tenantId: 1,
     });
     console.log(data);

@@ -21,6 +21,7 @@ export default function CurrentAffairs(props: any) {
   return (
     <ScrollView
       style={{
+        paddingVertical: wid / 50,
         backgroundColor: "#FAFAFB",
       }}
       contentContainerStyle={{ justifyContent: "flex-start" }}
@@ -36,8 +37,6 @@ export default function CurrentAffairs(props: any) {
         >
           <View
             style={{
-              height: "34%",
-              width: "20%",
               backgroundColor: "#FAFAFB",
               justifyContent: "center",
             }}
@@ -45,9 +44,9 @@ export default function CurrentAffairs(props: any) {
             <Image
               style={{
                 resizeMode: "contain",
-                backgroundColor: "#FAFAFB",
+                backgroundColor: "transparent",
                 width: wid / 5.4,
-                height: wid / 5.4,
+                height: 60,
               }}
               source={{ uri: `${image}` }}
             ></Image>
@@ -84,20 +83,22 @@ export default function CurrentAffairs(props: any) {
               </Text>
             ) : (
               <View>
-                <WebView
-                  style={{
-                    backgroundColor: "transparent",
-                    marginTop: -10,
-                    width: wid / 1.8,
-                    height: high / 15,
-                  }}
-                  originWhitelist={["*"]}
-                  source={{
-                    html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=0.7"></head><style>
+                {description && (
+                  <WebView
+                    style={{
+                      backgroundColor: "transparent",
+                      marginTop: -10,
+                      width: wid / 1.8,
+                      height: high / 14,
+                    }}
+                    originWhitelist={["*"]}
+                    source={{
+                      html: `<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width, initial-scale=0.7"></head><style>
     body { font-size: 100%; word-wrap: break-word; overflow-wrap: break-word; }
 </style><body>${description}</body></html>`,
-                  }}
-                />
+                    }}
+                  />
+                )}
               </View>
             )}
           </View>
@@ -176,19 +177,17 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   topicCntr: {
-    paddingHorizontal: "5%",
-    paddingVertical: "2%",
     marginHorizontal: "5%",
     flexDirection: "row",
     borderRadius: 11,
-    marginVertical: 10,
     justifyContent: "space-between",
-    // top: 100,
+    paddingVertical: wid / 50,
+    paddingHorizontal: wid / 40,
     borderWidth: 1,
     alignItems: "center",
     borderColor: "#F1F1F1",
     width: "90%",
-    backgroundColor: "#FAFAFB",
+    backgroundColor: "#FAFBFA",
   },
   separator: {
     marginVertical: 30,

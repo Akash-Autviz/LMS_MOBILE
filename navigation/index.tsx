@@ -159,6 +159,11 @@ function RootNavigator() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
+        name="Feed"
+        component={FeedScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
         name="QuizTest"
         component={QuizTestScreen}
         options={{ headerShown: false }}
@@ -254,6 +259,7 @@ function Home() {
         component={VideosScreen}
         options={{ headerShown: false }}
       />
+
       <Stack.Screen
         name="TestResult"
         component={TestResultScreen}
